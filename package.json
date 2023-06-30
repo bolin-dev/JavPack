@@ -1,0 +1,14 @@
+{
+  "name": "javpack",
+  "version": "0.0.1",
+  "description": "一些油猴脚本",
+  "author": "blc",
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "@babel/core": "^7.22.5",
+    "@babel/eslint-parser": "^7.22.5",
+    "eslint": "^8.43.0",
+    "eslint-config-alloy": "^5.0.0",
+    "prettier": "^2.8.8"
+  }
+}
