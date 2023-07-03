@@ -3,6 +3,8 @@
   "env": {
     "browser": true
   },
-  "globals": {},
+  "globals": {
+    "GM_addStyle": true
+  },
   "rules": {}
 }
