@@ -35,6 +35,10 @@
   #video-search {
     border: none;
   }
+  #video-search:focus {
+    box-shadow: none;
+    z-index: auto;
+  }
   .toolbar {
     font-size: 0;
     padding: 0 0 .5rem;
