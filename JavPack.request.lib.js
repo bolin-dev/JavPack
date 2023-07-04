@@ -16,21 +16,21 @@ function request(details = {}) {
     url: "",
     data: {},
     timeout: 10000,
-    responseType: "document",
   };
   Object.assign(defaults, details);
 
-  if (!defaults.url) throw new Error("url is required");
-  if (!METHODS.includes(defaults.method)) throw new Error("invalid method");
+  if (!defaults.url) throw new Error("Invalid URL");
+  if (!METHODS.includes(defaults.method)) throw new Error("Invalid Method");
 
   if (defaults.method === "GET") {
+    defaults.responseType ??= "document";
     defaults.url = buildQueryString(defaults.url, defaults.data);
   }
 
   if (defaults.method === "POST") {
     defaults.responseType ??= "json";
 
-    if (defaults.headers?.["Content-Type"] === "application/json") {
+    if (defaults.headers?.["Content-Type"].includes("application/json")) {
       defaults.data = JSON.stringify(defaults.data);
     } else {
       defaults.data = buildQueryStringParams(defaults.data);
@@ -65,9 +65,9 @@ function handleResponse(resolve, defaults) {
 }
 
 function buildQueryString(url, data) {
-  const urlObject = new URL(url);
-  urlObject.search = buildQueryStringParams(data, urlObject.searchParams);
-  return urlObject.toString();
+  const urlObj = new URL(url);
+  urlObj.search = buildQueryStringParams(data, urlObj.searchParams);
+  return urlObj.toString();
 }
 
 function buildQueryStringParams(data, params = new URLSearchParams()) {
