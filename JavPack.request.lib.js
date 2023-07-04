@@ -76,3 +76,23 @@ function buildQueryStringParams(data, params = new URLSearchParams()) {
   }
   return params.toString();
 }
+
+async function taskQueue({ url, steps = [] }) {
+  if (!url || typeof url !== "string") throw new Error("Invalid URL");
+  if (!Array.isArray(steps)) throw new Error("Steps should be an array");
+
+  let currentRes = url;
+
+  for (const step of steps) {
+    currentRes = await webScraper({ url: currentRes, ...step });
+    if (!currentRes) break;
+  }
+
+  return currentRes;
+}
+
+async function webScraper({ url, getRes }) {
+  let res = await request({ url });
+  if (res && getRes) res = getRes(res);
+  return res;
+}
