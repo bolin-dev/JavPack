@@ -4,7 +4,10 @@
     "browser": true
   },
   "globals": {
-    "GM_addStyle": true
+    "GM_addStyle": true,
+    "GM_xmlhttpRequest": true
   },
-  "rules": {}
+  "rules": {
+    "no-unused-vars": "off"
+  }
 }
