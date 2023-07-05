@@ -312,6 +312,9 @@ const detail = `
   width: 1.5rem;
   padding: 0;
 }
+.movie-panel-info .review-buttons > .panel-block:nth-child(2) {
+  display: none;
+}
 .video-meta-panel ~ .columns > .column {
   padding-bottom: 0;
 }
