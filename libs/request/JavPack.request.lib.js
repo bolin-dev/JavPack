@@ -68,13 +68,20 @@ function buildQueryStringParams(data, params = new URLSearchParams()) {
 }
 
 async function taskQueue(details, steps = []) {
-  let currentRes = typeof details === "string" ? { url: details } : details;
+  let currentDetails = parseDetails(details);
+  let currentRes;
 
   for (const step of steps) {
-    currentRes = await request(currentRes);
-    if (currentRes && step) currentRes = step(currentRes);
+    currentRes = await request(currentDetails);
+    if (currentRes && step) currentRes = step?.(currentRes);
     if (!currentRes) break;
+
+    currentDetails = parseDetails(currentRes);
   }
 
   return currentRes;
+}
+
+function parseDetails(data) {
+  return typeof data === "string" ? { url: data } : data;
 }
