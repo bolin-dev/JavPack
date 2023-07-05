@@ -6,11 +6,11 @@
 
 ## 内容
 
-| 函数             | 参数                          | 注释         |
-| :--------------- | :---------------------------- | :----------- |
-| request          | `details: object`             | 网络请求     |
-| buildQueryString | `url: string` `data: object ` | url 拼接     |
-| taskQueue        | `url: string` `steps: func[]` | 简易任务队列 |
+| 函数             | 参数                                     | 注释         |
+| :--------------- | :--------------------------------------- | :----------- |
+| request          | `details: object`                        | 网络请求     |
+| buildQueryString | `url: string` `data: object `            | url 拼接     |
+| taskQueue        | `details: string/object` `steps: func[]` | 简易任务队列 |
 
 ## 使用
 
