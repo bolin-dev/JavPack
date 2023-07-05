@@ -233,6 +233,9 @@
   .actors .box {
     margin-bottom: 0;
   }
+  .actors .box .button {
+    margin-top: 0 !important;
+  }
   `;
   const section = `
   .section-container .box {
@@ -259,19 +262,6 @@
   }
   :root[data-theme=dark] nav.pagination {
     border-top: none !important;
-  }
-  `;
-  const other = `
-  .payment-form {
-    padding: 1rem;
-  }
-  .payment-form .payment-total,
-  .form-panel .user-profile {
-    padding: 0;
-  }
-  nav.panel .panel-block {
-    margin-top: -1rem;
-    padding: .5rem;
   }
   `;
   const detail = `
@@ -306,26 +296,86 @@
     height: 100%;
   }
   .column-video-cover img {
-    max-width: none;
     height: 100%;
     max-height: none;
     width: 100%;
     object-fit: contain;
   }
-  nav.panel .panel-block {
+  .movie-panel-info .panel-block {
     margin-top: 0;
-    padding: .5rem 0;
+    padding: .5rem 0 !important;
   }
-  .panel .panel-block:last-child {
+  .movie-panel-info .panel-block:last-child {
     border-bottom: none !important;
   }
-  .video-meta-panel .copy-to-clipboard {
+  .movie-panel-info .copy-to-clipboard {
     height: 1.5rem;
     width: 1.5rem;
     padding: 0;
   }
+  .video-meta-panel ~ .columns > .column {
+    padding-bottom: 0;
+  }
+  .message-body {
+    padding: .5rem;
+  }
+  .video-panel .tile-images {
+    grid-gap: .5rem;
+    font-size: 0;
+  }
+  .video-panel .preview-images a {
+    aspect-ratio: 4 / 3;
+  }
+  .video-panel .preview-images img {
+    object-fit: cover;
+    height: 100% !important;
+    width: 100% !important;
+  }
+  .preview-video-container span {
+    z-index: 1;
+  }
+  .preview-video-container:hover span {
+    z-index: auto;
+  }
+  .preview-video-container:after {
+    height: 100%;
+  }
+  #tabs-container {
+    margin-top: -1rem;
+  }
+  #tabs-container .message {
+    margin-bottom: 0;
+  }
+  #tabs-container .message-body {
+    padding: 0;
+  }
+  #magnets-content > .columns,
+  #magnets-content > .columns .buttons:last-child {
+    margin: 0;
+  }
+  .review-items .review-item {
+    padding: .75rem;
+  }
+  .video-panel .tile-small .tile-item {
+    display: flex;
+    flex-direction: column;
+  }
+  .video-panel .tile-small img {
+    flex: 1;
+    object-fit: cover;
+  }
   `;
+  const other = `
+  .payment-form {
+    padding: 1rem;
+  }
+  .payment-form .payment-total,
+  .form-panel .user-profile {
+    padding: 0;
+  }
+  `;
+
   GM_addStyle(
-    `${root}${hidden}${search}${head}${toolbar}${main}${movie}${actor}${section}${foot}${other}${detail}`
+    `${root}${hidden}${search}${head}${toolbar}${main}${movie}${actor}${section}${foot}${detail}${other}`
   );
 })();
