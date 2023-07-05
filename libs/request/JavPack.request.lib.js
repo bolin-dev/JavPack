@@ -1,13 +1,3 @@
-// ==UserScript==
-// @name            JavPack.request
-// @namespace       JavPack.request@blc
-// @version         0.0.1
-// @author          blc
-// @description     请求数据
-// @grant           GM_xmlhttpRequest
-// @license         GPL-3.0-only
-// ==/UserScript==
-
 const METHODS = ["GET", "POST", "HEAD"];
 
 function request(details = {}) {
@@ -77,22 +67,18 @@ function buildQueryStringParams(data, params = new URLSearchParams()) {
   return params.toString();
 }
 
-async function taskQueue({ url, steps = [] }) {
+async function taskQueue(url, steps = []) {
   if (!url || typeof url !== "string") throw new Error("Invalid URL");
   if (!Array.isArray(steps)) throw new Error("Steps should be an array");
+  if (!steps.length) throw new Error("Steps should not be empty");
 
   let currentRes = url;
 
   for (const step of steps) {
-    currentRes = await webScraper({ url: currentRes, ...step });
+    let currentRes = await request({ url });
+    if (currentRes && step) currentRes = step(currentRes);
     if (!currentRes) break;
   }
 
   return currentRes;
-}
-
-async function webScraper({ url, getRes }) {
-  let res = await request({ url });
-  if (res && getRes) res = getRes(res);
-  return res;
 }
