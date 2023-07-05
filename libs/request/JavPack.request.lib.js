@@ -67,15 +67,11 @@ function buildQueryStringParams(data, params = new URLSearchParams()) {
   return params.toString();
 }
 
-async function taskQueue(url, steps = []) {
-  if (!url || typeof url !== "string") throw new Error("Invalid URL");
-  if (!Array.isArray(steps)) throw new Error("Steps should be an array");
-  if (!steps.length) throw new Error("Steps should not be empty");
-
-  let currentRes = url;
+async function taskQueue(details, steps = []) {
+  let currentRes = typeof details === "string" ? { url: details } : details;
 
   for (const step of steps) {
-    let currentRes = await request({ url });
+    currentRes = await request(currentRes);
     if (currentRes && step) currentRes = step(currentRes);
     if (!currentRes) break;
   }
