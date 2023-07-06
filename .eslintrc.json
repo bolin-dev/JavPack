@@ -5,7 +5,9 @@
   },
   "globals": {
     "GM_addStyle": true,
-    "GM_xmlhttpRequest": true
+    "GM_xmlhttpRequest": true,
+    "GM_openInTab": true,
+    "autoListener": true
   },
   "rules": {
     "no-unused-vars": "off"
