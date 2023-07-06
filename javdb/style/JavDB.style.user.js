@@ -158,6 +158,13 @@ const main = `
 .section-container {
   grid-gap: .5rem;
 }
+.movie-list .box .video-title,
+.actor-box a strong,
+.section-container .box,
+.movie-panel-info {
+  font-size: 14px;
+  line-height: unset;
+}
 :is(.tabs, #select-search-image-modal) + .section {
   padding: 0;
 }

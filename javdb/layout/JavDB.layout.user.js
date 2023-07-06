@@ -60,15 +60,6 @@ const common = `
   grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
 }
 `;
-const other = `
-.movie-list .box .video-title,
-.actor-box a strong,
-.section-container .box,
-.movie-panel-info {
-  font-size: 14px;
-  line-height: unset;
-}
-`;
 
 GM_addStyle(`
 ${variable}
@@ -128,5 +119,4 @@ ${common}
     grid-template-columns: repeat(var(--xxl-grid-cols), minmax(0, 1fr)) !important;
   }
 }
-${other}
 `);
