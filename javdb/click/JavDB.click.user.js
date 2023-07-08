@@ -6,9 +6,8 @@
 // @description     新标签页
 // @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/listener/JavPack.listener.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @run-at          document-end
+// @run-at          document-start
 // @grant           GM_openInTab
 // @license         GPL-3.0-only
 // @compatible      chrome
@@ -16,8 +15,8 @@
 // ==/UserScript==
 
 (function () {
-  const openWindow = (e, active = false) => {
-    const target = e.target.closest("a");
+  const openInTab = (e, active = false) => {
+    const target = e.target.closest(":is(.movie-list, .actors, .section-container) a");
     if (!target) return;
 
     e.preventDefault();
@@ -26,14 +25,6 @@
     GM_openInTab(target.href, { active, setParent: true });
   };
 
-  autoListener([
-    {
-      path: "_global",
-      container: ":is(.movie-list, .actors, .section-container)",
-      events: {
-        click: e => openWindow(e, true),
-        contextmenu: openWindow,
-      },
-    },
-  ]);
+  document.addEventListener("click", e => openInTab(e, true));
+  document.addEventListener("contextmenu", openInTab);
 })();
