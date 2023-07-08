@@ -8,21 +8,30 @@
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-body
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome
 // @compatible      edge
 // ==/UserScript==
 
 (function () {
-  const target = document.querySelector(".movie-list");
-  if (!target) return;
+  const container = document.querySelector(".movie-list");
+  if (!container) return;
 
-  const observer = new MutationObserver(mutationsList => {
-    for (let mutation of mutationsList) console.log(mutation);
-  });
+  const childList = container.querySelectorAll(".item");
+  if (!childList?.length) return;
 
-  observer.observe(target, {
-    childList: true,
-    attributes: false,
+  const filter = nodeList => {
+    console.log(nodeList);
+  };
+  filter(childList);
+
+  const mutationObserver = new MutationObserver((mutationsList, observer) => {
+    for (let { type, addedNodes } of mutationsList) {
+      if (type === "childList" && addedNodes?.length) filter(addedNodes);
+    }
   });
+  mutationObserver.observe(container, { childList: true, attributes: false });
+
+  GM_addStyle(`.hightlight {}`);
 })();
