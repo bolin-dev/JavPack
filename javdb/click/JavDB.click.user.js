@@ -5,8 +5,8 @@
 // @author          blc
 // @description     新标签页
 // @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @require         https://greasyfork.org/scripts/470274-javpack-listener/code/JavPacklistener.js?version=1216236
+// @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/listener/JavPack.listener.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-end
 // @grant           GM_openInTab

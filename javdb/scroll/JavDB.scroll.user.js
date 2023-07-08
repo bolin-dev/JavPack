@@ -5,8 +5,8 @@
 // @author          blc
 // @description     滚动加载
 // @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @require         file:///Users/bolinc/Projects/JavPack/libs/request/JavPack.request.lib.js
+// @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/request/JavPack.request.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @run-at          document-body
