@@ -6,7 +6,6 @@
 // @description     快捷搜索
 // @include         /^https:\/\/javdb\d*\.com\/.*$/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/listener/JavPack.listener.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
 // @grant           GM_openInTab
@@ -16,11 +15,6 @@
 // ==/UserScript==
 
 (function () {
-  const focusSearch = e => {
-    if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName)) return;
-    if (e.key === "/") document.querySelector("#video-search")?.focus();
-  };
-
   const search = async e => {
     if (e.ctrlKey && e.key === "/") {
       const text = (await navigator.clipboard.readText())?.trim();
@@ -32,14 +26,11 @@
       });
     }
   };
+  document.addEventListener("keydown", search);
 
-  autoListener([
-    {
-      path: "_global",
-      events: {
-        keyup: focusSearch,
-        keydown: search,
-      },
-    },
-  ]);
+  const focusSearch = e => {
+    if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName)) return;
+    if (e.key === "/") document.querySelector("#video-search")?.focus();
+  };
+  document.addEventListener("keyup", focusSearch);
 })();
