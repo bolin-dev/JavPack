@@ -6,8 +6,10 @@
 // @description     滚动加载
 // @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
+// @require         file:///Users/bolinc/Projects/JavPack/libs/request/JavPack.request.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @run-at          document-start
+// @run-at          document-body
+// @grant           GM_xmlhttpRequest
 // @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome
@@ -77,5 +79,57 @@
       contain-intrinsic-size: auto var(--xxl-item-height);
     }
   }
+  nav.pagination {
+    display: none;
+  }
+  .pagination-loading {
+    font-size: 14px;
+    padding-top: 1rem;
+    text-align: center;
+  }
   `);
+
+  const selectors = {
+    container: ":is(.movie-list, .actors, .section-container)",
+    child: ":is(div, a)",
+    pagination: "nav.pagination .pagination-next",
+  };
+
+  const container = document.querySelector(selectors.container);
+  if (!container) return;
+
+  let nextUrl = document.querySelector(selectors.pagination)?.href;
+  if (!nextUrl) return;
+
+  const loading = document.createElement("div");
+  loading.classList.add("pagination-loading");
+  loading.textContent = "加载中...";
+  container.insertAdjacentElement("afterend", loading);
+
+  const queryNext = dom => {
+    const list = dom.querySelectorAll(`${selectors.container} > ${selectors.child}`);
+    const url = dom.querySelector(selectors.pagination)?.href;
+    return { url, list };
+  };
+
+  let isLoading = false;
+  const callback = async (entries, observer) => {
+    if (!entries[0].isIntersecting || isLoading) return;
+
+    isLoading = true;
+    const { url, list } = await taskQueue(nextUrl, [queryNext]);
+    isLoading = false;
+
+    if (list?.length) container.append(...list);
+
+    if (!url) {
+      loading.textContent = "暂无更多";
+      return observer.disconnect();
+    }
+
+    nextUrl = url;
+  };
+
+  let observer = new IntersectionObserver(callback);
+  observer.observe(loading);
 })();

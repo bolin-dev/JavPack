@@ -7,7 +7,8 @@
     "GM_addStyle": true,
     "GM_xmlhttpRequest": true,
     "GM_openInTab": true,
-    "autoListener": true
+    "autoListener": true,
+    "taskQueue": true
   },
   "rules": {
     "no-unused-vars": "off"
