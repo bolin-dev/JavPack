@@ -130,6 +130,6 @@
     nextUrl = url;
   };
 
-  let observer = new IntersectionObserver(callback);
-  observer.observe(loading);
+  const intersectionObserver = new IntersectionObserver(callback);
+  intersectionObserver.observe(loading);
 })();
