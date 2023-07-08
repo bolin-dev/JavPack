@@ -8,7 +8,7 @@
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @require         https://greasyfork.org/scripts/470274-javpack-listener/code/JavPacklistener.js?version=1216236
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @run-at          document-body
+// @run-at          document-end
 // @grant           GM_openInTab
 // @license         GPL-3.0-only
 // @compatible      chrome
