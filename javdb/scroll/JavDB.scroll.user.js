@@ -18,6 +18,50 @@
 // ==/UserScript==
 
 (function () {
+  const selectors = {
+    container: ":is(.movie-list, .actors, .section-container)",
+    pagination: "nav.pagination .pagination-next",
+    child: ":is(div, a)",
+  };
+
+  const container = document.querySelector(selectors.container);
+  if (!container) return;
+
+  let nextUrl = document.querySelector(selectors.pagination)?.href;
+  if (!nextUrl) return;
+
+  const loading = document.createElement("div");
+  loading.classList.add("pagination-loading");
+  loading.textContent = "加载中...";
+  container.insertAdjacentElement("afterend", loading);
+
+  const queryNext = dom => {
+    const list = dom.querySelectorAll(`${selectors.container} > ${selectors.child}`);
+    const url = dom.querySelector(selectors.pagination)?.href;
+    return { url, list };
+  };
+
+  let isLoading = false;
+  const callback = async (entries, observer) => {
+    if (!entries[0].isIntersecting || isLoading) return;
+
+    isLoading = true;
+    const { url, list } = await taskQueue(nextUrl, [queryNext]);
+    isLoading = false;
+
+    if (list?.length) container.append(...list);
+
+    if (!url) {
+      loading.textContent = "暂无更多";
+      return observer.disconnect();
+    }
+
+    nextUrl = url;
+  };
+
+  const intersectionObserver = new IntersectionObserver(callback);
+  intersectionObserver.observe(loading);
+
   GM_addStyle(`
   .actors {
     --xs-item-height: 580px;
@@ -89,48 +133,4 @@
     text-align: center;
   }
   `);
-
-  const selectors = {
-    container: ":is(.movie-list, .actors, .section-container)",
-    child: ":is(div, a)",
-    pagination: "nav.pagination .pagination-next",
-  };
-
-  const container = document.querySelector(selectors.container);
-  if (!container) return;
-
-  let nextUrl = document.querySelector(selectors.pagination)?.href;
-  if (!nextUrl) return;
-
-  const loading = document.createElement("div");
-  loading.classList.add("pagination-loading");
-  loading.textContent = "加载中...";
-  container.insertAdjacentElement("afterend", loading);
-
-  const queryNext = dom => {
-    const list = dom.querySelectorAll(`${selectors.container} > ${selectors.child}`);
-    const url = dom.querySelector(selectors.pagination)?.href;
-    return { url, list };
-  };
-
-  let isLoading = false;
-  const callback = async (entries, observer) => {
-    if (!entries[0].isIntersecting || isLoading) return;
-
-    isLoading = true;
-    const { url, list } = await taskQueue(nextUrl, [queryNext]);
-    isLoading = false;
-
-    if (list?.length) container.append(...list);
-
-    if (!url) {
-      loading.textContent = "暂无更多";
-      return observer.disconnect();
-    }
-
-    nextUrl = url;
-  };
-
-  const intersectionObserver = new IntersectionObserver(callback);
-  intersectionObserver.observe(loading);
 })();
