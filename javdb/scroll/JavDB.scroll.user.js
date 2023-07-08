@@ -8,6 +8,7 @@
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @require         file:///Users/bolinc/Projects/JavPack/libs/request/JavPack.request.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
+// @connect         self
 // @run-at          document-body
 // @grant           GM_xmlhttpRequest
 // @grant           GM_addStyle
