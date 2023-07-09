@@ -4,11 +4,11 @@
     "browser": true
   },
   "globals": {
+    "request": true,
+    "taskQueue": true,
     "GM_addStyle": true,
-    "GM_xmlhttpRequest": true,
     "GM_openInTab": true,
-    "autoListener": true,
-    "taskQueue": true
+    "GM_xmlhttpRequest": true
   },
   "rules": {
     "no-unused-vars": "off"
