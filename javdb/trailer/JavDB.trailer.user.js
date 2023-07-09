@@ -19,20 +19,5 @@
 
 (async function () {
   let trailer = document.querySelector("#preview-video source")?.src;
-
-  // if (trailer) {
-  //   const code = document.querySelector(".movie-panel-info .first-block .value")?.textContent;
-  //   console.log(code);
-
-  //   const cid = await taskQueue(`https://db.msin.jp/branch/search?sort=jp.movie&str=${code}`, [
-  //     dom => {
-  //       return dom.querySelector(".mv_fileName")?.textContent;
-  //     },
-  //   ]);
-  //   console.log(cid);
-  // }
-
-  if (!trailer) return;
-
-  // GM_addStyle();
+  console.log(trailer);
 })();
