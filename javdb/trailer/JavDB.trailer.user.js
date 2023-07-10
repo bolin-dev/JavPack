@@ -51,11 +51,47 @@
 
     if (!trailer) trailer = await fetchJavspyl(code);
   }
-
   if (!trailer || /\.m3u8?$/i.test(trailer)) return;
 
   if (!trailer.includes("//")) trailer = `https://${trailer}`;
   localStorage.setItem(mid, trailer);
 
-  console.log(trailer);
+  GM_addStyle(`
+  .column-video-cover .cover-container .play-button{top:25%}
+  .trailer-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3rem!important;height:3rem!important}
+  .trailer-video{position:absolute;object-fit:contain;inset:0;width:100%;height:100%;z-index:-1;background:#000}
+  .trailer-index{z-index:20}
+  `);
+
+  const cover = document.querySelector(".column-video-cover > a");
+  cover.insertAdjacentHTML(
+    "beforeend",
+    '<img class="trailer-btn" src="/packs/media/images/btn-play-b414746c.svg">'
+  );
+
+  const video = document.createElement("video");
+  video.classList.add("trailer-video");
+  video.src = trailer;
+  video.controls = true;
+  video.volume = 0.3;
+  video.currentTime = 3;
+  video.preload = "metadata";
+  video.poster = cover.querySelector("img").src;
+  cover.appendChild(video);
+
+  cover.addEventListener("click", e => {
+    if (e.target.closest(".play-button")) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (video.classList.contains("trailer-index")) return;
+
+    video.classList.add("trailer-index");
+    video.play();
+    video.focus();
+  });
+  video.addEventListener("ended", () => {
+    video.blur();
+    video.classList.remove("trailer-index");
+  });
 })();
