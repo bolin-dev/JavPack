@@ -39,14 +39,18 @@ function request(details = {}) {
 
 function handleResponse(resolve, defaults) {
   return ({ status, responseHeaders, response }) => {
+    const responseType = responseHeaders
+      .split("\r\n")
+      .find(item => item.startsWith("content-type:"));
+
     if (status >= 400) {
       resolve(false);
     } else if (defaults.method === "HEAD") {
       resolve(true);
-    } else if (responseHeaders.includes("text/html") && defaults.responseType !== "document") {
+    } else if (responseType.includes("text/html") && defaults.responseType !== "document") {
       const parser = new DOMParser();
       resolve(parser.parseFromString(response, "text/html"));
-    } else if (responseHeaders.includes("application/json") && defaults.responseType !== "json") {
+    } else if (responseType.includes("application/json") && defaults.responseType !== "json") {
       resolve(JSON.parse(response));
     } else {
       resolve(response);
