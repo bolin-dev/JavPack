@@ -85,7 +85,8 @@ nav.pagination{padding-top:1rem;border-top:none;margin:0 -.25rem!important}
 @media only screen and (max-width:1024px){
 .video-meta-panel .column-video-cover{width:auto;margin:0!important}
 }
-.column-video-cover .cover-container:after,.column-video-cover>a{display:block;height:100%}
+.column-video-cover>a{position:relative;display:block;height:100%}
+.column-video-cover .cover-container:after{height:100%}
 .column-video-cover img{height:100%;max-height:none;width:100%;object-fit:contain}
 .movie-panel-info .panel-block{margin-top:0;padding:.5rem 0!important}
 .movie-panel-info .panel-block:last-child{border-bottom:none!important}
