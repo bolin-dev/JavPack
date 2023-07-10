@@ -40,3 +40,12 @@ async function verifyFanzaCid(cid) {
 
   return trailer;
 }
+
+function fetchJavspyl(code) {
+  return request({
+    method: "POST",
+    data: { ID: code },
+    url: "https://v2.javspyl.tk/api/",
+    headers: { origin: "https://javspyl.tk" },
+  }).then(res => res?.info?.url);
+}
