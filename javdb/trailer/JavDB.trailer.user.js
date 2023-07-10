@@ -39,12 +39,12 @@
 
     if (document.querySelector(".title.is-4 strong").textContent.includes("無碼")) {
       let studio = "";
-      infoNode.querySelectorAll(".panel-block").forEach(node => {
-        if (node.querySelector("strong")?.textContent === "片商:") {
-          studio = node.querySelector(".value").textContent;
-          return;
-        }
-      });
+      for (const node of infoNode.querySelectorAll(".panel-block")) {
+        if (node.querySelector("strong")?.textContent !== "片商:") continue;
+
+        studio = node.querySelector(".value").textContent;
+        break;
+      }
 
       if (studio) trailer = await fetchStudio(code, studio);
     }
@@ -90,6 +90,7 @@
     video.play();
     video.focus();
   });
+
   video.addEventListener("ended", () => {
     video.blur();
     video.classList.remove("trailer-index");
