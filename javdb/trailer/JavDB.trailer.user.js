@@ -25,8 +25,9 @@
 // ==/UserScript==
 
 (async function () {
-  const mid = location.pathname.split("/").at(-1);
+  let mid = location.pathname.split("/").at(-1);
   if (!mid) return;
+  mid = `trailer_${mid}`;
 
   let trailer =
     localStorage.getItem(mid) ??
