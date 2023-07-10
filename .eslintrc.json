@@ -8,6 +8,8 @@
     "taskQueue": true,
     "fetchStudio": true,
     "fetchJavspyl": true,
+    "fetchBlogJav": true,
+    "fetchJavStore": true,
     "GM_addStyle": true,
     "GM_openInTab": true,
     "GM_xmlhttpRequest": true
