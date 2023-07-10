@@ -1,14 +1,15 @@
 function request(details = {}) {
   const defaults = {
-    method: "GET",
     url: "",
     data: {},
+    headers: {},
+    method: "GET",
     timeout: 10000,
   };
   Object.assign(defaults, details);
 
   if (!defaults.url) throw new Error("Invalid URL");
-  if (!["GET", "POST", "HEAD"].includes(defaults.method)) throw new Error("Invalid Method");
+  if (!["HEAD", "GET", "POST"].includes(defaults.method)) throw new Error("Invalid Method");
 
   if (defaults.method === "GET") {
     defaults.responseType ??= "document";
@@ -17,8 +18,9 @@ function request(details = {}) {
 
   if (defaults.method === "POST") {
     defaults.responseType ??= "json";
+    defaults.headers["Content-Type"] ??= "application/x-www-form-urlencoded";
 
-    if (defaults.headers?.["Content-Type"]?.includes("application/json")) {
+    if (defaults.headers["Content-Type"].includes("application/json")) {
       defaults.data = JSON.stringify(defaults.data);
     } else {
       defaults.data = buildQueryStringParams(defaults.data);
