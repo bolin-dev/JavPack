@@ -7,6 +7,9 @@ function fetchJavspyl(code) {
   }).then(res => res?.info?.url);
 }
 
+const resolutions = ["720p", "1080p", "480p", "360p", "240p"];
+const sampleTransform = sample => resolutions.map(res => `${sample}${res}.mp4`);
+
 async function fetchStudio(code, studio) {
   const arr = studio
     .split(",")
@@ -20,23 +23,11 @@ async function fetchStudio(code, studio) {
     },
     {
       studio: "カリビアンコム",
-      samples: [
-        `https://smovie.caribbeancom.com/sample/movies/%s/720p.mp4`,
-        `https://smovie.caribbeancom.com/sample/movies/%s/1080p.mp4`,
-        `https://smovie.caribbeancom.com/sample/movies/%s/480p.mp4`,
-        `https://smovie.caribbeancom.com/sample/movies/%s/360p.mp4`,
-        `https://smovie.caribbeancom.com/sample/movies/%s/240p.mp4`,
-      ],
+      samples: sampleTransform("https://smovie.caribbeancom.com/sample/movies/%s/"),
     },
     {
       studio: "一本道",
-      samples: [
-        `http://smovie.1pondo.tv/sample/movies/%s/720p.mp4`,
-        `http://smovie.1pondo.tv/sample/movies/%s/1080p.mp4`,
-        `http://smovie.1pondo.tv/sample/movies/%s/480p.mp4`,
-        `http://smovie.1pondo.tv/sample/movies/%s/360p.mp4`,
-        `http://smovie.1pondo.tv/sample/movies/%s/240p.mp4`,
-      ],
+      samples: sampleTransform("http://smovie.1pondo.tv/sample/movies/%s/"),
     },
     {
       studio: "HEYZO",
@@ -45,23 +36,11 @@ async function fetchStudio(code, studio) {
     },
     {
       studio: "天然むすめ",
-      samples: [
-        `https://smovie.10musume.com/sample/movies/%s/720p.mp4`,
-        `https://smovie.10musume.com/sample/movies/%s/1080p.mp4`,
-        `https://smovie.10musume.com/sample/movies/%s/480p.mp4`,
-        `https://smovie.10musume.com/sample/movies/%s/360p.mp4`,
-        `https://smovie.10musume.com/sample/movies/%s/240p.mp4`,
-      ],
+      samples: sampleTransform("https://smovie.10musume.com/sample/movies/%s/"),
     },
     {
       studio: "パコパコママ",
-      samples: [
-        `https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/720p.mp4`,
-        `https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/1080p.mp4`,
-        `https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/480p.mp4`,
-        `https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/360p.mp4`,
-        `https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/240p.mp4`,
-      ],
+      samples: sampleTransform("https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/"),
     },
   ];
 
