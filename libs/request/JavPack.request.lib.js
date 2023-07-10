@@ -43,11 +43,11 @@ function handleResponse(resolve, defaults) {
       resolve(false);
     } else if (defaults.method === "HEAD") {
       resolve(true);
-    } else if (responseHeaders.includes("application/json") && defaults.responseType !== "json") {
-      resolve(JSON.parse(response));
     } else if (responseHeaders.includes("text/html") && defaults.responseType !== "document") {
       const parser = new DOMParser();
       resolve(parser.parseFromString(response, "text/html"));
+    } else if (responseHeaders.includes("application/json") && defaults.responseType !== "json") {
+      resolve(JSON.parse(response));
     } else {
       resolve(response);
     }
