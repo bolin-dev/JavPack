@@ -6,6 +6,8 @@
   "globals": {
     "request": true,
     "taskQueue": true,
+    "fetchStudio": true,
+    "fetchJavspyl": true,
     "GM_addStyle": true,
     "GM_openInTab": true,
     "GM_xmlhttpRequest": true

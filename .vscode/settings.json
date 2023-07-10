@@ -1,5 +1,17 @@
 {
-  "cSpell.words": ["fanza", "freepv", "javdb", "Javspyl", "Msin", "vrlite", "vrsample"],
+  "cSpell.words": [
+    "fanza",
+    "freepv",
+    "HEYZO",
+    "javdb",
+    "Javspyl",
+    "Msin",
+    "musume",
+    "pacopacomama",
+    "pondo",
+    "vrlite",
+    "vrsample"
+  ],
   "files.exclude": {
     "**/node_modules": true
   }
