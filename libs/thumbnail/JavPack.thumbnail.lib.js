@@ -18,10 +18,12 @@ function fetchBlogJav(code) {
 }
 
 function fetchJavStore(code) {
+  let word = code.replace("HEYZO-", "HEYZO ");
+
   return taskQueue(`https://javstore.net/search/${code}.html`, [
     dom => {
       const list = dom.querySelectorAll("#content_news li > a");
-      const res = [...list].find(item => item.title.includes(code));
+      const res = [...list].find(item => item.title.includes(word));
       return res?.href;
     },
     dom => {
