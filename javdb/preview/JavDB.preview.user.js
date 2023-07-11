@@ -11,6 +11,7 @@
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
+// @grant           GM_openInTab
 // @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome
@@ -30,7 +31,7 @@
         .querySelector(".cover")
         ?.insertAdjacentHTML(
           "beforeend",
-          '<button class="button is-info is-small preview">预览</button>'
+          '<button class="button is-info is-small preview">预览详情</button>'
         );
     }
   };
@@ -71,16 +72,67 @@
 
   document.body.insertAdjacentHTML(
     "beforeend",
-    `<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><button class="delete" aria-label="close"></button></header><section class="modal-card-body">loading...</section><footer class="modal-card-foot"><button class="button is-success">查看详情</button></footer></div></div>`
+    `<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><button class="delete" aria-label="close"></button></header><section class="modal-card-body">loading...</section><footer class="modal-card-foot"><a class="button is-success" target="_blank">查看详情</a></footer></div></div>`
   );
 
   const modal = document.querySelector("#javpack-preview");
   const modalTitle = modal.querySelector(".modal-card-title");
   const modalBody = modal.querySelector(".modal-card-body");
-  const modalFooter = modal.querySelector(".modal-card-foot");
+  const modalBtn = modal.querySelector(".modal-card-foot .button");
 
-  const modalOpen = url => modal.classList.add("is-active");
-  const modalClose = () => modal.classList.remove("is-active");
+  const createPreview = ({ cover, info, sample }) => {
+    const coverHTML = cover ? `<img src="${cover}" alt="cover">` : "";
+    // ...
+    return coverHTML;
+  };
+
+  const modalOpen = async node => {
+    const url = node.href;
+    if (!url) return;
+
+    let mid = url.split("/").at(-1);
+    if (!mid) return;
+
+    if (url === modalBtn.href && modalBody.innerHTML !== "获取失败") {
+      return modal.classList.add("is-active");
+    }
+
+    modalBtn.href = url;
+    modal.classList.add("is-active");
+    modalTitle.textContent = node.querySelector(".video-title").textContent;
+
+    mid = `preview_${mid}`;
+    let preview = localStorage.getItem(mid);
+
+    if (preview) {
+      modalBody.innerHTML = createPreview(JSON.parse(preview));
+      return;
+    }
+
+    modalBody.innerHTML = "loading...";
+
+    preview = await taskQueue(url, [
+      dom => {
+        const cover = dom.querySelector(".column-video-cover img")?.src ?? "";
+
+        const info = [];
+        for (const item of dom.querySelectorAll(".movie-panel-info > .panel-block")) {
+          const title = item.querySelector("strong")?.textContent?.trim() ?? "";
+          let value = item.querySelector("span.value")?.textContent?.trim() ?? "";
+          value = value
+            .split("\n")
+            .map(v => v.trim())
+            .join(", ");
+          if (title && value) info.push({ title, value });
+        }
+
+        return { cover, info };
+      },
+    ]);
+
+    modalBody.innerHTML = preview ? createPreview(preview) : "获取失败";
+    // if (preview) localStorage.setItem(mid, JSON.stringify(preview));
+  };
 
   container.addEventListener("click", e => {
     const target = e.target.closest(".movie-list .item .cover .preview");
@@ -90,10 +142,6 @@
     e.stopPropagation();
 
     const item = target.closest("a");
-    const url = item.href;
-    if (!url) return;
-
-    modalTitle.textContent = item.querySelector(".video-title").textContent;
-    modalOpen(url);
+    if (item) modalOpen(item);
   });
 })();
