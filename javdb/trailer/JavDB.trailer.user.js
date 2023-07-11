@@ -73,8 +73,10 @@
   const video = document.createElement("video");
   video.classList.add("trailer-video");
   video.src = trailer;
+  video.loop = false;
+  video.muted = false;
+  video.volume = 0.25;
   video.controls = true;
-  video.volume = 0.3;
   video.currentTime = 3;
   video.preload = "metadata";
   video.poster = cover.querySelector("img").src;
@@ -98,5 +100,9 @@
   video.addEventListener("ended", () => {
     video.blur();
     video.classList.remove("trailer-index");
+  });
+
+  video.addEventListener("keyup", e => {
+    if (e.key === "m") video.muted = !video.muted;
   });
 })();
