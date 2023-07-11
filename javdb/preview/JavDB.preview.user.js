@@ -69,40 +69,9 @@
   }
   `);
 
-  // document.body.insertAdjacentHTML(
-  //   "beforeend",
-  //   '<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><button class="delete" aria-label="close"></button></header><section class="modal-card-body">loading...</section><footer class="modal-card-foot"><a class="button is-success" target="_blank">查看详情</a></footer></div></div>'
-  // );
   document.body.insertAdjacentHTML(
     "beforeend",
-    `<div id="javpack-preview" class="modal">
-      <div class="modal-background"></div>
-      <div class="modal-content">
-        <div class="card">
-          <div class="card-image">
-            <figure class="image is-4by3">
-              <img src="https://bulma.io/images/placeholders/640x480.png" alt="Placeholder image">
-            </figure>
-          </div>
-          <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <p class="title is-4">John Smith</p>
-                <p class="subtitle is-6">@johnsmith</p>
-              </div>
-            </div>
-            <div class="content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Phasellus nec iaculis mauris. <a>@bulmaio</a>.
-              <a href="#">#css</a> <a href="#">#responsive</a>
-              <br>
-              <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="modal-close is-large" aria-label="close"></button>
-    </div>`
+    '<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><button class="delete" aria-label="close"></button></header><section class="modal-card-body">loading...</section><footer class="modal-card-foot"><a class="button is-success" target="_blank">查看详情</a></footer></div></div>'
   );
 
   const modal = document.querySelector("#javpack-preview");
@@ -172,7 +141,6 @@
     e.stopPropagation();
 
     const item = target.closest("a");
-    // if (item) modalOpen(item);
-    modal.classList.add("is-active");
+    if (item) modalOpen(item);
   });
 })();
