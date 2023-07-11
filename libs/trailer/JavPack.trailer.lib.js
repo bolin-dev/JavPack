@@ -43,6 +43,10 @@ async function fetchStudio(code, studio) {
       samples: sampleTransform("https://smovie.10musume.com/sample/movies/%s/"),
     },
     {
+      studio: "muramura",
+      samples: sampleTransform("https://smovie.muramura.tv/sample/movies/%s/"),
+    },
+    {
       studio: "パコパコママ",
       samples: sampleTransform("https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/"),
     },
