@@ -29,8 +29,13 @@
     const code = document.querySelector(".movie-panel-info .first-block .value")?.textContent;
     if (!code) return;
 
-    thumbnail = await fetchBlogJav(code);
-    if (!thumbnail) thumbnail = await fetchJavStore(code);
+    const list = await Promise.allSettled([fetchBlogJav(code), fetchJavStore(code)]);
+    for (const { status, value } of list) {
+      if (status !== "fulfilled" || !value) continue;
+
+      thumbnail = value;
+      break;
+    }
   }
   if (!thumbnail) return;
 

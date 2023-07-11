@@ -18,7 +18,7 @@ function fetchBlogJav(code) {
 }
 
 function fetchJavStore(code) {
-  let word = code.replace("HEYZO-", "HEYZO ");
+  const word = code.replace("HEYZO-", "HEYZO ");
 
   return taskQueue(`https://javstore.net/search/${code}.html`, [
     dom => {
