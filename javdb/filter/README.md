@@ -6,5 +6,5 @@
 
 ## 内容
 
-- 配置正则隐藏
-- 配置正则高亮
+- `hiddenList` 配置正则隐藏
+- `highlightList` 配置正则高亮
