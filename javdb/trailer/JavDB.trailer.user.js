@@ -85,7 +85,10 @@
 
     e.preventDefault();
     e.stopPropagation();
-    if (video.classList.contains("trailer-index")) return;
+
+    if (video.classList.contains("trailer-index")) {
+      return video.paused ? video.play() : video.pause();
+    }
 
     video.classList.add("trailer-index");
     video.play();
