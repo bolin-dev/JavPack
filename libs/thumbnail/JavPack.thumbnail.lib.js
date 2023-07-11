@@ -27,8 +27,8 @@ function fetchJavStore(code) {
       return res?.href;
     },
     dom => {
-      const img = dom.querySelector(".news > a");
-      if (img) return img?.href;
+      let img = dom.querySelector(".news > a")?.href;
+      if (img && /\.(jpg|png)$/i.test(img)) return img;
     },
   ]);
 }
