@@ -52,7 +52,7 @@
   filter(childList);
 
   const callback = (mutationsList, observer) => {
-    for (let { type, addedNodes } of mutationsList) {
+    for (const { type, addedNodes } of mutationsList) {
       if (type !== "childList") continue;
       if (!addedNodes?.length) continue;
       if (addedNodes.length < 40) observer.disconnect();
