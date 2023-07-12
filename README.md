@@ -17,6 +17,7 @@
 | [JavDB.nav](./javdb/nav/)             | 快捷导航     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/nav/JavDB.nav.user.js)             |
 | [JavDB.trailer](./javdb/trailer/)     | 预览片       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/trailer/JavDB.trailer.user.js)     |
 | [JavDB.thumbnail](./javdb/thumbnail/) | 缩略图       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/thumbnail/JavDB.thumbnail.user.js) |
+| [JavDB.preview](./javdb/preview/)     | 详情预览     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/preview/JavDB.preview.user.js)     |
 
 ## libs
 
