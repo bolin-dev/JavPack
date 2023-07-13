@@ -78,14 +78,16 @@
   const modalBody = modal.querySelector(".modal-card-body");
   const modalBtn = modal.querySelector(".modal-card-foot .button");
 
-  const createPreview = ({ cover, trailer, thumbnail, info }) => {
+  const createPreview = ({ cover, trailer, thumbnail, info }, _trailer = "") => {
     let innerHTML = "";
 
-    if (cover.length || trailer.length || thumbnail.length) {
+    if (cover.length || trailer.length || thumbnail.length || _trailer.length) {
       innerHTML += '<div class="is-relative is-clipped carousel">';
 
       if (cover.length) innerHTML += `<img src="${cover}" alt="cover" class="carousel-active">`;
-      if (trailer.length) innerHTML += `<video src="${trailer}" controls></video>`;
+      if (trailer.length || _trailer.length) {
+        innerHTML += `<video src="${trailer || _trailer}" controls></video>`;
+      }
       if (thumbnail.length) {
         for (const item of thumbnail) innerHTML += `<img src="${item}" alt="thumbnail">`;
       }
@@ -141,25 +143,20 @@
     modalTitle.textContent = node.querySelector(".video-title").textContent;
     modalOpen();
 
+    const trailer = localStorage.getItem(`trailer_${mid}`);
     mid = `preview_${mid}`;
     let preview = localStorage.getItem(mid);
 
     if (preview) {
-      modalBody.innerHTML = createPreview(JSON.parse(preview));
+      modalBody.innerHTML = createPreview(JSON.parse(preview), trailer);
       return;
     }
 
     modalBody.innerHTML = "loading...";
     preview = await taskQueue(url, [getDetail]);
+    modalBody.innerHTML = preview ? createPreview(preview, trailer) : "获取失败";
 
-    if (!preview) {
-      modalBody.innerHTML = "获取失败";
-      return;
-    }
-
-    preview.trailer ??= localStorage.getItem(mid.replace("preview_", "trailer_")) ?? "";
-    localStorage.setItem(mid, JSON.stringify(preview));
-    modalBody.innerHTML = createPreview(preview);
+    if (preview) localStorage.setItem(mid, JSON.stringify(preview));
   };
 
   container.addEventListener("click", e => {
@@ -196,7 +193,10 @@
 
     current.classList.remove("carousel-active");
     will.classList.add("carousel-active");
-    if (will.matches("video")) will.play();
+    if (will.matches("video")) {
+      will.play();
+      will.focus();
+    }
   });
 
   const modalObserver = new MutationObserver(mutationsList => {
@@ -209,7 +209,10 @@
       }
 
       const current = target.querySelector(".carousel-active");
-      if (current?.matches("video")) current.play();
+      if (current?.matches("video")) {
+        current.play();
+        current.focus();
+      }
     }
   });
   modalObserver.observe(modal, { attributeFilter: ["class"] });
