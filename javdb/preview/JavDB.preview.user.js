@@ -79,6 +79,7 @@
   const modalBtn = modal.querySelector(".modal-card-foot .button");
 
   const createPreview = ({ cover, trailer, thumbnail, info }, _trailer = "") => {
+    console.log(cover, trailer, thumbnail, info, _trailer);
     let innerHTML = "";
 
     if (cover.length || trailer.length || thumbnail.length || _trailer.length) {
@@ -142,7 +143,7 @@
     modalTitle.textContent = node.querySelector(".video-title").textContent;
     modalOpen();
 
-    const trailer = localStorage.getItem(`trailer_${mid}`);
+    const trailer = localStorage.getItem(`trailer_${mid}`) ?? "";
     mid = `preview_${mid}`;
     let preview = localStorage.getItem(mid);
 
