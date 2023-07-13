@@ -85,7 +85,7 @@
       innerHTML += '<div class="is-relative is-clipped carousel">';
 
       if (cover.length) innerHTML += `<img src="${cover}" alt="cover" class="carousel-active">`;
-      if (trailer.length) innerHTML += `<video src="${trailer}" controls muted></video>`;
+      if (trailer.length) innerHTML += `<video src="${trailer}" controls></video>`;
       if (thumbnail.length) {
         for (const item of thumbnail) innerHTML += `<img src="${item}" alt="thumbnail">`;
       }
@@ -152,8 +152,14 @@
     modalBody.innerHTML = "loading...";
     preview = await taskQueue(url, [getDetail]);
 
-    modalBody.innerHTML = preview ? createPreview(preview) : "获取失败";
-    if (preview) localStorage.setItem(mid, JSON.stringify(preview));
+    if (!preview) {
+      modalBody.innerHTML = "获取失败";
+      return;
+    }
+
+    preview.trailer ??= localStorage.getItem(mid.replace("preview_", "trailer_")) ?? "";
+    localStorage.setItem(mid, JSON.stringify(preview));
+    modalBody.innerHTML = createPreview(preview);
   };
 
   container.addEventListener("click", e => {

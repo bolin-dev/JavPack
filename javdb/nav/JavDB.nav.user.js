@@ -15,7 +15,7 @@
 
 (function () {
   const navigation = e => {
-    if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName)) return;
+    if (["INPUT", "TEXTAREA", "VIDEO", "AUDIO"].includes(document.activeElement.nodeName)) return;
     if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
 
     e.preventDefault();
