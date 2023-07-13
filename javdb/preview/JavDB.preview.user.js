@@ -79,7 +79,6 @@
   const modalBtn = modal.querySelector(".modal-card-foot .button");
 
   const createPreview = ({ cover, trailer, thumbnail, info }, _trailer = "") => {
-    console.log(cover, trailer, thumbnail, info, _trailer);
     let innerHTML = "";
 
     if (cover.length || trailer.length || thumbnail.length || _trailer.length) {
