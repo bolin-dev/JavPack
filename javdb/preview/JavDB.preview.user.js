@@ -129,7 +129,6 @@
   };
 
   const modalOpen = () => modal.classList.add("is-active");
-
   const handleOpen = async node => {
     const url = node.href;
     if (!url) return;
