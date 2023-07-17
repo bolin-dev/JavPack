@@ -24,6 +24,27 @@
   const childList = container.querySelectorAll(".item");
   if (!childList?.length) return;
 
+  GM_addStyle(`
+  .movie-list .item .cover{position:relative;overflow:hidden}
+  .movie-list .item .cover .preview{z-index:1;display:none;position:absolute;inset:.5rem .5rem auto auto}
+  .movie-list .item .cover:hover .preview{display:flex}
+  #javpack-preview .modal-card-head{gap:10px}
+  #javpack-preview .modal-card-title{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  #javpack-preview .modal-card-body{padding:15px}
+  #javpack-preview .preview-video-container{cursor:pointer}
+  #javpack-preview .carousel{aspect-ratio:400/269;background:#aa9084}
+  :root[data-theme=dark] #javpack-preview .carousel{background:#222}
+  #javpack-preview .carousel :is(img,video){display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
+  #javpack-preview .carousel :is(img,video).carousel-active{display:block}
+  #javpack-preview .carousel .btn{position:absolute;z-index:1;display:block;width:50px;height:50px;line-height:50px;text-align:center;font-size:30px;background:#fff;opacity:.4;cursor:pointer;top:50%;transform:translateY(-50%);border-radius:50%;overflow:hidden}
+  #javpack-preview .carousel .btn:hover{opacity:.8}
+  #javpack-preview .carousel .btn.carousel-prev{left:15px}
+  #javpack-preview .carousel .btn.carousel-next{right:15px}
+  #javpack-preview .info-block{padding-block:7.5px}
+  #javpack-preview .info-block:not(:last-child){border-bottom:1px solid #ededed}
+  :root[data-theme=dark] #javpack-preview .info-block{border-color:#4a4a4a}
+  `);
+
   const addTarget = nodeList => {
     for (const node of nodeList) {
       node
@@ -36,64 +57,46 @@
   };
   addTarget(childList);
 
-  const callback = (mutationsList, observer) => {
+  const movieCallback = (mutationsList, observer) => {
     for (const { type, addedNodes } of mutationsList) {
-      if (type !== "childList") continue;
-      if (!addedNodes?.length) continue;
+      if (type !== "childList" || !addedNodes?.length) continue;
       if (addedNodes.length < 40) observer.disconnect();
       addTarget(addedNodes);
     }
   };
-
-  const mutationObserver = new MutationObserver(callback);
-  mutationObserver.observe(container, { childList: true, attributes: false });
-
-  GM_addStyle(`
-  .movie-list .item .cover{position:relative;overflow:hidden}
-  .movie-list .item .cover .preview{z-index:1;display:none;position:absolute;inset:.5rem .5rem auto auto}
-  .movie-list .item .cover:hover .preview{display:flex}
-  #javpack-preview .modal-card-head{gap:15px}
-  #javpack-preview .modal-card-title{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  #javpack-preview .modal-card-body{padding:15px}
-  #javpack-preview .carousel{aspect-ratio:400/269;background:#aa9084}
-  :root[data-theme=dark] #javpack-preview .carousel{background:#222}
-  #javpack-preview .carousel :is(img,video){display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
-  #javpack-preview .carousel :is(img,video).carousel-active{display:block}
-  #javpack-preview .carousel .btn{position:absolute;z-index:1;display:block;width:50px;height:50px;line-height:50px;text-align:center;font-size:30px;background:#fff;opacity:.4;cursor:pointer;top:50%;transform:translateY(-50%);border-radius:50%;overflow:hidden}
-  #javpack-preview .carousel .btn:hover{opacity:.8}
-  #javpack-preview .carousel .btn.carousel-prev{left:15px}
-  #javpack-preview .carousel .btn.carousel-next{right:15px}
-  #javpack-preview .info-block{padding-block:7.5px}
-  #javpack-preview .info-block:not(:last-child){border-bottom:1px solid #ededed}
-  :root[data-theme=dark] #javpack-preview .info-block{border-color:#4a4a4a}
-  #javpack-preview .modal-card-foot{justify-content:flex-end}
-  `);
+  const movieObserver = new MutationObserver(movieCallback);
+  movieObserver.observe(container, { childList: true, attributes: false });
 
   document.body.insertAdjacentHTML(
     "beforeend",
-    '<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><button class="delete" aria-label="close"></button></header><section class="modal-card-body">loading...</section><footer class="modal-card-foot"><a class="button is-success is-small" target="_blank">查看详情</a></footer></div></div>'
+    '<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><a class="button is-success is-small" target="_blank">查看详情</a></header><section class="modal-card-body">loading...</section></div></div>'
   );
   const modal = document.querySelector("#javpack-preview");
   const modalTitle = modal.querySelector(".modal-card-title");
   const modalBody = modal.querySelector(".modal-card-body");
-  const modalBtn = modal.querySelector(".modal-card-foot .button");
+  const modalBtn = modal.querySelector(".modal-card-head .button");
 
   const createPreview = ({ cover, trailer, thumbnail, info }, _trailer = "") => {
     let innerHTML = "";
 
-    if (cover.length || trailer.length || thumbnail.length || _trailer.length) {
-      innerHTML += '<div class="is-relative is-clipped carousel">';
+    const carousel = [];
+    if (cover) carousel.push(`<img src="${cover}" alt="cover" class="carousel-active">`);
+    if (trailer || _trailer) carousel.push(`<video src="${trailer || _trailer}" controls></video>`);
+    for (const item of thumbnail) carousel.push(`<img src="${item}" alt="thumbnail">`);
 
-      if (cover.length) innerHTML += `<img src="${cover}" alt="cover" class="carousel-active">`;
-      if (trailer.length || _trailer.length) {
-        innerHTML += `<video src="${trailer || _trailer}" controls></video>`;
-      }
-      if (thumbnail.length) {
-        for (const item of thumbnail) innerHTML += `<img src="${item}" alt="thumbnail">`;
+    if (carousel.length) {
+      innerHTML = '<div class="is-block is-relative is-clipped preview-video-container carousel">';
+      if (!carousel?.[1]?.startsWith("<video")) {
+        innerHTML = innerHTML.replace("preview-video-container carousel", "carousel");
       }
 
-      innerHTML +=
-        '<div class="is-unselectable btn carousel-prev">🔙</div><div class="is-unselectable btn carousel-next">🔜</div></div>';
+      innerHTML += carousel.join("");
+      if (carousel.length > 1) {
+        innerHTML +=
+          '<div class="is-unselectable btn carousel-prev">🔙</div><div class="is-unselectable btn carousel-next">🔜</div>';
+      }
+
+      innerHTML += "</div>";
     }
 
     for (const { title, value } of info) {
@@ -129,6 +132,7 @@
   };
 
   const modalOpen = () => modal.classList.add("is-active");
+
   const handleOpen = async node => {
     const url = node.href;
     if (!url) return;
@@ -170,15 +174,18 @@
   });
 
   modalBody.addEventListener("click", e => {
-    const target = e.target.closest(".carousel .btn");
+    let target = e.target.closest(".carousel .btn");
+    if (!target && e.target.closest(".preview-video-container.carousel")) {
+      target = modalBody.querySelector(".carousel-next");
+    }
     if (!target) return;
 
     e.preventDefault();
     e.stopPropagation();
 
-    const list = modalBody.querySelectorAll(".carousel :is(img, video)");
-    const current = modalBody.querySelector(".carousel-active");
-    if (current.matches("video")) current.pause();
+    const carousel = modalBody.querySelector(".carousel");
+    const current = carousel.querySelector(".carousel-active");
+    const list = carousel.querySelectorAll("img, video");
 
     let will;
     if (target.matches(".carousel-prev")) {
@@ -190,7 +197,15 @@
     }
     if (!will) return;
 
+    if (will.nextElementSibling?.matches("video")) {
+      carousel.classList.add("preview-video-container");
+    } else {
+      carousel.classList.remove("preview-video-container");
+    }
+
     current.classList.remove("carousel-active");
+    if (current.matches("video")) current.pause();
+
     will.classList.add("carousel-active");
     if (will.matches("video")) {
       will.play();
@@ -198,7 +213,7 @@
     }
   });
 
-  const modalObserver = new MutationObserver(mutationsList => {
+  const modalCallback = mutationsList => {
     for (const { type, attributeName, target } of mutationsList) {
       if (type !== "attributes" || attributeName !== "class") continue;
 
@@ -213,6 +228,7 @@
         current.focus();
       }
     }
-  });
+  };
+  const modalObserver = new MutationObserver(modalCallback);
   modalObserver.observe(modal, { attributeFilter: ["class"] });
 })();
