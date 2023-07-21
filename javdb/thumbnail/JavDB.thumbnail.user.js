@@ -41,21 +41,21 @@
 
   localStorage.setItem(mid, thumbnail);
   const box = document.querySelector(".tile-images.preview-images");
-  const thumbnailText = `<a class="tile-item" href="${thumbnail}" data-fancybox="gallery" data-caption="缩略图"><img src="${thumbnail}" alt="缩略图" loading="lazy"></a>`;
+  const innerHTML = `<a class="tile-item" href="${thumbnail}" data-fancybox="gallery" data-caption="缩略图"><img src="${thumbnail}" alt="缩略图" loading="lazy"></a>`;
 
   if (!box) {
     document
       .querySelector(".video-meta-panel")
       .insertAdjacentHTML(
         "afterend",
-        `<div class="columns"><div class="column"><article class="message video-panel"><div class="message-body"><div class="tile-images preview-images">${thumbnailText}</div></div></article></div></div>`
+        `<div class="columns"><div class="column"><article class="message video-panel"><div class="message-body"><div class="tile-images preview-images">${innerHTML}</div></div></article></div></div>`
       );
   } else {
     const item = box.querySelector(".tile-item");
     if (item) {
-      item.insertAdjacentHTML("beforebegin", thumbnailText);
+      item.insertAdjacentHTML("beforebegin", innerHTML);
     } else {
-      box.insertAdjacentHTML("beforeend", thumbnailText);
+      box.insertAdjacentHTML("beforeend", innerHTML);
     }
   }
 })();
