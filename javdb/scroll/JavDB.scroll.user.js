@@ -9,7 +9,7 @@
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/request/JavPack.request.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
-// @run-at          document-body
+// @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           GM_addStyle
 // @license         GPL-3.0-only
