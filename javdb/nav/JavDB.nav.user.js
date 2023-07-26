@@ -22,9 +22,7 @@
     e.stopPropagation();
     e.stopImmediatePropagation();
 
-    document
-      .querySelector(`nav.pagination .pagination-${e.key === "ArrowLeft" ? "previous" : "next"}`)
-      ?.click();
+    document.querySelector(`nav.pagination .pagination-${e.key === "ArrowLeft" ? "previous" : "next"}`)?.click();
   };
   document.addEventListener("keyup", navigation);
 })();

@@ -49,10 +49,7 @@
     for (const node of nodeList) {
       node
         .querySelector(".cover")
-        ?.insertAdjacentHTML(
-          "beforeend",
-          "<button class='button is-info is-small preview'>预览详情</button>"
-        );
+        ?.insertAdjacentHTML("beforeend", "<button class='button is-info is-small preview'>预览详情</button>");
     }
   };
   addTarget(childList);
@@ -81,7 +78,7 @@
 
     const carousel = [];
     if (cover) carousel.push(`<img src="${cover}" alt="cover" class="carousel-active">`);
-    if (trailer || _trailer) carousel.push(`<video src="${trailer || _trailer}" controls></video>`);
+    if (trailer || _trailer) carousel.push(`<video src="${trailer || _trailer}" controls muted></video>`);
     for (const item of thumbnail) carousel.push(`<img src="${item}" alt="thumbnail">`);
 
     if (carousel.length) {

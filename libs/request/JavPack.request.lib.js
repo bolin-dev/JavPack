@@ -39,9 +39,7 @@ function request(details = {}) {
 
 function handleResponse(resolve, defaults) {
   return ({ status, responseHeaders, response }) => {
-    const responseType = responseHeaders
-      .split("\r\n")
-      .find(item => item.startsWith("content-type:"));
+    const responseType = responseHeaders.split("\r\n").find(item => item.startsWith("content-type:"));
 
     if (status >= 400) {
       resolve(false);

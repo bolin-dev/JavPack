@@ -29,9 +29,7 @@
   if (!mid) return;
   mid = `trailer_${mid}`;
 
-  let trailer =
-    localStorage.getItem(mid) ??
-    document.querySelector("#preview-video source")?.getAttribute("src");
+  let trailer = localStorage.getItem(mid) ?? document.querySelector("#preview-video source")?.getAttribute("src");
 
   if (!trailer) {
     const infoNode = document.querySelector(".movie-panel-info");
@@ -65,10 +63,7 @@
   `);
 
   const cover = document.querySelector(".column-video-cover > a");
-  cover.insertAdjacentHTML(
-    "beforeend",
-    '<img class="trailer-btn" src="/packs/media/images/btn-play-b414746c.svg">'
-  );
+  cover.insertAdjacentHTML("beforeend", '<img class="trailer-btn" src="/packs/media/images/btn-play-b414746c.svg">');
 
   const video = document.createElement("video");
   video.classList.add("trailer-video");
