@@ -28,7 +28,10 @@ function fetchJavStore(code) {
     },
     dom => {
       let img = dom.querySelector(".news > a")?.href;
-      if (img && /\.(jpg|png)$/i.test(img)) return img;
+      if (!img || !/\.(jpg|png)$/i.test(img)) return;
+
+      img = img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
+      return img;
     },
   ]);
 }
