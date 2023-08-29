@@ -46,11 +46,8 @@
   `);
 
   const addTarget = nodeList => {
-    for (const node of nodeList) {
-      node
-        .querySelector(".cover")
-        ?.insertAdjacentHTML("beforeend", "<button class='button is-info is-small preview'>预览详情</button>");
-    }
+    const htmlStr = "<button class='button is-info is-small preview'>预览详情</button>";
+    for (const node of nodeList) node.querySelector(".cover")?.insertAdjacentHTML("beforeend", htmlStr);
   };
   addTarget(childList);
 
