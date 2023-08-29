@@ -18,20 +18,19 @@ function fetchBlogJav(code) {
 }
 
 function fetchJavStore(code) {
-  const word = code.replace("HEYZO-", "HEYZO ");
+  const word = code.replace("HEYZO-", "HEYZO ").toUpperCase();
 
   return taskQueue(`https://javstore.net/search/${code}.html`, [
     dom => {
       const list = dom.querySelectorAll("#content_news li > a");
-      const res = [...list].find(item => item.title.includes(word));
+      const res = [...list].find(item => item.title.toUpperCase().includes(word));
       return res?.href;
     },
     dom => {
       let img = dom.querySelector(".news > a")?.href;
       if (!img || !/\.(jpg|png)$/i.test(img)) return;
 
-      img = img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
-      return img;
+      return img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
     },
   ]);
 }
