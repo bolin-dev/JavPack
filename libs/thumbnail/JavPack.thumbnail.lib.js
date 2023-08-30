@@ -27,10 +27,16 @@ function fetchJavStore(code) {
       return res?.href;
     },
     dom => {
-      let img = dom.querySelector(".news > a")?.href;
-      if (!img || !/\.(jpg|png)$/i.test(img)) return;
+      const node = dom.querySelector(".news > a");
+      const regex = /\.(jpg|png)$/i;
 
-      return img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
+      let res = node?.href;
+      if (!res) return;
+      if (regex.test(res)) return res.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
+
+      res = node.querySelector("img")?.src;
+      if (!res) return;
+      if (regex.test(res)) return res.replace(".th.", ".");
     },
   ]);
 }
