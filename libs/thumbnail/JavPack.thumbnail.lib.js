@@ -2,7 +2,7 @@ async function fetchBlogJav(code) {
   const url = await taskQueue(`https://blogjav.net/?s=${code}`, [
     dom => {
       const list = dom.querySelectorAll("#main .entry-title a");
-      const res = [...list].find(item => item.textContent.includes(code));
+      const res = [...list].find(item => item.textContent.toUpperCase().includes(code));
       return res?.href;
     },
     dom => {
