@@ -44,7 +44,7 @@ function handleResponse(resolve, defaults) {
     if (status >= 400) {
       resolve(false);
     } else if (defaults.method === "HEAD") {
-      resolve(true);
+      resolve(status);
     } else if (responseType.includes("text/html") && defaults.responseType !== "document") {
       const parser = new DOMParser();
       resolve(parser.parseFromString(response, "text/html"));
