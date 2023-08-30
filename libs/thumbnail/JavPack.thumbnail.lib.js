@@ -12,7 +12,7 @@ function fetchBlogJav(code) {
       img = img.dataset.src ?? img.dataset.lazySrc;
       if (!img) return;
 
-      return img.replace("//t", "//img").replace("thumbs", "images");
+      return img.replace("//t", "//img").replace("/thumbs/", "/images/");
     },
   ]);
 }

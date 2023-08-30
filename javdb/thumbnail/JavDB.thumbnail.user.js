@@ -29,7 +29,7 @@
     const code = document.querySelector(".movie-panel-info .first-block .value")?.textContent;
     if (!code) return;
 
-    const list = await Promise.allSettled([fetchBlogJav(code), fetchJavStore(code)]);
+    const list = await Promise.allSettled([fetchJavStore(code), fetchBlogJav(code)]);
     for (const { status, value } of list) {
       if (status !== "fulfilled" || !value) continue;
 
