@@ -7,7 +7,7 @@ function fetchJavspyl(code) {
   }).then(res => res?.info?.url);
 }
 
-const resolutions = ["720p", "1080p", "480p", "360p", "240p"];
+const resolutions = ["720p", "1080p", "480p", "360p"];
 const sampleTransform = sample => resolutions.map(res => `${sample}${res}.mp4`);
 
 async function fetchStudio(code, studio) {
