@@ -31,11 +31,11 @@ function fetchJavStore(code) {
       const regex = /\.(jpg|png)$/i;
 
       let res = node?.href;
-      if (!res) return;
+      if (!res || res.includes(".mp4.")) return;
       if (regex.test(res)) return res.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
 
       res = node.querySelector("img")?.src;
-      if (!res) return;
+      if (!res || res.includes(".mp4.")) return;
       if (regex.test(res)) return res.replace(".th.", ".");
     },
   ]);
