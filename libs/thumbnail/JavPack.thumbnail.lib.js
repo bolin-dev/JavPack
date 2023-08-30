@@ -1,5 +1,5 @@
-function fetchBlogJav(code) {
-  return taskQueue(`https://blogjav.net/?s=${code}`, [
+async function fetchBlogJav(code) {
+  const url = await taskQueue(`https://blogjav.net/?s=${code}`, [
     dom => {
       const list = dom.querySelectorAll("#main .entry-title a");
       const res = [...list].find(item => item.textContent.includes(code));
@@ -15,6 +15,9 @@ function fetchBlogJav(code) {
       return img.replace("//t", "//img").replace("/thumbs/", "/images/");
     },
   ]);
+
+  const status = await request({ url, method: "HEAD" });
+  if (status === 200) return url;
 }
 
 function fetchJavStore(code) {

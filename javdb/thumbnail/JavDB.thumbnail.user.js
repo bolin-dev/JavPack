@@ -11,6 +11,7 @@
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         javstore.net
 // @connect         blogjav.net
+// @connect         pixhost.to
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @license         GPL-3.0-only
@@ -29,7 +30,7 @@
     const code = document.querySelector(".movie-panel-info .first-block .value")?.textContent;
     if (!code) return;
 
-    const list = await Promise.allSettled([fetchJavStore(code), fetchBlogJav(code)]);
+    const list = await Promise.allSettled([fetchBlogJav(code), fetchJavStore(code)]);
     for (const { status, value } of list) {
       if (status !== "fulfilled" || !value) continue;
 
