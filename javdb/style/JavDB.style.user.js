@@ -110,6 +110,7 @@ nav.pagination{padding-top:1rem;border-top:none;margin:0 -.25rem!important}
 }
 .video-panel .magnet-links .columns .buttons .button{margin-bottom:.75rem}
 #magnets-content .item:hover{background:unset!important}
+#magnets-content .item.odd:hover{background:#fff!important}
 .review-items .review-item{padding:.75rem}
 .video-panel .tile-small .tile-item{display:flex;flex-direction:column}
 .video-panel .tile-small img{flex:1;object-fit:cover}
