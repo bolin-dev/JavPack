@@ -71,7 +71,7 @@
   video.src = trailer;
   video.loop = false;
   video.muted = false;
-  video.volume = 0.25;
+  video.volume = 0.2;
   video.controls = true;
   video.currentTime = 3;
   video.preload = "metadata";
