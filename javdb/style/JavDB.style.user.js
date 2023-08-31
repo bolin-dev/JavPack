@@ -84,6 +84,7 @@ nav.pagination{padding-top:1rem;border-top:none;margin:0 -.25rem!important}
 :root[data-theme=dark] .column-video-cover{background:#222}
 @media only screen and (max-width:1024px){
 .video-meta-panel .column-video-cover{width:auto;margin:0!important}
+.video-panel .magnet-links .columns{padding-block:0!important}
 }
 .column-video-cover>a{position:relative;display:block;height:100%}
 .column-video-cover .cover-container:after{height:100%}
