@@ -1,89 +1,66 @@
-function request(details = {}) {
-  const defaults = {
-    url: "",
-    data: {},
-    headers: {},
-    method: "GET",
-    timeout: 10000,
-  };
-  Object.assign(defaults, details);
+function request(url, options = {}) {
+  if (!url) throw new Error("Invalid URL");
 
-  if (!defaults.url) throw new Error("Invalid URL");
-  if (!["HEAD", "GET", "POST"].includes(defaults.method)) throw new Error("Invalid Method");
+  options = { method: "GET", timeout: 10000, ...options };
+  if (!["HEAD", "GET", "POST"].includes(options.method)) throw new Error("Invalid Method");
 
-  if (defaults.method === "GET") {
-    defaults.responseType ??= "document";
-    defaults.url = buildQueryString(defaults.url, defaults.data);
+  if (options.method === "GET") {
+    options.responseType ??= "document";
+
+    if (options.params) {
+      const params = options.params;
+      if (Object.keys(params).length) {
+        url = new URL(url);
+        for (const [key, value] of Object.entries(params)) url.searchParams.append(key, value);
+        url = url.toString();
+      }
+      delete options.params;
+    }
   }
 
-  if (defaults.method === "POST") {
-    defaults.responseType ??= "json";
-    defaults.headers["Content-Type"] ??= "application/x-www-form-urlencoded";
+  if (options.method === "POST") {
+    options.responseType ??= "json";
 
-    if (defaults.headers["Content-Type"].includes("application/json")) {
-      defaults.data = JSON.stringify(defaults.data);
-    } else {
-      defaults.data = buildQueryStringParams(defaults.data);
+    if (options.headers["Content-Type"].includes("application/json")) {
+      options.data = JSON.stringify(options.data);
+    } else if (Object.prototype.toString.call(options.data) === "[object Object]") {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(options.data)) formData.append(key, value);
+      options.data = formData;
     }
   }
 
   return new Promise(resolve => {
     GM_xmlhttpRequest({
-      ...defaults,
+      url,
+      ...options,
       onerror: () => resolve(false),
       ontimeout: () => resolve(false),
-      onload: handleResponse(resolve, defaults),
+      onload: ({ status, responseHeaders, response }) => {
+        const responseType = responseHeaders.split("\r\n").find(item => item.startsWith("content-type:"));
+
+        if (status >= 400) {
+          resolve(false);
+        } else if (options.method === "HEAD") {
+          resolve(status);
+        } else if (responseType.includes("text/html") && options.responseType !== "document") {
+          const parser = new DOMParser();
+          resolve(parser.parseFromString(response, "text/html"));
+        } else if (responseType.includes("application/json") && options.responseType !== "json") {
+          resolve(JSON.parse(response));
+        } else {
+          resolve(response);
+        }
+      },
     });
   });
 }
 
-function handleResponse(resolve, defaults) {
-  return ({ status, responseHeaders, response }) => {
-    const responseType = responseHeaders.split("\r\n").find(item => item.startsWith("content-type:"));
-
-    if (status >= 400) {
-      resolve(false);
-    } else if (defaults.method === "HEAD") {
-      resolve(status);
-    } else if (responseType.includes("text/html") && defaults.responseType !== "document") {
-      const parser = new DOMParser();
-      resolve(parser.parseFromString(response, "text/html"));
-    } else if (responseType.includes("application/json") && defaults.responseType !== "json") {
-      resolve(JSON.parse(response));
-    } else {
-      resolve(response);
-    }
-  };
-}
-
-function buildQueryString(url, data) {
-  const urlObj = new URL(url);
-  urlObj.search = buildQueryStringParams(data, urlObj.searchParams);
-  return urlObj.toString();
-}
-
-function buildQueryStringParams(data, params = new URLSearchParams()) {
-  for (const [key, value] of Object.entries(data)) {
-    params.append(key, value);
-  }
-  return params.toString();
-}
-
-async function taskQueue(details, steps = []) {
-  let currentDetails = parseDetails(details);
-  let currentRes;
-
+async function taskQueue(res, steps) {
   for (const step of steps) {
-    currentRes = await request(currentDetails);
-    if (currentRes && step) currentRes = step?.(currentRes);
-    if (!currentRes) break;
-
-    currentDetails = parseDetails(currentRes);
+    res = await request(res);
+    if (!res) break;
+    if (res && step) res = await step?.(res);
   }
-
-  return currentRes;
-}
-
-function parseDetails(data) {
-  return typeof data === "string" ? { url: data } : data;
+  return res;
 }
