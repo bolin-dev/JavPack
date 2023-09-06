@@ -109,6 +109,10 @@ nav.pagination{padding-top:1rem;border-top:none;margin:0 -.25rem!important}
 .video-panel .magnet-links .item .magnet-name{padding-top:.75rem}
 }
 .video-panel .magnet-links .columns .buttons .button{margin-bottom:.75rem}
+.video-panel .magnet-links .item.odd:hover{background:#fff!important}
+.video-panel .magnet-links .item:hover{background:unset!important}
+:root[data-theme=dark] .video-panel .magnet-links .item.odd:hover{background:#333!important}
+:root[data-theme=dark] .video-panel .magnet-links .item:hover{background:#444!important}
 .review-items .review-item{padding:.75rem}
 .video-panel .tile-small .tile-item{display:flex;flex-direction:column}
 .video-panel .tile-small img{flex:1;object-fit:cover}
