@@ -20,10 +20,9 @@
       const text = (await navigator.clipboard.readText())?.trim();
       if (!text) return;
 
-      GM_openInTab(`${location.origin}/search?q=%s`.replaceAll("%s", text), {
-        active: true,
-        setParent: true,
-      });
+      const { origin, pathname } = location;
+      const url = `${origin}/search?q=${text}`;
+      pathname === "/search" ? (location.href = url) : GM_openInTab(url, { active: true, setParent: true });
     }
   };
   document.addEventListener("keydown", search);
