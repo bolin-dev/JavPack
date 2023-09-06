@@ -1,8 +1,7 @@
 function fetchJavspyl(code) {
-  return request({
+  return request("https://v2.javspyl.tk/api/", {
     method: "POST",
     data: { ID: code },
-    url: "https://v2.javspyl.tk/api/",
     headers: { origin: "https://javspyl.tk" },
   }).then(res => res?.info?.url);
 }
@@ -63,7 +62,7 @@ async function fetchStudio(code, studio) {
   if (!list.length) return;
 
   let trailer = "";
-  const res = await Promise.allSettled(list.map(url => request({ url, method: "HEAD" })));
+  const res = await Promise.allSettled(list.map(url => request(url, { method: "HEAD" })));
   for (let index = 0, { length } = res; index < length; index++) {
     const { status, value } = res[index];
     if (status !== "fulfilled" || !value) continue;

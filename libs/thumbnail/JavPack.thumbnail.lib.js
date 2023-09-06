@@ -16,7 +16,7 @@ async function fetchBlogJav(code) {
     },
   ]);
 
-  const status = await request({ url, method: "HEAD" });
+  const status = await request(url, { method: "HEAD" });
   if (status === 200) return url;
 }
 
