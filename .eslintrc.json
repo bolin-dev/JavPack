@@ -15,7 +15,8 @@
     "GM_xmlhttpRequest": true
   },
   "rules": {
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "no-param-reassign": "off"
   },
   "ignorePatterns": ["**/*.md"]
 }
