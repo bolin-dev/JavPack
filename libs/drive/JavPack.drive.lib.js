@@ -59,3 +59,26 @@ function filesSearch(search_value, params = {}) {
     responseType: "json",
   });
 }
+
+function filesVideo(pickcode) {
+  if (!pickcode) return;
+
+  return request("https://v.anxia.com/webapi/files/video", {
+    params: {
+      pickcode,
+      local: 1,
+    },
+    responseType: "json",
+  });
+}
+
+function rbDelete(fids = [], pid) {
+  if (!fids.length || !pid) return;
+
+  const data = { pid, ignore_warn: 1 };
+  fids.forEach((fid, index) => {
+    data[`fid[${index}]`] = fid;
+  });
+
+  return request("https://webapi.115.com/rb/delete", { method: "POST", data });
+}
