@@ -77,6 +77,8 @@ img,video{filter:brightness(.9) contrast(.9)}
 .section-container .box strong{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
 nav.pagination{padding-top:1rem;border-top:none;margin:0 -.25rem!important}
 :root[data-theme=dark] nav.pagination{border-top:none!important}
+body:has(.video-detail) :is(.sub-header,#search-bar-container){display:none}
+.section:has(.video-detail){padding-bottom:0}
 .video-meta-panel{margin-bottom:1rem;padding:0}
 .video-meta-panel>.columns{margin:0}
 .video-meta-panel>.columns>.column{padding:0 .5rem}
