@@ -20,13 +20,15 @@ function request(url, options = {}) {
 
   if (options.method === "POST") {
     options.responseType ??= "json";
+    options.headers["Content-Type"] ??= "application/x-www-form-urlencoded";
+    const contentType = options.headers["Content-Type"];
 
-    if (options.headers["Content-Type"].includes("application/json")) {
+    if (contentType.includes("application/json")) {
       options.data = JSON.stringify(options.data);
-    } else if (Object.prototype.toString.call(options.data) === "[object Object]") {
-      const formData = new FormData();
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      const formData = new URLSearchParams();
       for (const [key, value] of Object.entries(options.data)) formData.append(key, value);
-      options.data = formData;
+      options.data = formData.toString();
     }
   }
 
