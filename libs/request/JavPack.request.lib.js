@@ -1,7 +1,7 @@
 function request(url, options = {}) {
   if (!url) throw new Error("Invalid URL");
 
-  options = { method: "GET", timeout: 10000, ...options };
+  options = { method: "GET", timeout: 10000, headers: {}, ...options };
   if (!["HEAD", "GET", "POST"].includes(options.method)) throw new Error("Invalid Method");
 
   if (options.method === "GET") {

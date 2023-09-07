@@ -4,6 +4,9 @@
     "browser": true
   },
   "globals": {
+    "GM_addStyle": true,
+    "GM_openInTab": true,
+    "GM_xmlhttpRequest": true,
     "request": true,
     "taskQueue": true,
     "fetchStudio": true,
@@ -13,9 +16,8 @@
     "codeParse": true,
     "files": true,
     "filesSearch": true,
-    "GM_addStyle": true,
-    "GM_openInTab": true,
-    "GM_xmlhttpRequest": true
+    "filesVideo": true,
+    "rbDelete": true
   },
   "rules": {
     "no-unused-vars": "off",
