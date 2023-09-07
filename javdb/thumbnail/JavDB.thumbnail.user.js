@@ -22,8 +22,8 @@
 (async function () {
   let mid = location.pathname.split("/").at(-1);
   if (!mid) return;
-  mid = `thumbnail_${mid}`;
 
+  mid = `thumbnail_${mid}`;
   let thumbnail = localStorage.getItem(mid);
 
   if (!thumbnail) {
