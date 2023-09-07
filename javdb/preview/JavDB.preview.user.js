@@ -128,11 +128,7 @@
     return { cover, trailer, thumbnail, info };
   };
 
-  const modalClose = e => e.key === "Escape" && modal.classList.remove("is-active");
-  const modalOpen = () => {
-    modal.classList.add("is-active");
-    document.addEventListener("keyup", modalClose);
-  };
+  const modalOpen = () => modal.classList.add("is-active");
 
   const handleOpen = async node => {
     const url = node.href;
@@ -205,6 +201,8 @@
     }
   });
 
+  document.addEventListener("keyup", e => e.key === "Escape" && modal.classList.remove("is-active"));
+
   const playVideo = e => {
     const video = e.querySelector("video.carousel-active");
     if (!video) return;
@@ -217,13 +215,7 @@
     for (const { type, addedNodes, attributeName, target } of mutationsList) {
       if (type === "childList" && addedNodes.length > 1) playVideo(target);
       if (type !== "attributes" || attributeName !== "class") continue;
-
-      if (!target.classList.contains("is-active")) {
-        document.removeEventListener("keyup", modalClose);
-        target.querySelector("video")?.pause();
-        continue;
-      }
-      playVideo(target);
+      target.classList.contains("is-active") ? playVideo(target) : target.querySelector("video")?.pause();
     }
   };
 
