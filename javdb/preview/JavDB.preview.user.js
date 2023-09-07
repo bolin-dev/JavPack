@@ -31,7 +31,6 @@
   #javpack-preview .modal-card-head{gap:10px}
   #javpack-preview .modal-card-title{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   #javpack-preview .modal-card-body{padding:15px}
-  #javpack-preview .preview-video-container{cursor:pointer}
   #javpack-preview .carousel{aspect-ratio:400/269;background:#aa9084}
   :root[data-theme=dark] #javpack-preview .carousel{background:#222}
   #javpack-preview .carousel :is(img,video){display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
@@ -45,8 +44,8 @@
   :root[data-theme=dark] #javpack-preview .info-block{border-color:#4a4a4a}
   `);
 
+  const htmlStr = "<button class='button is-info is-small preview'>预览详情</button>";
   const addTarget = nodeList => {
-    const htmlStr = "<button class='button is-info is-small preview'>预览详情</button>";
     for (const node of nodeList) node.querySelector(".cover")?.insertAdjacentHTML("beforeend", htmlStr);
   };
   addTarget(childList);
@@ -74,17 +73,21 @@
     let innerHTML = "";
 
     const carousel = [];
+    if (trailer || _trailer) {
+      carousel.push(
+        `<video src="${trailer || _trailer}" controls muted poster="${cover}" class="carousel-active"></video>`
+      );
+    }
     if (cover) carousel.push(`<img src="${cover}" alt="cover" class="carousel-active">`);
-    if (trailer || _trailer) carousel.push(`<video src="${trailer || _trailer}" controls muted></video>`);
     for (const item of thumbnail) carousel.push(`<img src="${item}" alt="thumbnail">`);
 
     if (carousel.length) {
-      innerHTML = '<div class="is-block is-relative is-clipped preview-video-container carousel">';
-      if (!carousel?.[1]?.startsWith("<video")) {
-        innerHTML = innerHTML.replace("preview-video-container carousel", "carousel");
-      }
-
+      innerHTML = '<div class="is-block is-relative is-clipped carousel">';
       innerHTML += carousel.join("");
+
+      if (carousel[0].startsWith("<video")) {
+        innerHTML = innerHTML.replace('alt="cover" class="carousel-active"', 'alt="cover"');
+      }
       if (carousel.length > 1) {
         innerHTML +=
           '<div class="is-unselectable btn carousel-prev">🔙</div><div class="is-unselectable btn carousel-next">🔜</div>';
@@ -125,7 +128,11 @@
     return { cover, trailer, thumbnail, info };
   };
 
-  const modalOpen = () => modal.classList.add("is-active");
+  const modalClose = e => e.key === "Escape" && modal.classList.remove("is-active");
+  const modalOpen = () => {
+    modal.classList.add("is-active");
+    document.addEventListener("keyup", modalClose);
+  };
 
   const handleOpen = async node => {
     const url = node.href;
@@ -169,9 +176,6 @@
 
   modalBody.addEventListener("click", e => {
     let target = e.target.closest(".carousel .btn");
-    if (!target && e.target.closest(".preview-video-container.carousel")) {
-      target = modalBody.querySelector(".carousel-next");
-    }
     if (!target) return;
 
     e.preventDefault();
@@ -191,19 +195,13 @@
     }
     if (!will) return;
 
-    if (will.nextElementSibling?.matches("video")) {
-      carousel.classList.add("preview-video-container");
-    } else {
-      carousel.classList.remove("preview-video-container");
-    }
-
     current.classList.remove("carousel-active");
     if (current.matches("video")) current.pause();
 
     will.classList.add("carousel-active");
     if (will.matches("video")) {
-      will.play();
       will.focus();
+      will.play();
     }
   });
 
@@ -212,14 +210,15 @@
       if (type !== "attributes" || attributeName !== "class") continue;
 
       if (!target.classList.contains("is-active")) {
+        document.removeEventListener("keyup", modalClose);
         target.querySelector("video")?.pause();
         continue;
       }
 
       const current = target.querySelector(".carousel-active");
       if (current?.matches("video")) {
-        current.play();
         current.focus();
+        current.play();
       }
     }
   };
