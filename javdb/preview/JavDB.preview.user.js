@@ -205,8 +205,17 @@
     }
   });
 
+  const playVideo = e => {
+    const video = e.querySelector("video.carousel-active");
+    if (!video) return;
+
+    video.focus();
+    video.play();
+  };
+
   const modalCallback = mutationsList => {
-    for (const { type, attributeName, target } of mutationsList) {
+    for (const { type, addedNodes, attributeName, target } of mutationsList) {
+      if (type === "childList" && addedNodes.length > 1) playVideo(target);
       if (type !== "attributes" || attributeName !== "class") continue;
 
       if (!target.classList.contains("is-active")) {
@@ -214,14 +223,10 @@
         target.querySelector("video")?.pause();
         continue;
       }
-
-      const current = target.querySelector(".carousel-active");
-      if (current?.matches("video")) {
-        current.focus();
-        current.play();
-      }
+      playVideo(target);
     }
   };
+
   const modalObserver = new MutationObserver(modalCallback);
-  modalObserver.observe(modal, { attributeFilter: ["class"] });
+  modalObserver.observe(modal, { subtree: true, childList: true, attributeFilter: ["class"] });
 })();
