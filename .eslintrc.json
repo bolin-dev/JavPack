@@ -10,6 +10,9 @@
     "fetchJavspyl": true,
     "fetchBlogJav": true,
     "fetchJavStore": true,
+    "codeParse": true,
+    "files": true,
+    "filesSearch": true,
     "GM_addStyle": true,
     "GM_openInTab": true,
     "GM_xmlhttpRequest": true

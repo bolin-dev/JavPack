@@ -45,9 +45,6 @@ function request(url, options = {}) {
           resolve(false);
         } else if (options.method === "HEAD") {
           resolve(status);
-        } else if (responseType.includes("text/html") && options.responseType !== "document") {
-          const parser = new DOMParser();
-          resolve(parser.parseFromString(response, "text/html"));
         } else if (responseType.includes("application/json") && options.responseType !== "json") {
           resolve(JSON.parse(response));
         } else {
