@@ -1,23 +1,22 @@
-async function fetchBlogJav(code) {
-  const url = await taskQueue(`https://blogjav.net/?s=${code}`, [
+function fetchBlogJav(code) {
+  return taskQueue(`https://blogjav.net/?s=${code}`, [
     dom => {
       const list = dom.querySelectorAll("#main .entry-title a");
       const res = [...list].find(item => item.textContent.toUpperCase().includes(code));
       return res?.href;
     },
-    dom => {
+    async dom => {
       let img = dom.querySelector("#main .entry-content p > a img");
       if (!img) return;
 
       img = img.dataset.src ?? img.dataset.lazySrc;
       if (!img) return;
 
-      return img.replace("//t", "//img").replace("/thumbs/", "/images/");
+      img = img.replace("//t", "//img").replace("/thumbs/", "/images/");
+      const status = await request(img, { method: "HEAD" });
+      if (status === 200) return img;
     },
   ]);
-
-  const status = await request(url, { method: "HEAD" });
-  if (status === 200) return url;
 }
 
 function fetchJavStore(code) {
