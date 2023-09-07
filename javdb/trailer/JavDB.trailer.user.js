@@ -28,8 +28,8 @@
 (async function () {
   let mid = location.pathname.split("/").at(-1);
   if (!mid) return;
-  mid = `trailer_${mid}`;
 
+  mid = `trailer_${mid}`;
   let trailer = localStorage.getItem(mid) ?? document.querySelector("#preview-video source")?.getAttribute("src");
 
   if (!trailer) {
@@ -46,7 +46,7 @@
         break;
       }
 
-      if (studio) trailer = await fetchStudio(code, studio);
+      if (studio) trailer = await fetchStudio(code, studio.trim());
     }
 
     if (!trailer) trailer = await fetchJavspyl(code);
@@ -89,8 +89,8 @@
     }
 
     video.classList.add("trailer-index");
-    video.play();
     video.focus();
+    video.play();
   });
 
   video.addEventListener("ended", () => {
