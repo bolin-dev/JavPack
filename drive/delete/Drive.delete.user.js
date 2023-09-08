@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     播放页删除
-// @include         /^https:\/\/v\.anxia\.com\/\?pickcode=\w+$/
+// @include         /^https:\/\/v\.anxia\.com\/\?pickcode=\w+/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/request/JavPack.request.lib.js
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/drive/JavPack.drive.lib.js
