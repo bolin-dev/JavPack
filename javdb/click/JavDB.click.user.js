@@ -17,7 +17,7 @@
 (function () {
   const openInTab = (e, active = false) => {
     const target = e.target.closest(":is(.movie-list, .actors, .section-container) a");
-    if (!target) return;
+    if (!target || e.target.matches(".button.is-danger")) return;
 
     e.preventDefault();
     e.stopPropagation();
