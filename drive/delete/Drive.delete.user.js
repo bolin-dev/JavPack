@@ -30,13 +30,23 @@
     loading = true;
 
     let res = await filesVideo(pc);
-    if (!res) return;
+    if (!res) {
+      loading = false;
+      return;
+    }
 
     res = await files(res.parent_id);
     res = res.path;
-    if (!res?.length) return;
+    if (!res?.length) {
+      loading = false;
+      return;
+    }
 
-    rbDelete([res.at(-1).cid], res.at(-2).cid).then(window.close);
+    rbDelete([res.at(-1).cid], res.at(-2).cid)
+      .then(window.close)
+      .finally(() => {
+        loading = false;
+      });
   };
 
   document
