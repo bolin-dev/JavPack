@@ -16,12 +16,13 @@
 在脚本元属性加入：
 
 - `// @require [request url]`
-- `// @require [trailer url]`
+- `// @require [url]`
 - `// @grant GM_xmlhttpRequest`
 - `// @connect caribbeancom.com`
 - `// @connect pacopacomama.com`
 - `// @connect tokyo-hot.com`
 - `// @connect 10musume.com`
+- `// @connect muramura.tv`
 - `// @connect javspyl.tk`
 - `// @connect 1pondo.tv`
 - `// @connect heyzo.com`

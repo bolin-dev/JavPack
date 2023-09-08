@@ -16,7 +16,8 @@
 在脚本元属性加入：
 
 - `// @require [request url]`
-- `// @require [thumbnail url]`
+- `// @require [url]`
 - `// @grant GM_xmlhttpRequest`
 - `// @connect javstore.net`
 - `// @connect blogjav.net`
+- `// @connect pixhost.to`

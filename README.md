@@ -20,6 +20,10 @@
 | [JavDB.preview](./javdb/preview/)     | 详情预览     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/preview/JavDB.preview.user.js)     |
 | [JavDB.query](./javdb/query/)         | 网盘查询     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/query/JavDB.query.user.js)         |
 
+| 115 脚本                        | 说明       | 安装                                                                                       |
+| :------------------------------ | :--------- | :----------------------------------------------------------------------------------------- |
+| [Drive.delete](./drive/delete/) | 播放页删除 | [Install](https://github.com/bolin-dev/JavPack/raw/main/drive/delete/Drive.delete.user.js) |
+
 ## libs
 
 | 通用库                                 | 说明       |
@@ -27,3 +31,4 @@
 | [JavPack.request](./libs/request/)     | 网络请求   |
 | [JavPack.trailer](./libs/trailer/)     | 获取预告片 |
 | [JavPack.thumbnail](./libs/thumbnail/) | 获取缩略图 |
+| [JavPack.drive](./libs/drive/)         | 网盘请求   |
