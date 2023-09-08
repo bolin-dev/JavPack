@@ -44,7 +44,7 @@
   :root[data-theme=dark] #javpack-preview .info-block{border-color:#4a4a4a}
   `);
 
-  const htmlStr = "<button class='button is-info is-small preview'>预览详情</button>";
+  const htmlStr = "<button class='button is-info is-small preview' type='button'>预览详情</button>";
   const addTarget = nodeList => {
     for (const node of nodeList) node.querySelector(".cover")?.insertAdjacentHTML("beforeend", htmlStr);
   };
@@ -66,8 +66,8 @@
   );
   const modal = document.querySelector("#javpack-preview");
   const modalTitle = modal.querySelector(".modal-card-title");
-  const modalBody = modal.querySelector(".modal-card-body");
   const modalBtn = modal.querySelector(".modal-card-head .button");
+  const modalBody = modal.querySelector(".modal-card-body");
 
   const createPreview = ({ cover, trailer, thumbnail, info }, _trailer = "") => {
     let innerHTML = "";
@@ -130,6 +130,8 @@
 
   const modalOpen = () => modal.classList.add("is-active");
 
+  const modalClose = () => modal.classList.remove("is-active");
+
   const handleOpen = async node => {
     const url = node.href;
     if (!url) return;
@@ -159,6 +161,8 @@
     if (preview) localStorage.setItem(mid, JSON.stringify(preview));
   };
 
+  document.addEventListener("keyup", e => e.key === "Escape" && modalClose());
+
   container.addEventListener("click", e => {
     const target = e.target.closest(".movie-list .item .cover .preview");
     if (!target) return;
@@ -170,6 +174,8 @@
     if (node) handleOpen(node);
   });
 
+  modalBtn.addEventListener("click", modalClose);
+
   modalBody.addEventListener("click", e => {
     let target = e.target.closest(".carousel .btn");
     if (!target) return;
@@ -179,15 +185,17 @@
 
     const carousel = modalBody.querySelector(".carousel");
     const current = carousel.querySelector(".carousel-active");
-    const list = carousel.querySelectorAll("img, video");
+
+    const selector = "img, video";
+    const list = carousel.querySelectorAll(selector);
 
     let will;
     if (target.matches(".carousel-prev")) {
       will = current.previousElementSibling;
-      if (!will?.matches("img, video")) will = list[list.length - 1];
+      if (!will?.matches(selector)) will = list[list.length - 1];
     } else {
       will = current.nextElementSibling;
-      if (!will?.matches("img, video")) will = list[0];
+      if (!will?.matches(selector)) will = list[0];
     }
     if (!will) return;
 
@@ -200,8 +208,6 @@
       will.play();
     }
   });
-
-  document.addEventListener("keyup", e => e.key === "Escape" && modal.classList.remove("is-active"));
 
   const playVideo = e => {
     const video = e.querySelector("video.carousel-active");
@@ -218,7 +224,6 @@
       target.classList.contains("is-active") ? playVideo(target) : target.querySelector("video")?.pause();
     }
   };
-
   const modalObserver = new MutationObserver(modalCallback);
   modalObserver.observe(modal, { subtree: true, childList: true, attributeFilter: ["class"] });
 })();
