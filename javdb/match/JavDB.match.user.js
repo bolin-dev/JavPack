@@ -98,9 +98,9 @@
   const mutationObserver = new MutationObserver(callback);
   mutationObserver.observe(container, { childList: true, attributes: false });
 
-  GM_addStyle(`
-  .x-match:after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3rem;height:3rem;background:url(/packs/media/images/btn-play-b414746c.svg) no-repeat center/contain;z-index:1}
-  `);
+  GM_addStyle(
+    '.x-match:after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3rem;height:3rem;background:url(/packs/media/images/btn-play-b414746c.svg) no-repeat center/contain;z-index:1}'
+  );
 
   container.addEventListener("click", e => {
     if (e.target.classList.contains("preview")) return;
