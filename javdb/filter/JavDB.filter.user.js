@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     影片筛选
-// @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
+// @include         /^https:\/\/javdb\d*\.com\/(?!v\/)/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-body
@@ -54,11 +54,10 @@
   const callback = (mutationsList, observer) => {
     for (const { type, addedNodes } of mutationsList) {
       if (type !== "childList" || !addedNodes?.length) continue;
-      if (addedNodes.length < 40) observer.disconnect();
+      if (addedNodes.length < 12) observer.disconnect();
       filter(addedNodes);
     }
   };
-
   const mutationObserver = new MutationObserver(callback);
   mutationObserver.observe(container, { childList: true, attributes: false });
 

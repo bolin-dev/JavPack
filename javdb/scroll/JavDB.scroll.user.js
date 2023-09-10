@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     滚动加载
-// @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
+// @include         /^https:\/\/javdb\d*\.com\/(?!v\/)/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/request/JavPack.request.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -34,14 +34,13 @@
   loading.textContent = "加载中...";
   container.insertAdjacentElement("afterend", loading);
 
-  let isLoading = false;
-
   const queryNext = dom => {
     const url = dom.querySelector(selectors.pagination)?.href;
     const list = dom.querySelectorAll(`${selectors.container} > :is(div, a)`);
     return { url, list };
   };
 
+  let isLoading = false;
   const callback = async (entries, observer) => {
     if (!entries[0].isIntersecting || isLoading) return;
 

@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     快捷导航
-// @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
+// @include         /^https:\/\/javdb\d*\.com\/(?!v\/)/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start

@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     详情预览
-// @include         /^https:\/\/javdb\d*\.com\/(?!v\/).*$/
+// @include         /^https:\/\/javdb\d*\.com\/(?!v\/)/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/request/JavPack.request.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -21,7 +21,7 @@
   const container = document.querySelector(".movie-list");
   if (!container) return;
 
-  const childList = container.querySelectorAll(".item");
+  const childList = container.querySelectorAll(".item:not(.is-hidden)");
   if (!childList?.length) return;
 
   GM_addStyle(`
@@ -53,7 +53,7 @@
   const movieCallback = (mutationsList, observer) => {
     for (const { type, addedNodes } of mutationsList) {
       if (type !== "childList" || !addedNodes?.length) continue;
-      if (addedNodes.length < 40) observer.disconnect();
+      if (addedNodes.length < 12) observer.disconnect();
       addTarget(addedNodes);
     }
   };
@@ -164,7 +164,7 @@
   document.addEventListener("keyup", e => e.key === "Escape" && modalClose());
 
   container.addEventListener("click", e => {
-    const target = e.target.closest(".movie-list .item .cover .preview");
+    const target = e.target.closest(".item .cover .preview");
     if (!target) return;
 
     e.preventDefault();
@@ -199,8 +199,8 @@
     }
     if (!will) return;
 
-    current.classList.remove("carousel-active");
     if (current.matches("video")) current.pause();
+    current.classList.remove("carousel-active");
 
     will.classList.add("carousel-active");
     if (will.matches("video")) {
