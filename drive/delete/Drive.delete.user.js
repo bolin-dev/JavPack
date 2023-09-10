@@ -49,8 +49,7 @@
       });
   };
 
-  document
-    .querySelector(".vt-headline")
-    .insertAdjacentHTML("beforeend", `<a href="javascript:void(0);" class="btn-opendir" id="x-delete">删除目录</a>`);
+  const htmlStr = '<a href="javascript:void(0);" class="btn-opendir" id="x-delete">删除目录</a>';
+  document.querySelector(".vt-headline").insertAdjacentHTML("beforeend", htmlStr);
   document.querySelector("#x-delete").addEventListener("click", handleDel);
 })();
