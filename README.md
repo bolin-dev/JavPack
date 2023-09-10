@@ -19,6 +19,7 @@
 | [JavDB.thumbnail](./javdb/thumbnail/) | 缩略图       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/thumbnail/JavDB.thumbnail.user.js) |
 | [JavDB.preview](./javdb/preview/)     | 详情预览     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/preview/JavDB.preview.user.js)     |
 | [JavDB.query](./javdb/query/)         | 网盘查询     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/query/JavDB.query.user.js)         |
+| [JavDB.match](./javdb/match/)         | 列表匹配     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/match/JavDB.match.user.js)         |
 
 | 115 脚本                        | 说明       | 安装                                                                                       |
 | :------------------------------ | :--------- | :----------------------------------------------------------------------------------------- |
