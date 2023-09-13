@@ -25,6 +25,8 @@
   const childList = container.querySelectorAll(".item");
   if (!childList?.length) return;
 
+  GM_addStyle(".is-highlight{box-shadow:0 0 0 4px red!important}");
+
   const parseRes = node => {
     const title = node.querySelector(".video-title");
     const code = title.querySelector("strong").textContent;
@@ -51,6 +53,8 @@
   };
   filter(childList);
 
+  if (!document.querySelector("nav.pagination .pagination-next")) return;
+
   const callback = (mutationsList, observer) => {
     for (const { type, addedNodes } of mutationsList) {
       if (type !== "childList" || !addedNodes?.length) continue;
@@ -60,6 +64,4 @@
   };
   const mutationObserver = new MutationObserver(callback);
   mutationObserver.observe(container, { childList: true, attributes: false });
-
-  GM_addStyle(".is-highlight{box-shadow:0 0 0 4px red!important}");
 })();
