@@ -50,16 +50,6 @@
   };
   addTarget(childList);
 
-  const movieCallback = (mutationsList, observer) => {
-    for (const { type, addedNodes } of mutationsList) {
-      if (type !== "childList" || !addedNodes?.length) continue;
-      if (addedNodes.length < 12) observer.disconnect();
-      addTarget(addedNodes);
-    }
-  };
-  const movieObserver = new MutationObserver(movieCallback);
-  movieObserver.observe(container, { childList: true, attributes: false });
-
   document.body.insertAdjacentHTML(
     "beforeend",
     '<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><a class="button is-success is-small" target="_blank">查看详情</a></header><section class="modal-card-body">loading...</section></div></div>'
@@ -226,4 +216,16 @@
   };
   const modalObserver = new MutationObserver(modalCallback);
   modalObserver.observe(modal, { subtree: true, childList: true, attributeFilter: ["class"] });
+
+  if (!document.querySelector("nav.pagination .pagination-next")) return;
+
+  const movieCallback = (mutationsList, observer) => {
+    for (const { type, addedNodes } of mutationsList) {
+      if (type !== "childList" || !addedNodes?.length) continue;
+      if (addedNodes.length < 12) observer.disconnect();
+      addTarget(addedNodes);
+    }
+  };
+  const movieObserver = new MutationObserver(movieCallback);
+  movieObserver.observe(container, { childList: true, attributes: false });
 })();
