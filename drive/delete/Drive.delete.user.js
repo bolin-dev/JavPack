@@ -36,7 +36,7 @@
     }
 
     res = await files(res.parent_id);
-    res = res.path;
+    res = res?.path;
     if (!res?.length) {
       loading = false;
       return;
