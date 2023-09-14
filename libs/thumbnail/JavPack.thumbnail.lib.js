@@ -14,7 +14,7 @@ function fetchBlogJav(code) {
 
       img = img.replace("//t", "//img").replace("/thumbs/", "/images/");
       const { finalUrl } = await request(img, { method: "HEAD" });
-      if (!finalUrl.includes("remove")) return img;
+      if (!finalUrl.includes("removed.png")) return img;
     },
   ]);
 }
