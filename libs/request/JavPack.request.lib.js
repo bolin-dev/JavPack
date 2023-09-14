@@ -38,13 +38,14 @@ function request(url, options = {}) {
       ...options,
       onerror: () => resolve(false),
       ontimeout: () => resolve(false),
-      onload: ({ status, responseHeaders, response }) => {
+      onload: res => {
+        const { status, responseHeaders, response } = res;
         const responseType = responseHeaders.split("\r\n").find(item => item.startsWith("content-type:"));
 
         if (status >= 400) {
           resolve(false);
         } else if (options.method === "HEAD") {
-          resolve(status);
+          resolve(res);
         } else if (responseType.includes("application/json") && options.responseType !== "json") {
           resolve(JSON.parse(response));
         } else {
