@@ -13,8 +13,8 @@ function fetchBlogJav(code) {
       if (!img) return;
 
       img = img.replace("//t", "//img").replace("/thumbs/", "/images/");
-      const status = await request(img, { method: "HEAD" });
-      if (status === 200) return img;
+      const { finalUrl } = await request(img, { method: "HEAD" });
+      if (!finalUrl.includes("remove")) return img;
     },
   ]);
 }
