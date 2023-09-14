@@ -51,9 +51,8 @@
 
     if (!trailer) trailer = await fetchJavspyl(code);
   }
-  if (!trailer || /\.m3u8?$/i.test(trailer)) return;
+  if (!trailer) return;
 
-  if (!trailer.includes("//")) trailer = `https://${trailer}`;
   localStorage.setItem(mid, trailer);
 
   GM_addStyle(`

@@ -3,7 +3,10 @@ function fetchJavspyl(code) {
     method: "POST",
     data: { ID: code },
     headers: { origin: "https://javspyl.tk" },
-  }).then(res => res?.info?.url);
+  }).then(res => {
+    res = res?.info?.url;
+    if (res && !/\.m3u8?$/i.test(res)) return res.includes("//") ? res : `https://${res}`;
+  });
 }
 
 const resolutions = ["720p", "1080p", "480p", "360p"];
