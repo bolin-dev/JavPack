@@ -12,14 +12,14 @@
 | [JavDB.layout](./javdb/layout/)       | 布局调整     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/layout/JavDB.layout.user.js)       |
 | [JavDB.search](./javdb/search/)       | 快捷搜索     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/search/JavDB.search.user.js)       |
 | [JavDB.filter](./javdb/filter/)       | 影片筛选     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/filter/JavDB.filter.user.js)       |
+| [JavDB.match](./javdb/match/)         | 列表匹配     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/match/JavDB.match.user.js)         |
+| [JavDB.preview](./javdb/preview/)     | 悬停预览     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/preview/JavDB.preview.user.js)     |
 | [JavDB.click](./javdb/click/)         | 新标签页打开 | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/click/JavDB.click.user.js)         |
 | [JavDB.scroll](./javdb/scroll/)       | 滚动加载     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/scroll/JavDB.scroll.user.js)       |
 | [JavDB.nav](./javdb/nav/)             | 快捷导航     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/nav/JavDB.nav.user.js)             |
 | [JavDB.trailer](./javdb/trailer/)     | 预览片       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/trailer/JavDB.trailer.user.js)     |
 | [JavDB.thumbnail](./javdb/thumbnail/) | 缩略图       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/thumbnail/JavDB.thumbnail.user.js) |
-| [JavDB.preview](./javdb/preview/)     | 悬停预览     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/preview/JavDB.preview.user.js)     |
 | [JavDB.query](./javdb/query/)         | 网盘查询     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/query/JavDB.query.user.js)         |
-| [JavDB.match](./javdb/match/)         | 列表匹配     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/match/JavDB.match.user.js)         |
 
 | 115 脚本                        | 说明       | 安装                                                                                       |
 | :------------------------------ | :--------- | :----------------------------------------------------------------------------------------- |
