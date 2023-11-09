@@ -81,15 +81,6 @@
     tag.href = `https://v.anxia.com/?pickcode=${res.pc}`;
   }
 
-  // TODO: 处理消息 event.data 以更新匹配结果
-  // window.addEventListener(
-  //   "message",
-  //   e => {
-  //     if (e.origin !== location.origin) return;
-  //   },
-  //   false
-  // );
-
   if (!document.querySelector("nav.pagination .pagination-next")) return;
 
   const callback = (mutationsList, observer) => {

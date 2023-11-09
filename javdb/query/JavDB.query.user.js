@@ -24,10 +24,15 @@
   const code = info.querySelector(".first-block .value").textContent;
   if (!code) return;
 
-  info.insertAdjacentHTML(
-    "beforeend",
-    '<div class="panel-block"><strong>资源:</strong>&nbsp;<span class="value" id="x-query">查询中...</span></div>'
-  );
+  const insertHTML =
+    '<div class="panel-block"><strong>资源:</strong>&nbsp;<span class="value" id="x-query">查询中...</span></div>';
+
+  const offline = info.querySelector("#x-offline");
+  if (offline) {
+    offline.insertAdjacentHTML("beforebegin", insertHTML);
+  } else {
+    info.insertAdjacentHTML("beforeend", insertHTML);
+  }
 
   const query = info.querySelector("#x-query");
   query.addEventListener("contextmenu", e => {
