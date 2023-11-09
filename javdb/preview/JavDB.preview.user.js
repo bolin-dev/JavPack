@@ -153,7 +153,6 @@
     video.setAttribute("x-webkit-airplay", "deny");
     video.setAttribute("controlslist", "nodownload nofullscreen noremoteplayback noplaybackrate");
     video.setAttribute("title", "");
-
     video.autoplay = true;
     video.autoPictureInPicture = false;
     video.controls = true;
@@ -164,12 +163,11 @@
     video.muted = false;
     video.playsInline = true;
     video.volume = localStorage.getItem("volume") ?? 0;
-
     elem.append(video);
-    video.focus();
-    video.addEventListener("volumechange", ({ target }) => localStorage.setItem("volume", target.volume));
 
-    setTimeout(() => video.classList.add("fade-in"), 50);
+    video.focus();
+    video.addEventListener("canplay", () => video.classList.add("fade-in"), { once: true });
+    video.addEventListener("volumechange", ({ target }) => localStorage.setItem("volume", target.volume));
   }
 
   document.addEventListener("mouseout", e => {
