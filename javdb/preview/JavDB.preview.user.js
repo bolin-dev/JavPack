@@ -3,11 +3,20 @@
 // @namespace       JavDB.preview@blc
 // @version         0.0.1
 // @author          blc
-// @description     详情预览
+// @description     悬停预览
 // @include         /^https:\/\/javdb\d*\.com\/(?!v\/)/
 // @icon            https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/request/JavPack.request.lib.js
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/trailer/JavPack.trailer.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
+// @connect         caribbeancom.com
+// @connect         pacopacomama.com
+// @connect         tokyo-hot.com
+// @connect         10musume.com
+// @connect         muramura.tv
+// @connect         javspyl.tk
+// @connect         1pondo.tv
+// @connect         heyzo.com
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
@@ -18,214 +27,193 @@
 // ==/UserScript==
 
 (function () {
-  const container = document.querySelector(".movie-list");
-  if (!container) return;
-
-  const childList = container.querySelectorAll(".item:not(.is-hidden)");
-  if (!childList?.length) return;
-
+  const SELECTORS = ".movie-list .cover";
+  if (!document.querySelector(SELECTORS)) return;
   GM_addStyle(`
-  .movie-list .item .cover{position:relative;overflow:hidden}
-  .movie-list .item .cover .preview{z-index:1;display:none;position:absolute;inset:.5rem .5rem auto auto}
-  .movie-list .item .cover:hover .preview{display:flex}
-  #javpack-preview .modal-card-head{gap:10px}
-  #javpack-preview .modal-card-title{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  #javpack-preview .modal-card-body{padding:15px}
-  #javpack-preview .carousel{aspect-ratio:400/269;background:#aa9084}
-  :root[data-theme=dark] #javpack-preview .carousel{background:#222}
-  #javpack-preview .carousel :is(img,video){display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
-  #javpack-preview .carousel :is(img,video).carousel-active{display:block}
-  #javpack-preview .carousel .btn{position:absolute;z-index:1;display:block;width:50px;height:50px;line-height:50px;text-align:center;font-size:30px;background:#fff;opacity:.4;cursor:pointer;top:50%;transform:translateY(-50%);border-radius:50%;overflow:hidden}
-  #javpack-preview .carousel .btn:hover{opacity:.8}
-  #javpack-preview .carousel .btn.carousel-prev{left:15px}
-  #javpack-preview .carousel .btn.carousel-next{right:15px}
-  #javpack-preview .info-block{padding-block:7.5px}
-  #javpack-preview .info-block:not(:last-child){border-bottom:1px solid #ededed}
-  :root[data-theme=dark] #javpack-preview .info-block{border-color:#4a4a4a}
+  ${SELECTORS} video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity .2s ease-in-out;
+    background: #000;
+  }
+  ${SELECTORS} video.fade-in {
+    opacity: 1;
+  }
   `);
 
-  const htmlStr = "<button class='button is-info is-small preview' type='button'>预览详情</button>";
-  const addTarget = nodeList => {
-    for (const node of nodeList) node.querySelector(".cover")?.insertAdjacentHTML("beforeend", htmlStr);
-  };
-  addTarget(childList);
+  let currentElem = null;
 
-  document.body.insertAdjacentHTML(
-    "beforeend",
-    '<div id="javpack-preview" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">JavPack Preview</p><a class="button is-success is-small" target="_blank">查看详情</a></header><section class="modal-card-body">loading...</section></div></div>'
-  );
-  const modal = document.querySelector("#javpack-preview");
-  const modalTitle = modal.querySelector(".modal-card-title");
-  const modalBtn = modal.querySelector(".modal-card-head .button");
-  const modalBody = modal.querySelector(".modal-card-body");
+  let prevX = null;
+  let prevY = null;
+  let prevTime = null;
 
-  const createPreview = ({ cover, trailer, thumbnail, info }, _trailer = "") => {
-    let innerHTML = "";
+  let lastX = null;
+  let lastY = null;
+  let lastTime = null;
 
-    const carousel = [];
-    if (trailer || _trailer) {
-      carousel.push(
-        `<video src="${trailer || _trailer}" controls muted poster="${cover}" class="carousel-active"></video>`
-      );
-    }
-    if (cover) carousel.push(`<img src="${cover}" alt="cover" class="carousel-active">`);
-    for (const item of thumbnail) carousel.push(`<img src="${item}" alt="thumbnail">`);
+  const interval = 300; // 检测间隔（ms）
+  const sensitivity = 0; // 鼠标移动速度（px/ms）
+  let checkSpeedInterval = null;
 
-    if (carousel.length) {
-      innerHTML = '<div class="is-block is-relative is-clipped carousel">';
-      innerHTML += carousel.join("");
+  document.addEventListener("mouseover", e => {
+    if (currentElem) return;
 
-      if (carousel[0].startsWith("<video")) {
-        innerHTML = innerHTML.replace('alt="cover" class="carousel-active"', 'alt="cover"');
-      }
-      if (carousel.length > 1) {
-        innerHTML +=
-          '<div class="is-unselectable btn carousel-prev">🔙</div><div class="is-unselectable btn carousel-next">🔜</div>';
-      }
-
-      innerHTML += "</div>";
-    }
-
-    for (const { title, value } of info) {
-      innerHTML += `<div class="info-block"><strong>${title}</strong>&nbsp;<span class="value">${value}</span></div>`;
-    }
-
-    return innerHTML;
-  };
-
-  const getDetail = dom => {
-    const cover = dom.querySelector(".column-video-cover img")?.src ?? "";
-    const trailer = dom.querySelector("#preview-video source")?.getAttribute("src") ?? "";
-
-    const info = [];
-    for (const item of dom.querySelectorAll(".movie-panel-info > .panel-block")) {
-      const title = item.querySelector("strong")?.textContent?.trim() ?? "";
-      let value = item.querySelector("span.value")?.textContent?.trim() ?? "";
-      value = value
-        .split("\n")
-        .map(v => v.trim())
-        .join(", ");
-      if (title && value) info.push({ title, value });
-    }
-
-    const thumbnail = [];
-    for (const item of dom.querySelectorAll(".tile-images.preview-images .tile-item")) {
-      const url = item?.href;
-      if (url) thumbnail.push(url);
-    }
-
-    if (!cover && !trailer && !thumbnail.length && !info.length) return;
-    return { cover, trailer, thumbnail, info };
-  };
-
-  const modalOpen = () => modal.classList.add("is-active");
-
-  const modalClose = () => modal.classList.remove("is-active");
-
-  const handleOpen = async node => {
-    const url = node.href;
-    if (!url) return;
-
-    let mid = url.split("/").at(-1);
-    if (!mid) return;
-
-    if (url === modalBtn.href && modalBody.innerHTML !== "获取失败") return modalOpen();
-
-    modalBtn.href = url;
-    modalTitle.textContent = node.querySelector(".video-title").textContent;
-    modalOpen();
-
-    const trailer = localStorage.getItem(`trailer_${mid}`) ?? "";
-    mid = `preview_${mid}`;
-    let preview = localStorage.getItem(mid);
-
-    if (preview) {
-      modalBody.innerHTML = createPreview(JSON.parse(preview), trailer);
-      return;
-    }
-
-    modalBody.innerHTML = "loading...";
-    preview = await taskQueue(url, [getDetail]);
-    modalBody.innerHTML = preview ? createPreview(preview, trailer) : "获取失败";
-
-    if (preview) localStorage.setItem(mid, JSON.stringify(preview));
-  };
-
-  document.addEventListener("keyup", e => e.key === "Escape" && modalClose());
-
-  container.addEventListener("click", e => {
-    const target = e.target.closest(".item .cover .preview");
+    const target = e.target.closest(SELECTORS);
     if (!target) return;
 
-    e.preventDefault();
-    e.stopPropagation();
+    prevX = e.pageX;
+    prevY = e.pageY;
+    prevTime = Date.now();
 
-    const node = target.closest("a");
-    if (node) handleOpen(node);
+    currentElem = target;
+    currentElem.addEventListener("mousemove", onMouseMove);
+    checkSpeedInterval = setInterval(trackSpeed, interval);
   });
 
-  modalBtn.addEventListener("click", modalClose);
+  function onMouseMove(e) {
+    lastX = e.pageX;
+    lastY = e.pageY;
+    lastTime = Date.now();
+  }
 
-  modalBody.addEventListener("click", e => {
-    let target = e.target.closest(".carousel .btn");
-    if (!target) return;
+  function trackSpeed() {
+    let speed;
 
-    e.preventDefault();
-    e.stopPropagation();
-
-    const carousel = modalBody.querySelector(".carousel");
-    const current = carousel.querySelector(".carousel-active");
-
-    const selector = "img, video";
-    const list = carousel.querySelectorAll(selector);
-
-    let will;
-    if (target.matches(".carousel-prev")) {
-      will = current.previousElementSibling;
-      if (!will?.matches(selector)) will = list[list.length - 1];
+    if (!lastTime || lastTime === prevTime) {
+      speed = 0;
     } else {
-      will = current.nextElementSibling;
-      if (!will?.matches(selector)) will = list[0];
+      speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
     }
-    if (!will) return;
 
-    if (current.matches("video")) current.pause();
-    current.classList.remove("carousel-active");
-
-    will.classList.add("carousel-active");
-    if (will.matches("video")) {
-      will.focus();
-      will.play();
+    if (speed <= sensitivity) {
+      onHover(currentElem);
+    } else {
+      prevX = lastX;
+      prevY = lastY;
+      prevTime = Date.now();
     }
+  }
+
+  async function onHover(elem) {
+    destroy(elem);
+
+    let { trailer } = elem.dataset;
+    if (trailer) return setPreview(elem, trailer);
+
+    const parentNode = elem.closest("a");
+    const { href } = parentNode;
+    const mid = `trailer_${href.split("/").at(-1)}`;
+
+    trailer = localStorage.getItem(mid); // 从缓存获取
+    if (!trailer) {
+      const code = parentNode.querySelector(".video-title strong").textContent;
+      let [res, dom] = await Promise.allSettled([fetchJavspyl(code), request(href)]);
+
+      if (res.status === "fulfilled") trailer = res.value ?? ""; // 从 javspyl 获取
+
+      if (!trailer) {
+        if (dom.status !== "fulfilled") return;
+        dom = dom.value;
+
+        trailer = dom.querySelector("#preview-video source")?.getAttribute("src"); // 从详情页获取
+
+        if (!trailer && dom.querySelector(".title.is-4 strong").textContent.includes("無碼")) {
+          trailer = await fetchByStudio(code, dom); // 从片商获取
+        }
+      }
+    }
+
+    if (!trailer) return;
+    elem.dataset.trailer = trailer;
+    localStorage.setItem(mid, trailer);
+
+    if (elem === currentElem) setPreview(elem, trailer);
+  }
+
+  function fetchByStudio(code, dom) {
+    let studio = "";
+    for (const node of dom.querySelectorAll(".movie-panel-info > .panel-block")) {
+      if (node.querySelector("strong")?.textContent !== "片商:") continue;
+      studio = node.querySelector(".value").textContent;
+      break;
+    }
+    if (studio) return fetchStudio(code, studio.trim());
+  }
+
+  function setPreview(elem, trailer) {
+    trailer = trailer.replace("mhb.mp4", "dm.mp4").replace("mmb.mp4", "dm.mp4").replace("sm.mp4", "dm.mp4");
+
+    const video = document.createElement("video");
+    video.setAttribute("src", trailer);
+    video.setAttribute("x-webkit-airplay", "deny");
+    video.setAttribute("controlslist", "nodownload nofullscreen noremoteplayback noplaybackrate");
+    video.setAttribute("title", "");
+
+    video.autoplay = true;
+    video.autoPictureInPicture = false;
+    video.controls = true;
+    video.currentTime = 3;
+    video.disablePictureInPicture = true;
+    video.disableRemotePlayback = true;
+    video.loop = true;
+    video.muted = false;
+    video.playsInline = true;
+    video.volume = localStorage.getItem("volume") ?? 0;
+
+    elem.append(video);
+    video.focus();
+    video.addEventListener("volumechange", ({ target }) => localStorage.setItem("volume", target.volume));
+
+    setTimeout(() => video.classList.add("fade-in"), 50);
+  }
+
+  document.addEventListener("mouseout", e => {
+    if (!currentElem) return;
+
+    let relatedTarget = e.relatedTarget;
+    while (relatedTarget) {
+      if (relatedTarget === currentElem) return;
+      relatedTarget = relatedTarget.parentNode;
+    }
+
+    onLeave(currentElem);
+    currentElem = null;
   });
 
-  const playVideo = e => {
-    const video = e.querySelector("video.carousel-active");
+  function onLeave(elem) {
+    destroy(elem);
+
+    const video = elem.querySelector("video");
     if (!video) return;
 
-    video.focus();
-    video.play();
-  };
+    video.classList.remove("fade-in");
+    setTimeout(() => video.remove(), 200);
+  }
 
-  const modalCallback = mutationsList => {
-    for (const { type, addedNodes, attributeName, target } of mutationsList) {
-      if (type === "childList" && addedNodes.length > 1) playVideo(target);
-      if (type !== "attributes" || attributeName !== "class") continue;
-      target.classList.contains("is-active") ? playVideo(target) : target.querySelector("video")?.pause();
-    }
-  };
-  const modalObserver = new MutationObserver(modalCallback);
-  modalObserver.observe(modal, { subtree: true, childList: true, attributeFilter: ["class"] });
+  function destroy(elem) {
+    elem.removeEventListener("mousemove", onMouseMove);
+    clearInterval(checkSpeedInterval);
+  }
 
-  if (!document.querySelector("nav.pagination .pagination-next")) return;
+  document.addEventListener("mouseleave", e => {
+    if (!currentElem) return;
 
-  const movieCallback = (mutationsList, observer) => {
-    for (const { type, addedNodes } of mutationsList) {
-      if (type !== "childList" || !addedNodes?.length) continue;
-      if (addedNodes.length < 12) observer.disconnect();
-      addTarget(addedNodes);
-    }
-  };
-  const movieObserver = new MutationObserver(movieCallback);
-  movieObserver.observe(container, { childList: true, attributes: false });
+    const from = e.relatedTarget || e.toElement;
+    if (from && from.nodeName !== "HTML") return;
+
+    onLeave(currentElem);
+    currentElem = null;
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!currentElem || !document.hidden) return;
+
+    onLeave(currentElem);
+    currentElem = null;
+  });
 })();

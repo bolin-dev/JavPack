@@ -2,8 +2,8 @@
 
 # JavDB.preview
 
-[JavDB](https://javdb.com/) 影片详情预览
+[JavDB](https://javdb.com/) 悬停预览
 
 ## 内容
 
-- 列表页影片详情预览
+- 列表页悬停预览
