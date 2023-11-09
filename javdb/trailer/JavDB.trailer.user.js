@@ -70,12 +70,12 @@
   video.src = trailer;
   video.loop = false;
   video.muted = false;
-  video.volume = 0.2;
+  video.volume = localStorage.getItem("volume") ?? 0;
   video.controls = true;
   video.currentTime = 3;
   video.preload = "metadata";
   video.poster = cover.querySelector("img").src;
-  cover.appendChild(video);
+  cover.append(video);
 
   cover.addEventListener("click", e => {
     if (e.target.closest(".play-button")) return;
@@ -97,7 +97,15 @@
     video.classList.remove("trailer-index");
   });
 
-  video.addEventListener("keyup", e => {
-    if (e.key === "m") video.muted = !video.muted;
+  video.addEventListener("keydown", e => {
+    if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    video.currentTime += e.key === "ArrowLeft" ? -3 : 5;
   });
+
+  video.addEventListener("volumechange", ({ target }) => localStorage.setItem("volume", target.volume));
 })();
