@@ -14,10 +14,8 @@
 // @grant           GM_xmlhttpRequest
 // @grant           GM_deleteValue
 // @grant           GM_listValues
-// @grant           GM_openInTab
 // @grant           GM_getValue
 // @grant           GM_setValue
-// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome
 // @compatible      edge
@@ -25,9 +23,7 @@
 
 (function () {
   const date = new Date().getDate();
-  const cd = GM_getValue("CD");
-
-  if (cd !== date) {
+  if (GM_getValue("CD", "") !== date) {
     for (const key of GM_listValues()) GM_deleteValue(key);
     GM_setValue("CD", date);
   }
@@ -35,42 +31,37 @@
   const container = document.querySelector(".movie-list");
   if (!container) return;
 
-  const childList = container.querySelectorAll(".item:not(.is-hidden)");
-  if (!childList?.length) return;
+  const childList = container.querySelectorAll(".item");
+  if (!childList.length) return;
 
-  GM_addStyle(
-    '.x-match:after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3rem;height:3rem;background:url(/packs/media/images/btn-play-b414746c.svg) no-repeat center/contain;z-index:1}'
-  );
-
-  container.addEventListener("click", e => {
-    if (e.target.classList.contains("preview")) return;
-
-    const target = e.target.closest(".cover.x-match");
-    if (!target) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    GM_openInTab(`https://v.anxia.com/?pickcode=${target.dataset.pc}`, { active: true, setParent: true });
-  });
-
+  const insertHTML = '<a class="tag is-info" href="javascript:void(0);" target="_blank">查询中</a>&nbsp;';
+  const parseList = [];
   let loading = false;
-  const listMatch = async () => {
-    if (!parseList.__target.length || loading) return;
+
+  matchTask(childList);
+
+  async function matchTask(nodeList) {
+    for (const node of nodeList) {
+      node.classList.add(`x-${node.querySelector("a").href.split("/").pop()}`);
+      const titleNode = node.querySelector(".video-title");
+      const code = titleNode.querySelector("strong")?.textContent;
+
+      titleNode.insertAdjacentHTML("afterbegin", insertHTML);
+      parseList.push({ ...codeParse(code), node });
+    }
+
+    if (loading) return;
     loading = true;
 
-    const target = parseList.__target;
-    const _fetch = async () => {
-      await match(target[0]);
-      target.splice(0, 1);
-      if (target.length) await _fetch();
-    };
-    await _fetch();
+    while (parseList.length) {
+      const item = parseList.shift();
+      await matchItem(item);
+    }
 
     loading = false;
-  };
+  }
 
-  const match = async ({ prefix, regex, node }) => {
+  async function matchItem({ prefix, regex, node }) {
     let res = GM_getValue(prefix);
 
     if (!res) {
@@ -78,29 +69,26 @@
       if (Array.isArray(res)) GM_setValue(prefix, res);
     }
     res = res?.find(item => regex.test(item.n));
-    if (!res) return;
 
-    const cover = node.querySelector(".cover");
-    cover.classList.add("x-match");
-    cover.dataset.pc = res.pc;
-  };
-
-  const parseList = new Proxy([], {
-    get(target, prop, receiver) {
-      return prop === "__target" ? target : Reflect.get(target, prop, receiver);
-    },
-    set(target, prop, value, receiver) {
-      if (value.prefix) listMatch();
-      return Reflect.set(target, prop, value, receiver);
-    },
-  });
-  const parseItems = nodeList => {
-    for (const node of nodeList) {
-      const code = node.querySelector(".video-title strong")?.textContent;
-      if (code) parseList.push({ ...codeParse(code), node });
+    const tag = node.querySelector(".video-title .tag");
+    if (!res) {
+      tag.textContent = "未匹配";
+      return tag.classList.remove("is-info");
     }
-  };
-  parseItems(childList);
+
+    tag.textContent = "已离线";
+    tag.classList.replace("is-info", "is-success");
+    tag.href = `https://v.anxia.com/?pickcode=${res.pc}`;
+  }
+
+  // TODO: 处理消息 event.data 以更新匹配结果
+  // window.addEventListener(
+  //   "message",
+  //   e => {
+  //     if (e.origin !== location.origin) return;
+  //   },
+  //   false
+  // );
 
   if (!document.querySelector("nav.pagination .pagination-next")) return;
 
@@ -108,7 +96,7 @@
     for (const { type, addedNodes } of mutationsList) {
       if (type !== "childList" || !addedNodes?.length) continue;
       if (addedNodes.length < 12) observer.disconnect();
-      parseItems(addedNodes);
+      matchTask(addedNodes);
     }
   };
   const mutationObserver = new MutationObserver(callback);
