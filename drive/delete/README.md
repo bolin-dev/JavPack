@@ -1,4 +1,4 @@
-![JavPack](https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png "logo")
+![JavPack](https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png)
 
 # Drive.delete
 
