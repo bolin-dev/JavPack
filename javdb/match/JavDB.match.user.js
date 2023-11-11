@@ -42,7 +42,6 @@
 
   async function matchTask(nodeList) {
     for (const node of nodeList) {
-      node.classList.add(`x-${node.querySelector("a").href.split("/").pop()}`);
       const titleNode = node.querySelector(".video-title");
       const code = titleNode.querySelector("strong")?.textContent;
 
@@ -79,6 +78,7 @@
     tag.textContent = "已离线";
     tag.classList.replace("is-info", "is-success");
     tag.href = `https://v.anxia.com/?pickcode=${res.pc}`;
+    node.querySelector(".video-title").classList.add("has-text-weight-bold");
   }
 
   if (!document.querySelector("nav.pagination .pagination-next")) return;
@@ -86,10 +86,10 @@
   const callback = (mutationsList, observer) => {
     for (const { type, addedNodes } of mutationsList) {
       if (type !== "childList" || !addedNodes?.length) continue;
-      if (addedNodes.length < 12) observer.disconnect();
+      if (addedNodes.length < 40) observer.disconnect();
       matchTask(addedNodes);
     }
   };
   const mutationObserver = new MutationObserver(callback);
-  mutationObserver.observe(container, { childList: true, attributes: false });
+  mutationObserver.observe(container, { childList: true, attributes: false, subtree: false });
 })();
