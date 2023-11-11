@@ -61,7 +61,7 @@
     query.innerHTML = res
       .map(
         ({ pc, cid, t, n }) =>
-          `<a href="https://v.anxia.com/?pickcode=${pc}" data-cid="${cid}" title="[${t}]${n}" target="_blank">${n}</a>`
+          `<a href="https://v.anxia.com/?pickcode=${pc}" data-cid="${cid}" title="[${t}] ${n}" target="_blank">${n}</a>`
       )
       .join("");
   };
