@@ -15,7 +15,7 @@
 // ==/UserScript==
 
 (function () {
-  const search = async e => {
+  document.addEventListener("keydown", async e => {
     if (e.ctrlKey && e.key === "/") {
       const text = (await navigator.clipboard.readText())?.trim();
       if (!text) return;
@@ -24,12 +24,10 @@
       const url = `${origin}/search?q=${text}`;
       pathname === "/search" ? (location.href = url) : GM_openInTab(url, { active: true, setParent: true });
     }
-  };
-  document.addEventListener("keydown", search);
+  });
 
-  const focusSearch = e => {
-    if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName)) return;
+  document.addEventListener("keyup", e => {
+    if (["INPUT", "TEXTAREA", "VIDEO", "AUDIO"].includes(document.activeElement.nodeName)) return;
     if (e.key === "/") document.querySelector("#video-search")?.focus();
-  };
-  document.addEventListener("keyup", focusSearch);
+  });
 })();
