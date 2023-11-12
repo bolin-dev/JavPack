@@ -42,7 +42,7 @@
     e.preventDefault();
     e.stopPropagation();
 
-    GM_openInTab(`https://115.com/?cid=${cid}`, { active: true, setParent: true });
+    GM_openInTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`, { active: true, setParent: true });
   });
 
   const parseRes = res => {
