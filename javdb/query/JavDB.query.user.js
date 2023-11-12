@@ -46,17 +46,11 @@
   });
 
   const parseRes = res => {
-    if (!res?.state) {
-      query.textContent = "查询失败";
-      return;
-    }
+    if (!res?.state) return (query.textContent = "查询失败");
 
     const { regex } = codeParse(code);
     res = res.data.filter(item => regex.test(item.n));
-    if (!res.length) {
-      query.textContent = "暂无资源";
-      return;
-    }
+    if (!res.length) return (query.textContent = "暂无资源");
 
     query.innerHTML = res
       .map(
