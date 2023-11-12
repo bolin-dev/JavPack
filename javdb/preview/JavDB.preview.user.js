@@ -56,7 +56,7 @@
   let lastY = null;
   let lastTime = null;
 
-  const interval = 300; // 检测间隔（ms）
+  const interval = 600; // 检测间隔（ms）
   const sensitivity = 0; // 鼠标移动速度（px/ms）
   let checkSpeedInterval = null;
 
