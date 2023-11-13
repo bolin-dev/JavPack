@@ -67,7 +67,7 @@
 
   const video = document.createElement("video");
   video.classList.add("trailer-video");
-  video.src = trailer;
+  video.src = trailer.replace(/(mhb|mmb|dmb|sm)(_w)?\.mp4/, "dm$2.mp4");
   video.loop = false;
   video.muted = false;
   video.volume = localStorage.getItem("volume") ?? 0;

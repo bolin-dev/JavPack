@@ -146,7 +146,7 @@
   }
 
   function setPreview(elem, trailer) {
-    trailer = trailer.replace("mhb.mp4", "dm.mp4").replace("mmb.mp4", "dm.mp4").replace("sm.mp4", "dm.mp4");
+    trailer = trailer.replace(/(mhb|mmb|dmb|sm)(_w)?\.mp4/, "dm$2.mp4");
 
     const video = document.createElement("video");
     video.setAttribute("src", trailer);
