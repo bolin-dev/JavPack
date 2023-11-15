@@ -14,8 +14,13 @@
 // ==/UserScript==
 
 (function () {
-  const navigation = e => {
-    if (["INPUT", "TEXTAREA", "VIDEO", "AUDIO"].includes(document.activeElement.nodeName)) return;
+  document.addEventListener("keyup", e => {
+    const active = document.activeElement;
+    if (["INPUT", "TEXTAREA"].includes(active.nodeName)) return;
+
+    const target = active.closest("video") ?? active.closest("audio");
+    if (target) return;
+
     if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
 
     e.preventDefault();
@@ -23,6 +28,5 @@
     e.stopImmediatePropagation();
 
     document.querySelector(`nav.pagination .pagination-${e.key === "ArrowLeft" ? "previous" : "next"}`)?.click();
-  };
-  document.addEventListener("keyup", navigation);
+  });
 })();
