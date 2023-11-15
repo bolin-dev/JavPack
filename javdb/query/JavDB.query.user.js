@@ -59,7 +59,7 @@
       )
       .join("");
   };
-  filesSearch(code).then(parseRes);
+  filesSearch(code.replace("-", " ")).then(parseRes);
 
   GM_addStyle(
     "#x-query a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}"
