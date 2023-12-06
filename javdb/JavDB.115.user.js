@@ -36,7 +36,12 @@
 
 (function () {
   const defaultMagnetOptions = {
-    filter: ({ size }) => parseFloat(size) > parseFloat(Util.transToByte("200MB")),
+    filter: ({ size }) => {
+      return (
+        parseFloat(size) > parseFloat(Util.transToByte("200MB")) &&
+        parseFloat(size) < parseFloat(Util.transToByte("5GB"))
+      );
+    },
     max: 5,
   };
 
@@ -381,7 +386,7 @@
 
         if (upload) {
           const cover = document.querySelector(".video-cover").src;
-          Util115.handleUpload({ url: cover, filename: `${rename}.cover.jpg`, cid: file_id });
+          await Util115.handleUpload({ url: cover, filename: `${rename}.cover.jpg`, cid: file_id });
         }
 
         break;
@@ -475,7 +480,7 @@
         let title = "";
         let pc = "";
         let cid = "";
-        let className = "is-info";
+        let className = "";
 
         if (res.length) {
           const zhRes = res.filter(item => Util.zhReg.test(item.n));
