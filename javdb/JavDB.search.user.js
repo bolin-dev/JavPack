@@ -2,7 +2,7 @@
 // @name            JavDB.search
 // @namespace       JavDB.search@blc
 // @version         0.0.1
-// @description     快捷键搜索
+// @description     快捷搜索
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @grant           GM_openInTab
 // @author          blc
