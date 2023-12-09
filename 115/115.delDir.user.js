@@ -2,20 +2,20 @@
 // @name            115.delDir
 // @namespace       115.delDir@blc
 // @version         0.0.1
-// @description     播放页删除目录
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @grant           GM_addStyle
-// @grant           GM_xmlhttpRequest
-// @grant           window.close
 // @author          blc
+// @description     播放页删除目录
+// @match           https://v.anxia.com/*
+// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Req.lib.js
 // @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Req115.lib.js
 // @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Util115.lib.js
-// @match           https://v.anxia.com/*
-// @run-at          document-start
-// @connect         115.com
-// @connect         self
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
+// @connect         self
+// @connect         115.com
+// @run-at          document-start
+// @grant           GM_xmlhttpRequest
+// @grant           window.close
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -29,6 +29,7 @@
   GM_addStyle(
     "#x-del{background:rgb(175, 23, 0)}#js_common_mini-dialog{display:none !important}",
   );
+
   document.addEventListener("DOMContentLoaded", () => {
     document
       .querySelector(".vt-headline")
