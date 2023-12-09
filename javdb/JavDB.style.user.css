@@ -196,7 +196,7 @@ body {
 }
 
 .section-container {
-  grid-gap: var(--x-grid-gap, 0.5rem);
+  grid-gap: var(--x-grid-gap, 0.5rem) !important;
 
   & .box {
     padding: 0.75rem;
@@ -347,7 +347,7 @@ br + .title {
 }
 
 .actors {
-  grid-gap: var(--x-grid-gap, 0.5rem);
+  grid-gap: var(--x-grid-gap, 0.5rem) !important;
 
   & .box {
     margin-bottom: 0;
@@ -381,9 +381,17 @@ br + .title {
 }
 
 .movie-list .item .video-title {
+  display: -webkit-box;
+  height: calc(3em + 0.75rem);
   padding-top: 0.5rem;
+  padding-right: 0.5rem;
   padding-bottom: 0.25rem;
+  overflow: hidden;
   font-size: var(--x-title-size);
+  text-overflow: ellipsis;
+  white-space: normal;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .movie-list .item :is(.score, .meta) {
@@ -392,7 +400,7 @@ br + .title {
 }
 
 .movie-list {
-  grid-gap: var(--x-grid-gap, 0.5rem);
+  grid-gap: var(--x-grid-gap, 0.5rem) !important;
   padding-bottom: 0;
 
   & .box {
