@@ -61,7 +61,11 @@ class Req {
     for (const step of steps) {
       res = await this.request(res);
       if (!res) break;
-      if (step) res = step(res);
+
+      if (step) {
+        res = step(res);
+        if (!res) break;
+      }
     }
     return res;
   }
