@@ -1,4 +1,20 @@
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.organizeImports": "never"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 120,
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/node_modules": true
+  },
   "cSpell.words": [
     "accessid",
     "aliyuncs",
@@ -21,6 +37,7 @@
     "musume",
     "natsort",
     "ncensored",
+    "Neue",
     "pacopacomama",
     "pickcode",
     "pixhost",
@@ -31,8 +48,5 @@
     "vrlite",
     "vrsample",
     "xmlhttp"
-  ],
-  "files.exclude": {
-    "**/node_modules": true
-  }
+  ]
 }

@@ -1,0 +1,41 @@
+:root {
+  --x-red: rgb(255, 59, 48);
+  --x-orange: rgb(255, 149, 0);
+  --x-yellow: rgb(255, 204, 0);
+  --x-green: rgb(40, 205, 65);
+  --x-blue: rgb(0, 122, 255);
+  --x-purple: rgb(175, 82, 222);
+  --x-pink: rgb(255, 45, 85);
+  --x-gray: rgb(142, 142, 147);
+}
+
+:root[data-theme="dark"] {
+  --x-red: rgb(255, 69, 58);
+  --x-orange: rgb(255, 159, 10);
+  --x-yellow: rgb(255, 214, 10);
+  --x-green: rgb(50, 215, 75);
+  --x-blue: rgb(10, 132, 255);
+  --x-purple: rgb(191, 90, 242);
+  --x-pink: rgb(255, 55, 95);
+  --x-gray: rgb(152, 152, 157);
+}
+
+.tag {
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  background: var(--x-blue);
+  color: #fff;
+  border-color: rgba(0, 0, 0, 0);
+  border-radius: 980px;
+  font-size: 12px;
+  line-height: 1.33337;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  font-family: "SF Pro Text", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  border-style: solid;
+  border-width: 1px;
+  min-width: 25px;
+  padding: 3px 10px;
+}

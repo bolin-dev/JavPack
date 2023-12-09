@@ -1,35 +1,15 @@
-![JavPack](https://raw.githubusercontent.com/bolin-dev/JavPack/main/static/logo.png)
+![JavPack](https://s1.ax1x.com/2022/04/01/q5lzYn.png)
 
 # JavPack
 
-一些油猴脚本
+> 一些（最小化）油猴脚本
 
-## scripts
+## Scripts
 
-| JavDB 脚本                            | 说明         | 安装                                                                                             |
-| :------------------------------------ | :----------- | :----------------------------------------------------------------------------------------------- |
-| [JavDB.style](./javdb/style/)         | 样式调整     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/style/JavDB.style.user.js)         |
-| [JavDB.layout](./javdb/layout/)       | 布局调整     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/layout/JavDB.layout.user.js)       |
-| [JavDB.search](./javdb/search/)       | 快捷搜索     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/search/JavDB.search.user.js)       |
-| [JavDB.click](./javdb/click/)         | 新标签页打开 | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/click/JavDB.click.user.js)         |
-| [JavDB.scroll](./javdb/scroll/)       | 滚动加载     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/scroll/JavDB.scroll.user.js)       |
-| [JavDB.filter](./javdb/filter/)       | 影片筛选     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/filter/JavDB.filter.user.js)       |
-| [JavDB.preview](./javdb/preview/)     | 悬停预览     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/preview/JavDB.preview.user.js)     |
-| [JavDB.match](./javdb/match/)         | 列表匹配     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/match/JavDB.match.user.js)         |
-| [JavDB.nav](./javdb/nav/)             | 快捷导航     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/nav/JavDB.nav.user.js)             |
-| [JavDB.trailer](./javdb/trailer/)     | 预览片       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/trailer/JavDB.trailer.user.js)     |
-| [JavDB.thumbnail](./javdb/thumbnail/) | 缩略图       | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/thumbnail/JavDB.thumbnail.user.js) |
-| [JavDB.query](./javdb/query/)         | 网盘查询     | [Install](https://github.com/bolin-dev/JavPack/raw/main/javdb/query/JavDB.query.user.js)         |
+| 名称       | 功能             |   安装   |
+| :--------- | :--------------- | :------: |
+| 115.delDir | 在播放页删除目录 | [安装]() |
 
-| 115 脚本                        | 说明       | 安装                                                                                       |
-| :------------------------------ | :--------- | :----------------------------------------------------------------------------------------- |
-| [Drive.delete](./drive/delete/) | 播放页删除 | [Install](https://github.com/bolin-dev/JavPack/raw/main/drive/delete/Drive.delete.user.js) |
+## License
 
-## libs
-
-| 通用库                                 | 说明       |
-| :------------------------------------- | :--------- |
-| [JavPack.request](./libs/request/)     | 网络请求   |
-| [JavPack.trailer](./libs/trailer/)     | 获取预告片 |
-| [JavPack.thumbnail](./libs/thumbnail/) | 获取缩略图 |
-| [JavPack.drive](./libs/drive/)         | 网盘请求   |
+The GPL-3.0 License.

@@ -208,4 +208,13 @@ class Req115 extends Req {
       },
     });
   }
+
+  // 获取视频文件信息
+  static filesVideo(pickcode) {
+    return this.request({
+      url: "https://v.anxia.com/webapi/files/video",
+      params: { pickcode, local: 1 },
+      responseType: "json",
+    });
+  }
 }

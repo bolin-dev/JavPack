@@ -71,4 +71,9 @@ class Util115 extends Req115 {
     });
     return labels;
   }
+
+  // 删除视频文件夹
+  static delDirByPc(pc) {
+    return this.filesVideo(pc).then(({ parent_id }) => this.rbDelete([parent_id]));
+  }
 }
