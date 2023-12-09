@@ -1,22 +1,35 @@
-#navbar-menu-hero .navbar-start > .navbar-item:not(.has-dropdown),
+:root {
+  --x-avatar-ratio: 1;
+  --x-sprite-ratio: 4 / 3;
+  --x-thumb-ratio: 83 / 118;
+  --x-cover-ratio: 420 / 283;
+  --x-title-size: 0.875rem;
+  --x-sub-size: 0.75rem;
+}
+
 .sub-header,
+.actors + br,
+.actor-filter hr,
 .app-desktop-banner,
-.video-panel .message-body .top-meta {
+.video-panel .message-body .top-meta,
+#navbar-menu-hero .navbar-start > .navbar-item:not(.has-dropdown) {
   display: none !important;
 }
 
 html {
-  padding-bottom: 0 !important;
+  padding-block: 0 !important;
   overflow-y: auto;
 }
 
 body {
+  padding-top: 3.25rem;
   font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC",
     "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .navbar {
   padding: 0 0.25rem;
+  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%);
 
   &.is-black {
     background: rgb(22 22 23 / 80%) !important;
@@ -57,6 +70,10 @@ body {
   }
 }
 
+.section:has(.video-detail) {
+  padding-bottom: 0;
+}
+
 .columns:not(:last-child) {
   margin-bottom: 0.25rem;
 }
@@ -68,7 +85,7 @@ body {
 
 .column-video-cover a {
   display: block;
-  aspect-ratio: 420 / 283;
+  aspect-ratio: var(--x-cover-ratio);
 
   & img {
     width: 100%;
@@ -79,19 +96,20 @@ body {
   }
 }
 
+.preview-video-container::after,
 .column-video-cover .cover-container::after {
   height: 100%;
 }
 
 .movie-panel-info {
-  font-size: 0.875rem;
+  font-size: var(--x-title-size);
 
   & div.panel-block {
     padding: 0.5rem 0;
 
     & .copy-to-clipboard {
-      width: 21px;
-      height: 21px;
+      width: 1.25rem;
+      height: 1.25rem;
     }
   }
 }
@@ -115,7 +133,7 @@ body {
 }
 
 .preview-images :is(.preview-video-container, .tile-item) {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--x-sprite-ratio);
 
   & img {
     width: 100% !important;
@@ -123,10 +141,6 @@ body {
     object-fit: cover;
     vertical-align: middle;
   }
-}
-
-.preview-video-container::after {
-  height: 100%;
 }
 
 #tabs-container {
@@ -171,8 +185,8 @@ body {
 
   & .box {
     padding: 1rem;
-    margin-bottom: 0;
-    font-size: 0.875rem;
+    margin-bottom: 0 !important;
+    font-size: var(--x-title-size);
   }
 
   & a {
@@ -188,7 +202,7 @@ body {
     }
 
     & span {
-      font-size: 0.75rem;
+      font-size: var(--x-sub-size);
     }
   }
 }
@@ -200,6 +214,10 @@ body {
 
 :is(.title, .tabs, .box, .message):not(:last-child) {
   margin-bottom: 1rem;
+}
+
+.message-body {
+  padding: 1rem;
 }
 
 br + .title {
@@ -279,10 +297,6 @@ br + .title {
 
 .actor-filter {
   padding: 1rem;
-
-  & hr {
-    display: none;
-  }
 }
 
 .filter-slider {
@@ -314,16 +328,12 @@ br + .title {
 
   & .box {
     margin-bottom: 0;
-    font-size: 0.875rem;
-  }
-
-  & + br {
-    display: none;
+    font-size: var(--x-title-size);
   }
 }
 
 .actor-box a figure {
-  aspect-ratio: 1;
+  aspect-ratio: var(--x-avatar-ratio);
   overflow: hidden;
 }
 
@@ -337,7 +347,7 @@ br + .title {
 }
 
 .movie-list .item .cover {
-  aspect-ratio: 420 / 283;
+  aspect-ratio: var(--x-cover-ratio);
   padding-top: 0 !important;
 
   & img {
@@ -354,12 +364,12 @@ br + .title {
 .movie-list .item .video-title {
   padding-top: 0.5rem;
   padding-bottom: 0.25rem;
-  font-size: 0.875rem;
+  font-size: var(--x-title-size);
 }
 
 .movie-list .item :is(.score, .meta) {
   padding-bottom: 0.25rem;
-  font-size: 0.75rem;
+  font-size: var(--x-sub-size);
 }
 
 .movie-list {
@@ -383,7 +393,7 @@ br + .title {
   }
 
   &.v .item .cover {
-    aspect-ratio: 83 / 118;
+    aspect-ratio: var(--x-thumb-ratio);
 
     & img {
       object-fit: contain !important;
@@ -423,15 +433,15 @@ nav.pagination {
   color-scheme: dark;
   background-color: unset;
 
-  & :is(img, video) {
-    filter: brightness(0.95) contrast(0.95);
+  & #tags dt:last-child {
+    border-bottom: none !important;
   }
 
   & nav.pagination {
     border-top: none !important;
   }
 
-  & #tags dt:last-child {
-    border-bottom: none !important;
+  & :is(img, video) {
+    filter: brightness(0.95) contrast(0.95);
   }
 }
