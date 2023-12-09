@@ -86,6 +86,7 @@ body {
 .column-video-cover a {
   display: block;
   aspect-ratio: var(--x-cover-ratio);
+  background-color: #aa9084;
 
   & img {
     width: 100%;
@@ -172,8 +173,16 @@ body {
   }
 }
 
-.tile-small .tile-item img {
-  width: 100%;
+.tile-small .tile-item {
+  display: flex;
+  flex-direction: column;
+
+  & img {
+    flex: 1;
+    width: 100%;
+    object-fit: contain;
+    background-color: #aa9084;
+  }
 }
 
 .box {
@@ -432,6 +441,14 @@ nav.pagination {
 :root[data-theme="dark"] {
   color-scheme: dark;
   background-color: unset;
+
+  .column-video-cover a {
+    background-color: #222;
+  }
+
+  .tile-small .tile-item img {
+    background-color: #363636;
+  }
 
   & #tags dt:last-child {
     border-bottom: none !important;
