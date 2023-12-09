@@ -26,10 +26,17 @@
   const pc = searchParams.get("pickcode");
   if (!pc) return;
 
-  GM_addStyle("#js_common_mini-dialog{display:none !important;}#x-del{background:rgb(175, 23, 0)}");
+  GM_addStyle(
+    "#x-del{background:rgb(175, 23, 0)}#js_common_mini-dialog{display:none !important}",
+  );
   document.addEventListener("DOMContentLoaded", () => {
-    const htmlStr = '<a href="javascript:void(0);" class="btn-opendir" id="x-del">删除目录</a>';
-    document.querySelector(".vt-headline").insertAdjacentHTML("beforeend", htmlStr);
+    document
+      .querySelector(".vt-headline")
+      .insertAdjacentHTML(
+        "beforeend",
+        "<a href='javascript:void(0);' class='btn-opendir' id='x-del'>删除目录</a>",
+      );
+
     document.querySelector("#x-del").addEventListener("click", ({ target }) => {
       target.style.pointerEvents = "none";
       target.textContent = "请求中...";
