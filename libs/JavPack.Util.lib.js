@@ -7,24 +7,24 @@ class Util {
   static zhReg = /中字|字幕|中文字幕|-c|(?<![a-z])ch/i;
 
   static transToByteRules = [
-    { unit: /byte/i, trans: size => size },
+    { unit: /byte/i, trans: (size) => size },
 
-    { unit: /kb/i, trans: size => size * 1000 },
-    { unit: /mb/i, trans: size => size * 1000 ** 2 },
-    { unit: /gb/i, trans: size => size * 1000 ** 3 },
-    { unit: /tb/i, trans: size => size * 1000 ** 4 },
+    { unit: /kb/i, trans: (size) => size * 1000 },
+    { unit: /mb/i, trans: (size) => size * 1000 ** 2 },
+    { unit: /gb/i, trans: (size) => size * 1000 ** 3 },
+    { unit: /tb/i, trans: (size) => size * 1000 ** 4 },
 
-    { unit: /kib/i, trans: size => size * 1024 },
-    { unit: /mib/i, trans: size => size * 1024 ** 2 },
-    { unit: /gib/i, trans: size => size * 1024 ** 3 },
-    { unit: /tib/i, trans: size => size * 1024 ** 4 },
+    { unit: /kib/i, trans: (size) => size * 1024 },
+    { unit: /mib/i, trans: (size) => size * 1024 ** 2 },
+    { unit: /gib/i, trans: (size) => size * 1024 ** 3 },
+    { unit: /tib/i, trans: (size) => size * 1024 ** 4 },
   ];
 
   static upStore() {
     const date = new Date().getDate();
     if (GM_getValue("CD") === date) return;
 
-    GM_listValues().forEach(key => GM_deleteValue(key));
+    GM_listValues().forEach((key) => GM_deleteValue(key));
     GM_setValue("CD", date);
   }
 
@@ -45,7 +45,7 @@ class Util {
     return rule ? rule.trans(num).toFixed(2) : 0;
   }
 
-  static getImg = txt => (txt.includes("//") ? txt : GM_getResourceURL(txt));
+  static getImg = (txt) => (txt.includes("//") ? txt : GM_getResourceURL(txt));
 
   static notify(details) {
     if (typeof details === "string") details = { text: details };
@@ -70,11 +70,15 @@ class Util {
     const href = this.getImg(details.icon);
 
     const icons = document.querySelectorAll("link[rel*='icon']");
-    if (icons.length) return icons.forEach(item => item.setAttribute("href", href));
+    if (icons.length) {
+      return icons.forEach((item) => item.setAttribute("href", href));
+    }
     GM_addElement(document.head, "link", { rel: "icon", href });
   }
 
-  static openTab = (url, active = true) => GM_openInTab(url, { active, setParent: true });
+  static openTab = (url, active = true) => {
+    return GM_openInTab(url, { active, setParent: true });
+  };
 
   static magnetSort = (a, b) => {
     if (a.zh !== b.zh) return a.zh ? -1 : 1;

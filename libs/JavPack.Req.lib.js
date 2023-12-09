@@ -1,5 +1,7 @@
 class Req {
-  static isPlainObj = obj => Object.prototype.toString.call(obj) === "[object Object]";
+  static isPlainObj = (obj) => {
+    return Object.prototype.toString.call(obj) === "[object Object]";
+  };
 
   static request(details) {
     if (typeof details === "string") details = { url: details };
@@ -28,7 +30,9 @@ class Req {
           }
 
           if (this.isPlainObj(val)) {
-            for (const [k, v] of Object.entries(val)) formData.append(`${key}[${k}]`, v);
+            for (const [k, v] of Object.entries(val)) {
+              formData.append(`${key}[${k}]`, v);
+            }
             continue;
           }
 
@@ -41,7 +45,7 @@ class Req {
 
     if (details.method === "GET") details.responseType ??= "document";
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       GM_xmlhttpRequest({
         onload: ({ status, finalUrl, response }) => {
           if (status >= 400) resolve(false);

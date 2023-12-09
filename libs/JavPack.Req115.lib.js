@@ -1,5 +1,5 @@
 class Req115 extends Req {
-  // 获取文件列表
+  // Get file list
   static files(cid = "0", params = {}) {
     return this.request({
       url: "https://webapi.115.com/files",
@@ -32,7 +32,7 @@ class Req115 extends Req {
     });
   }
 
-  // 搜索文件
+  // Search for files
   static filesSearch(search_value, params = {}) {
     return this.request({
       url: "https://webapi.115.com/files/search",
@@ -54,7 +54,7 @@ class Req115 extends Req {
     });
   }
 
-  // 新建文件夹
+  // Create a new folder
   static filesAdd(cname, pid) {
     return this.request({
       method: "POST",
@@ -64,9 +64,9 @@ class Req115 extends Req {
   }
 
   /**
-   * 批量删除文件
-   * @param {string[]} fid 文件 id 数组
-   * @param {string} pid 父文件夹 id
+   * Bulk delete files
+   * @param {string[]} fid Array of file IDs
+   * @param {string} pid Parent folder ID
    */
   static rbDelete(fid, pid) {
     return this.request({
@@ -77,7 +77,7 @@ class Req115 extends Req {
   }
 
   /**
-   * 批量重命名文件
+   * Bulk rename files
    * @param {object} files_new_name { [fid]: rename }
    */
   static filesBatchRename(files_new_name) {
@@ -89,8 +89,8 @@ class Req115 extends Req {
   }
 
   /**
-   * 编辑文件标签
-   * @param {string} fid 文件 id
+   * Edit file tags
+   * @param {string} fid File ID
    * @param {string} file_label label_id,label_id
    */
   static filesEdit(fid, file_label) {
@@ -102,9 +102,9 @@ class Req115 extends Req {
   }
 
   /**
-   * 批量移动文件
-   * @param {string[]} fid 文件 id 数组
-   * @param {string} pid 目标文件夹 id
+   * Batch move files
+   * @param {string[]} fid Array of file IDs
+   * @param {string} pid Destination folder ID
    */
   static filesMove(fid, pid) {
     return this.request({
@@ -114,7 +114,7 @@ class Req115 extends Req {
     });
   }
 
-  // 获取离线空间信息
+  // Get offline space information
   static offlineSpace() {
     return this.request({
       url: "https://115.com/",
@@ -123,7 +123,7 @@ class Req115 extends Req {
     });
   }
 
-  // 获取离线配额
+  // Get offline quota
   static lixianGetQuotaPackageInfo() {
     return this.request({
       url: "https://115.com/web/lixian/",
@@ -132,7 +132,7 @@ class Req115 extends Req {
     });
   }
 
-  // 获取离线任务列表
+  // Get offline task list
   static lixianTaskLists() {
     return this.request({
       url: "https://115.com/web/lixian/",
@@ -141,7 +141,7 @@ class Req115 extends Req {
     });
   }
 
-  // 添加离线任务
+  // Add offline task
   static lixianAddTaskUrl(url, wp_path_id) {
     return this.request({
       method: "POST",
@@ -152,8 +152,8 @@ class Req115 extends Req {
   }
 
   /**
-   * 批量删除离线任务 & 源文件
-   * @param {string[]} hash info_hash 数组
+   * Bulk delete offline tasks and source files
+   * @param {string[]} hash Array of info_hashes
    */
   static lixianTaskDel(hash) {
     return this.request({
@@ -164,7 +164,7 @@ class Req115 extends Req {
     });
   }
 
-  // 获取标签列表
+  // Get tag list
   static labelList() {
     return this.request({
       url: "https://webapi.115.com/label/list",
@@ -173,7 +173,7 @@ class Req115 extends Req {
     });
   }
 
-  // 获取上传签名
+  // Get upload signature
   static sampleInitUpload({ filename, filesize, cid }) {
     return this.request({
       method: "POST",
@@ -182,7 +182,7 @@ class Req115 extends Req {
     });
   }
 
-  // 上传文件
+  // Upload file
   static upload({
     host: url,
     filename: name,
@@ -209,7 +209,7 @@ class Req115 extends Req {
     });
   }
 
-  // 获取视频文件信息
+  // Get video file information
   static filesVideo(pickcode) {
     return this.request({
       url: "https://v.anxia.com/webapi/files/video",
