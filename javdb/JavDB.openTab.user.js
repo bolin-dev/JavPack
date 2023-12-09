@@ -2,14 +2,14 @@
 // @name            JavDB.openTab
 // @namespace       JavDB.openTab@blc
 // @version         0.0.1
-// @description     新标签页打开
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @grant           GM_openInTab
 // @author          blc
-// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Util.lib.js
+// @description     新标签页打开
 // @include         /^https:\/\/javdb\.com\/(?!v\/)/
-// @run-at          document-start
+// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
+// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
+// @run-at          document-start
+// @grant           GM_openInTab
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
