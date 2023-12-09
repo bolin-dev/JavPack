@@ -37,7 +37,9 @@ body {
 
     &
       :is(
+        .navbar-brand > a.navbar-item:focus,
         .navbar-brand > a.navbar-item:hover,
+        .navbar-item.has-dropdown:focus .navbar-link,
         .navbar-item.has-dropdown:hover .navbar-link
       ) {
       background-color: unset !important;
