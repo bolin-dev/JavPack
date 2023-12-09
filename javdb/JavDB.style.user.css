@@ -189,13 +189,21 @@ body {
   transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
 }
 
+.actor-box .button {
+  margin-top: 0 !important;
+}
+
 .section-container {
   grid-gap: var(--x-grid-gap, 0.5rem);
 
   & .box {
-    padding: 1rem;
+    padding: 0.75rem;
     margin-bottom: 0 !important;
     font-size: var(--x-title-size);
+
+    & .button {
+      margin-top: 0.75rem;
+    }
   }
 
   & a {
@@ -213,6 +221,10 @@ body {
     & span {
       font-size: var(--x-sub-size);
     }
+  }
+
+  & > .column {
+    padding: 0;
   }
 }
 
@@ -349,10 +361,6 @@ br + .title {
 .actor-box a strong {
   padding: 0.5rem;
   line-height: normal;
-}
-
-.actor-box .button {
-  margin-top: 0 !important;
 }
 
 .movie-list .item .cover {
