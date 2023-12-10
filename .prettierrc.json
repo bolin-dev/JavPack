@@ -1,4 +1,4 @@
 {
-  "prettier.printWidth": 120,
-  "prettier.quoteProps": "consistent"
+  "printWidth": 120,
+  "quoteProps": "consistent"
 }
