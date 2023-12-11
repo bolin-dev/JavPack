@@ -4,7 +4,8 @@
 // @version         0.0.1
 // @author          blc
 // @description     快捷翻页
-// @include         /^https:\/\/javdb\.com\/(?!v\/)/
+// @match           https://javdb.com/*
+// @exclude         https://javdb.com/v/*
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
@@ -14,25 +15,23 @@
 // ==/UserScript==
 
 (function () {
+  const keyMap = {
+    ArrowLeft: "previous",
+    ArrowRight: "next",
+  };
+
   document.addEventListener("keyup", (e) => {
+    const action = keyMap[e.key];
+    if (!action) return;
+
     const active = document.activeElement;
     if (["INPUT", "TEXTAREA"].includes(active.nodeName)) return;
-
-    const target = active.closest("video") ?? active.closest("audio");
-    if (target) return;
-
-    if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    if (active.closest("video") ?? active.closest("audio")) return;
 
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
 
-    document
-      .querySelector(
-        `nav.pagination .pagination-${
-          e.key === "ArrowLeft" ? "previous" : "next"
-        }`,
-      )
-      ?.click();
+    document.querySelector(`nav.pagination .pagination-${action}`)?.click();
   });
 })();
