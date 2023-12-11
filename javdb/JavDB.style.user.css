@@ -5,6 +5,7 @@
   --x-cover-ratio: 420 / 283;
   --x-title-size: 0.875rem;
   --x-sub-size: 0.75rem;
+  --x-grid-gap: 0.5rem;
 }
 
 .sub-header,
@@ -23,13 +24,11 @@ html {
 
 body {
   padding-top: 3.25rem;
-  font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC",
-    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .navbar {
   padding: 0 0.25rem;
-  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%);
 
   &.is-black {
     background: rgb(22 22 23 / 80%) !important;
@@ -55,10 +54,10 @@ body {
   padding: 0.75rem;
 
   & .search-recent-keywords {
-    margin-inline: -0.375rem;
+    margin-inline: -0.5rem;
 
     & li {
-      padding: 0 0.375rem;
+      padding: 0 0.5rem;
     }
   }
 }
@@ -196,7 +195,7 @@ body {
 }
 
 .section-container {
-  grid-gap: var(--x-grid-gap, 0.5rem) !important;
+  grid-gap: var(--x-grid-gap);
 
   & .box {
     padding: 0.75rem;
@@ -282,16 +281,18 @@ br + .title {
     padding: 0.5rem 0 0;
     line-height: normal;
 
+    --x-line-height: 40px;
+
     &:last-child {
       border-bottom: none;
     }
 
     &.collapse {
       display: flex;
-      height: 41px;
+      height: calc(var(--x-line-height) + 1px);
 
       &:last-child {
-        height: 40px;
+        height: var(--x-line-height);
       }
     }
 
@@ -347,7 +348,7 @@ br + .title {
 }
 
 .actors {
-  grid-gap: var(--x-grid-gap, 0.5rem) !important;
+  grid-gap: var(--x-grid-gap);
 
   & .box {
     margin-bottom: 0;
@@ -400,7 +401,7 @@ br + .title {
 }
 
 .movie-list {
-  grid-gap: var(--x-grid-gap, 0.5rem) !important;
+  grid-gap: var(--x-grid-gap);
   padding-bottom: 0;
 
   & .box {
@@ -441,7 +442,7 @@ br + .title {
   }
 
   & .awards .movie-list {
-    margin-top: var(--x-grid-gap, 0.5rem) !important;
+    margin-top: 1rem !important;
     margin-bottom: 0 !important;
   }
 }
@@ -477,6 +478,6 @@ nav.pagination {
   }
 
   & :is(img, video) {
-    filter: brightness(0.95) contrast(0.95);
+    filter: brightness(0.92) contrast(0.92);
   }
 }
