@@ -12,7 +12,8 @@
     "Util115": true
   },
   "rules": {
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "no-param-reassign": "off"
   },
   "ignorePatterns": ["**/*.md"]
 }
