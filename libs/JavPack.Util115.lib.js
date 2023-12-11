@@ -1,13 +1,7 @@
 class Util115 extends Req115 {
   // Search for videos
   static videosSearch(search_value) {
-    return this.filesSearch(search_value, {
-      type: 4,
-      o: "user_ptime",
-      asc: 0,
-      star: "",
-      suffix: "",
-    });
+    return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
 
   // Get video list
@@ -18,9 +12,7 @@ class Util115 extends Req115 {
   // Get folder list
   static folders(cid) {
     return this.files(cid).then((res) => {
-      if (res?.data?.length) {
-        res.data = res.data.filter(({ pid }) => Boolean(pid));
-      }
+      if (res?.data?.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
       return res;
     });
   }
@@ -42,17 +34,21 @@ class Util115 extends Req115 {
 
   // Verify offline task
   static async verifyTask(info_hash, verifyFn, max_retry = 5) {
-    const { tasks } = await this.lixianTaskLists();
-    const { file_id } = tasks.find((task) => task.info_hash === info_hash);
-    if (!file_id) return this.verifyTask(info_hash, verifyFn, max_retry);
-
+    let file_id = "";
     let videos = [];
+
+    for (let index = 0; index < max_retry; index++) {
+      const { tasks } = await this.lixianTaskLists();
+      file_id = tasks.find((task) => task.info_hash === info_hash).file_id;
+      if (file_id) break;
+    }
+    if (!file_id) return { file_id, videos };
+
     for (let index = 0; index < max_retry; index++) {
       const { data } = await this.videos(file_id);
       videos = data.filter(verifyFn);
       if (videos.length) break;
     }
-
     return { file_id, videos };
   }
 
@@ -61,11 +57,7 @@ class Util115 extends Req115 {
     const file = await this.request({ url, responseType: "blob" });
     if (!file) return file;
 
-    const res = await this.sampleInitUpload({
-      cid,
-      filename,
-      filesize: file.size,
-    });
+    const res = await this.sampleInitUpload({ cid, filename, filesize: file.size });
     if (!res?.host) return res;
 
     return this.upload({ ...res, filename, file });
@@ -86,8 +78,6 @@ class Util115 extends Req115 {
 
   // Delete video folder
   static delDirByPc(pc) {
-    return this.filesVideo(pc).then(({ parent_id }) => {
-      return this.rbDelete([parent_id]);
-    });
+    return this.filesVideo(pc).then(({ parent_id }) => this.rbDelete([parent_id]));
   }
 }

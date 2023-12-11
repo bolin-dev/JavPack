@@ -1,7 +1,5 @@
 class Req {
-  static isPlainObj = (obj) => {
-    return Object.prototype.toString.call(obj) === "[object Object]";
-  };
+  static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
   static request(details) {
     if (typeof details === "string") details = { url: details };
@@ -30,9 +28,7 @@ class Req {
           }
 
           if (this.isPlainObj(val)) {
-            for (const [k, v] of Object.entries(val)) {
-              formData.append(`${key}[${k}]`, v);
-            }
+            for (const [k, v] of Object.entries(val)) formData.append(`${key}[${k}]`, v);
             continue;
           }
 
