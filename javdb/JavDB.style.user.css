@@ -132,6 +132,10 @@ body {
 .video-panel .tile-images {
   gap: 0.5rem;
   font-size: 0;
+
+  & .tile-item :is(.video-number, .video-title) {
+    font-size: var(--x-title-size);
+  }
 }
 
 .preview-images :is(.preview-video-container, .tile-item) {
