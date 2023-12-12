@@ -51,7 +51,7 @@
         <div class="modal-card">
           <header class="modal-card-head p-3">
             <p class="modal-card-title is-clipped">Quick Look</p>
-            <button class="delete" aria-label="close"></button>
+            <button class="button is-success is-small">访问页面</button>
           </header>
           <section class="modal-card-body p-3">Loading...</section>
         </div>
@@ -143,19 +143,23 @@
     if (details) return createDom(JSON.parse(details), trailer);
 
     Req.request(href).then((dom) => {
-      if (!dom) {
+      const _details = parseElem(dom);
+      if (!_details) {
         modalBody.innerHTML = "获取失败";
         return;
       }
 
-      const _details = parseElem(dom);
       localStorage.setItem(`details_${mid}`, JSON.stringify(_details));
       if (href === modal.dataset.href) createDom(_details, trailer);
     });
   }
 
   function parseElem(dom) {
-    const cover = dom.querySelector(".column-video-cover img").src;
+    if (!dom) return;
+
+    const cover = dom.querySelector(".column-video-cover img")?.src;
+    if (!cover) return;
+
     const trailer = dom.querySelector("#preview-video source")?.getAttribute("src");
 
     const info = [];
@@ -227,6 +231,7 @@
 
   modal.addEventListener("click", (e) => {
     const { target } = e;
+    if (target.classList.contains("is-success")) handleEnter(e);
     if (target.classList.contains("carousel-prev")) handleCarouselPrev();
     if (target.classList.contains("carousel-next")) handleCarouselNext();
     if (target.nodeName !== "A") return;
