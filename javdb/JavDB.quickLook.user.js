@@ -246,6 +246,7 @@
 
     if (!modalActive) {
       if (!videoPaused) video.pause();
+      video.blur();
       return;
     }
 
