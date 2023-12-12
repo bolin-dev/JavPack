@@ -20,9 +20,17 @@ class Util {
     { unit: /tib/i, trans: (size) => size * 1024 ** 4 },
   ];
 
+  static upLocal() {
+    const date = new Date().getDate();
+    if (localStorage.getItem("CD") === date.toString()) return;
+
+    localStorage.clear();
+    localStorage.setItem("CD", date);
+  }
+
   static upStore() {
     const date = new Date().getDate();
-    if (GM_getValue("CD") === date) return;
+    if (GM_getValue("CD") === date.toString()) return;
 
     GM_listValues().forEach((key) => GM_deleteValue(key));
     GM_setValue("CD", date);

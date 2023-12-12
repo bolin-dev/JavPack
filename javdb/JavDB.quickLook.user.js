@@ -21,6 +21,8 @@
 // ==/UserScript==
 
 (function () {
+  Util.upLocal();
+
   const selector = ".movie-list .item";
   if (!document.querySelector(selector)) return;
 
