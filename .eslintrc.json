@@ -9,7 +9,8 @@
     "Req": true,
     "Req115": true,
     "Util": true,
-    "Util115": true
+    "Util115": true,
+    "UtilTrailer": true
   },
   "rules": {
     "no-unused-vars": "warn",
