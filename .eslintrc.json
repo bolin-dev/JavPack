@@ -13,7 +13,7 @@
     "UtilTrailer": true
   },
   "rules": {
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util" }],
     "no-param-reassign": "off"
   },
   "ignorePatterns": ["**/*.md"]
