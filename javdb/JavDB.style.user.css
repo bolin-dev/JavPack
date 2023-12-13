@@ -27,6 +27,10 @@ body {
   font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.compensate-for-scrollbar {
+  margin-right: 0 !important;
+}
+
 .navbar {
   padding: 0 0.25rem;
 
