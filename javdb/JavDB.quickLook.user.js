@@ -181,7 +181,7 @@
     let innerHTML = '<div class="is-relative carousel-container"><div class="is-relative carousel">';
 
     const carousel = [];
-    const video = trailer ?? _trailer;
+    const video = trailer || _trailer;
     if (video) {
       carousel.push(`<video src="${video}" controls muted poster="${cover}" class="is-block"></video>`);
     } else {
