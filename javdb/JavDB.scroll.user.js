@@ -4,14 +4,15 @@
 // @version         0.0.1
 // @author          blc
 // @description     滚动加载
-// @include         /^https:\/\/javdb\.com\/(?!v\/)/
+// @match           https://javdb.com/*
+// @exclude         https://javdb.com/v/*
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
 // @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Req.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
-// @run-at          document-body
-// @grant           GM_xmlhttpRequest
+// @run-at          document-end
 // @grant           GM_addStyle
+// @grant           GM_xmlhttpRequest
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -29,28 +30,27 @@
   let nextUrl = document.querySelector(selector.pagination)?.href;
   if (!nextUrl) return;
 
-  GM_addStyle(
-    "nav.pagination{display:none}.x-indicator{padding-top:1rem;font-size:0.875rem;text-align:center}",
-  );
-
+  GM_addStyle("nav.pagination,#footer{display:none}");
   const loading = document.createElement("div");
-  loading.classList.add("x-indicator");
+  loading.setAttribute("class", "has-text-grey pt-4 has-text-centered");
   loading.textContent = "加载中...";
   container.insertAdjacentElement("afterend", loading);
 
-  const queryNext = (dom) => {
-    const url = dom.querySelector(selector.pagination)?.href;
-    const list = dom.querySelectorAll(`${selector.container} > :is(div, a)`);
-    return { url, list };
-  };
-
   const useCallback = () => {
+    let next = nextUrl;
     let isLoading = false;
+
+    const parseDom = (dom) => {
+      const url = dom.querySelector(selector.pagination)?.href;
+      const list = dom.querySelectorAll(`${selector.container} > :is(div, a)`);
+      return { url, list };
+    };
+
     return async (entries, observer) => {
       if (!entries[0].isIntersecting || isLoading) return;
 
       isLoading = true;
-      const { url, list } = await Req.tasks(nextUrl, [queryNext]);
+      const { url, list } = await Req.tasks(next, [parseDom]);
       isLoading = false;
 
       if (list?.length) container.append(...list);
@@ -60,12 +60,11 @@
         return observer.disconnect();
       }
 
-      nextUrl = url;
+      next = url;
     };
   };
 
   const callback = useCallback();
-
   const intersectionObserver = new IntersectionObserver(callback);
   intersectionObserver.observe(loading);
 })();
