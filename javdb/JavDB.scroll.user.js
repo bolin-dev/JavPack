@@ -41,19 +41,22 @@
     let isLoading = false;
 
     const parseDom = (dom) => {
-      const url = dom.querySelector(selector.pagination)?.href;
       const list = dom.querySelectorAll(`${selector.container} > :is(div, a)`);
-      return { url, list };
+      const url = dom.querySelector(selector.pagination)?.href;
+      return { list, url };
     };
 
     return async (entries, observer) => {
       if (!entries[0].isIntersecting || isLoading) return;
 
       isLoading = true;
-      const { url, list } = await Req.tasks(next, [parseDom]);
+      const { list, url } = await Req.tasks(next, [parseDom]);
       isLoading = false;
 
-      if (list?.length) container.append(...list);
+      if (list?.length) {
+        container.append(...list);
+        window.dispatchEvent(new CustomEvent("loadmore", { detail: list }));
+      }
 
       if (!url) {
         loading.textContent = "暂无更多";
