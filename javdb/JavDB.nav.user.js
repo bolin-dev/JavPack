@@ -25,8 +25,7 @@
     if (!action) return;
 
     const active = document.activeElement;
-    if (["INPUT", "TEXTAREA"].includes(active.nodeName)) return;
-    if (active.closest("video") ?? active.closest("audio")) return;
+    if (["INPUT", "TEXTAREA"].includes(active.nodeName) || active.closest("video")) return;
     if (document.querySelector(".modal.is-active")) return;
 
     e.preventDefault();
