@@ -93,7 +93,7 @@ body {
   aspect-ratio: var(--x-cover-ratio);
   background-color: #aa9084;
 
-  & img {
+  & :is(img, video) {
     width: 100%;
     height: 100%;
     object-fit: contain;
