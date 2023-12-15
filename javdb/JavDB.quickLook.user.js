@@ -29,21 +29,21 @@
   const genModal = () => {
     const modalId = "x-quicklook";
 
-    GM_addStyle(
-      `#${modalId} .modal-card-head{gap:.5rem}
-      #${modalId} .modal-card-title{flex:1;white-space:nowrap;text-overflow:ellipsis}
-      #${modalId} .carousel{aspect-ratio:420/283;background:#aa9084}
-      :root[data-theme=dark] #${modalId} .carousel{background:#222}
-      #${modalId} .carousel :is(img,video){position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
-      #${modalId} .carousel-container .btn{position:absolute;z-index:1;width:3rem;height:3rem;opacity:0;top:50%;transform:translateY(-50%);border-radius:50%;transition:all .3s cubic-bezier(0,0,.5,1);box-shadow:2px 4px 12px rgba(0,0,0,.08)}
-      #${modalId} .carousel-container:hover .btn{opacity:.75}
-      #${modalId} .carousel-container .btn:hover{opacity:1}
-      #${modalId} .carousel-container .btn.carousel-prev{left:1rem}
-      #${modalId} .carousel-container .btn.carousel-next{right:1rem}
-      #${modalId} .info-block{padding-top:.5rem}
-      #${modalId} .info-block:not(:last-child){border-bottom:1px solid #ededed;padding-bottom:.5rem}
-      :root[data-theme=dark] #${modalId} .info-block{border-color:#4a4a4a}`,
-    );
+    GM_addStyle(`
+    #${modalId} .modal-card-head{gap:.5rem}
+    #${modalId} .modal-card-title{flex:1;white-space:nowrap;text-overflow:ellipsis}
+    #${modalId} .carousel{aspect-ratio:420/283;background:#aa9084}
+    :root[data-theme=dark] #${modalId} .carousel{background:#222}
+    #${modalId} .carousel :is(img,video){position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
+    #${modalId} .carousel-container .btn{position:absolute;z-index:1;width:3rem;height:3rem;opacity:0;top:50%;transform:translateY(-50%);border-radius:50%;transition:all .3s cubic-bezier(0,0,.5,1);box-shadow:2px 4px 12px rgba(0,0,0,.08)}
+    #${modalId} .carousel-container:hover .btn{opacity:.75}
+    #${modalId} .carousel-container .btn:hover{opacity:1}
+    #${modalId} .carousel-container .btn.carousel-prev{left:1rem}
+    #${modalId} .carousel-container .btn.carousel-next{right:1rem}
+    #${modalId} .info-block{padding-top:.5rem}
+    #${modalId} .info-block:not(:last-child){border-bottom:1px solid #ededed;padding-bottom:.5rem}
+    :root[data-theme=dark] #${modalId} .info-block{border-color:#4a4a4a}
+    `);
     document.body.insertAdjacentHTML(
       "beforeend",
       `<div id="${modalId}" class="modal">
