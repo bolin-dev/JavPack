@@ -272,7 +272,7 @@
     };
     const observer = new MutationObserver(callback);
 
-    const options = { attributes: true, attributeFilter: ["class"], childList: true, subtree: true };
+    const options = { subtree: true, childList: true, attributeFilter: ["class"], characterData: false };
     observer.observe(modal, options);
   };
   obModal();
