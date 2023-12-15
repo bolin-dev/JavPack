@@ -12,9 +12,9 @@
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @run-at          document-end
-// @grant           GM_addStyle
-// @grant           GM_openInTab
 // @grant           GM_xmlhttpRequest
+// @grant           GM_openInTab
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
