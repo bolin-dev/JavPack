@@ -11,8 +11,8 @@
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @run-at          document-end
-// @grant           GM_addStyle
 // @grant           GM_xmlhttpRequest
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -20,17 +20,19 @@
 
 (function () {
   const selector = {
-    container: ":is(.movie-list, .actors, .section-container)",
+    container: ":is(.actors, .movie-list, .section-container)",
     pagination: "nav.pagination .pagination-next",
   };
 
   const container = document.querySelector(selector.container);
   if (!container) return;
 
-  let nextUrl = document.querySelector(selector.pagination)?.href;
+  const nextUrl = document.querySelector(selector.pagination)?.href;
   if (!nextUrl) return;
 
+  selector.list = `${selector.container} > :is(div, a)`;
   GM_addStyle("nav.pagination,#footer{display:none}");
+
   const loading = document.createElement("div");
   loading.setAttribute("class", "has-text-grey pt-4 has-text-centered");
   loading.textContent = "加载中...";
@@ -41,7 +43,7 @@
     let isLoading = false;
 
     const parseDom = (dom) => {
-      const list = dom.querySelectorAll(`${selector.container} > :is(div, a)`);
+      const list = dom.querySelectorAll(selector.list);
       const url = dom.querySelector(selector.pagination)?.href;
       return { list, url };
     };
