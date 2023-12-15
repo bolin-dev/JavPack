@@ -46,11 +46,22 @@
 
   function createVideo(src, poster) {
     const video = document.createElement("video");
+
     video.src = src;
     video.loop = false;
+    video.title = "";
     video.poster = poster;
     video.controls = true;
     video.volume = localStorage.getItem("volume") ?? 0.2;
+
+    video.addEventListener("keydown", (e) => {
+      if (e.key === "m") video.muted = !video.muted;
+    });
+
+    video.addEventListener("volumechange", ({ target }) => {
+      localStorage.setItem("volume", target.volume);
+    });
+
     return video;
   }
 
@@ -72,6 +83,7 @@
       }
 
       const resList = await Promise.allSettled(reqList.map((fn) => fn()));
+
       for (const { status, value } of resList) {
         if (status !== "fulfilled" || !value) continue;
         trailer = value;
@@ -86,23 +98,182 @@
     const video = createVideo(trailer, cover.src);
     cover.replaceWith(video);
 
-    video.addEventListener("volumechange", ({ target }) => localStorage.setItem("volume", target.volume));
-    container.addEventListener("click", (e) => {
+    return container.addEventListener("click", (e) => {
       if (e.target.closest(".play-button")) return;
 
       e.preventDefault();
       e.stopPropagation();
-      if (!video.paused) return video.pause();
 
+      video.style.zIndex = 11;
       video.focus();
       video.play();
     });
-
-    const btn = container.querySelector(".play-button");
-    if (!btn) return;
-
-    video.addEventListener("play", () => btn.classList.add("is-hidden"));
-    video.addEventListener("pause", () => btn.classList.remove("is-hidden"));
-    return;
   }
+
+  const selector = ".movie-list .cover";
+  if (!document.querySelector(selector)) return;
+
+  GM_addStyle(`
+  ${selector} video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;opacity:0;transition:opacity .2s ease-in-out;background:#000}
+  ${selector} video.fade-in{opacity:1}
+  `);
+
+  const interval = 300;
+  const sensitivity = 0;
+
+  let currElem = null;
+  let trackSpeedInterval = null;
+
+  let prevX = null;
+  let prevY = null;
+  let prevTime = null;
+
+  let lastX = null;
+  let lastY = null;
+  let lastTime = null;
+
+  const handleMouseover = (e) => {
+    if (currElem) return;
+
+    const target = e.target.closest(selector);
+    if (!target) return;
+
+    prevX = e.pageX;
+    prevY = e.pageY;
+    prevTime = Date.now();
+
+    currElem = target;
+    currElem.addEventListener("mousemove", handleMousemove);
+    trackSpeedInterval = setInterval(trackSpeed, interval);
+  };
+
+  const handleMousemove = (e) => {
+    lastX = e.pageX;
+    lastY = e.pageY;
+    lastTime = Date.now();
+  };
+
+  const trackSpeed = () => {
+    let speed;
+
+    if (!lastTime || lastTime === prevTime) {
+      speed = 0;
+    } else {
+      speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
+    }
+
+    if (speed <= sensitivity) {
+      onHover(currElem);
+    } else {
+      prevX = lastX;
+      prevY = lastY;
+      prevTime = Date.now();
+    }
+  };
+
+  const handleMouseout = ({ relatedTarget }) => {
+    if (!currElem) return;
+
+    while (relatedTarget) {
+      if (relatedTarget === currElem) return;
+      relatedTarget = relatedTarget.parentNode;
+    }
+
+    onLeave(currElem);
+    currElem = null;
+  };
+
+  document.addEventListener("mouseover", handleMouseover);
+  document.addEventListener("mouseout", handleMouseout);
+
+  const destroy = (elem) => {
+    elem.removeEventListener("mousemove", handleMousemove);
+    clearInterval(trackSpeedInterval);
+  };
+
+  const onHover = async (elem) => {
+    destroy(elem);
+
+    let { trailer, cover, mid, code } = elem.dataset;
+    if (trailer) return setPreview(elem, trailer, cover);
+
+    if (!cover || !mid || !code) {
+      const parentNode = elem.closest("a");
+
+      cover = parentNode.querySelector("img").src;
+      mid = parentNode.href.split("/").pop();
+      code = parentNode.querySelector(".video-title strong").textContent;
+
+      elem.dataset.cover = cover;
+      elem.dataset.mid = mid;
+      elem.dataset.code = code;
+    }
+
+    trailer = localStorage.getItem(`trailer_${mid}`);
+    if (trailer) {
+      elem.dataset.trailer = trailer;
+      return setPreview(elem, trailer, cover);
+    }
+
+    const reqList = [
+      () => UtilTrailer.javspyl(code),
+      () => UtilTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]),
+    ];
+    const resList = await Promise.allSettled(reqList.map((fn) => fn()));
+
+    for (const { status, value } of resList) {
+      if (status !== "fulfilled" || !value) continue;
+      trailer = value;
+      break;
+    }
+    if (!trailer) return;
+
+    if (trailer.trailer) trailer = trailer.trailer;
+
+    if (typeof trailer === "string") {
+      localStorage.setItem(`trailer_${mid}`, trailer);
+      elem.dataset.trailer = trailer;
+      if (elem === currElem) return setPreview(elem, trailer, cover);
+    }
+
+    const { isUncensored, studio } = trailer;
+    if (!isUncensored || !studio) return;
+
+    const guessStudio = UtilTrailer.useStudio();
+    trailer = await guessStudio(code, studio);
+    if (!trailer) return;
+
+    localStorage.setItem(`trailer_${mid}`, trailer);
+    elem.dataset.trailer = trailer;
+    if (elem === currElem) return setPreview(elem, trailer, cover);
+  };
+
+  const getDetails = (dom) => {
+    return {
+      trailer: getTrailer(dom),
+      isUncensored: isUncensored(dom),
+      studio: getStudio(dom),
+    };
+  };
+
+  const setPreview = (elem, trailer, cover) => {
+    const video = createVideo(trailer, cover);
+    elem.append(video);
+
+    video.focus();
+    setTimeout(() => {
+      video.classList.add("fade-in");
+      video.play();
+    }, 50);
+  };
+
+  const onLeave = (elem) => {
+    destroy(elem);
+
+    const video = elem.querySelector("video");
+    if (!video) return;
+
+    video.classList.remove("fade-in");
+    setTimeout(() => video.remove(), 200);
+  };
 })();
