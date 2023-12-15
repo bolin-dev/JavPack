@@ -28,6 +28,8 @@
 // ==/UserScript==
 
 (async function () {
+  Util.upLocal();
+
   function getTrailer(dom = document) {
     return dom.querySelector("#preview-video source")?.getAttribute("src");
   }
