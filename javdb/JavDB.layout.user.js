@@ -9,8 +9,8 @@
 // @resource        layout file:///Users/bolinc/Projects/JavPack/javdb/JavDB.layout.user.css
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
-// @grant           GM_addStyle
 // @grant           GM_getResourceText
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
