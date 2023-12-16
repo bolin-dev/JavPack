@@ -67,8 +67,9 @@
     return video;
   }
 
-  if (location.pathname.startsWith("/v/")) {
-    const mid = `trailer_${location.pathname.split("/").pop()}`;
+  const { pathname } = location;
+  if (pathname.startsWith("/v/")) {
+    const mid = `trailer_${pathname.split("/").pop()}`;
 
     let trailer = localStorage.getItem(mid);
     if (!trailer) trailer = getTrailer();
