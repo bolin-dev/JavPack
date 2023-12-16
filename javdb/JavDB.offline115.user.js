@@ -7,10 +7,10 @@
 // @match           https://javdb.com/v/*
 // @match           https://captchaapi.115.com/*
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Util.lib.js
-// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Req.lib.js
-// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Req115.lib.js
-// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Util115.lib.js
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util.lib.js
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req.lib.js
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req115.lib.js
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util115.lib.js
 // @resource        success https://s1.ax1x.com/2022/04/01/q5l2LD.png
 // @resource        error https://s1.ax1x.com/2022/04/01/q5lcQK.png
 // @resource        warn https://s1.ax1x.com/2022/04/01/q5lgsO.png

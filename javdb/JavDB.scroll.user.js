@@ -7,7 +7,7 @@
 // @match           https://javdb.com/*
 // @exclude         https://javdb.com/v/*
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @require         file:///Users/bolinc/Projects/JavPack/libs/JavPack.Req.lib.js
+// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @run-at          document-end
