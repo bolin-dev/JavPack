@@ -415,6 +415,7 @@ br + .title {
 
 .movie-list {
   grid-gap: var(--x-grid-gap);
+  align-items: start;
   padding-bottom: 0;
 
   & .box {
