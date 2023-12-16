@@ -120,7 +120,7 @@
   ${selector} video.fade-in{opacity:1}
   `);
 
-  const interval = 300;
+  const interval = 600;
   const sensitivity = 0;
 
   let currElem = null;
@@ -197,7 +197,7 @@
     destroy(elem);
 
     let { trailer, cover, mid, code } = elem.dataset;
-    if (trailer) return setPreview(elem, trailer, cover);
+    if (trailer) return setTrailer(elem, trailer, cover);
 
     if (!cover || !mid || !code) {
       const parentNode = elem.closest("a");
@@ -210,11 +210,12 @@
       elem.dataset.mid = mid;
       elem.dataset.code = code;
     }
+    const trailerMid = `trailer_${mid}`;
 
-    trailer = localStorage.getItem(`trailer_${mid}`);
+    trailer = localStorage.getItem(trailerMid);
     if (trailer) {
       elem.dataset.trailer = trailer;
-      return setPreview(elem, trailer, cover);
+      return setTrailer(elem, trailer, cover);
     }
 
     const reqList = [
@@ -233,9 +234,10 @@
     if (trailer.trailer) trailer = trailer.trailer;
 
     if (typeof trailer === "string") {
-      localStorage.setItem(`trailer_${mid}`, trailer);
+      localStorage.setItem(trailerMid, trailer);
       elem.dataset.trailer = trailer;
-      if (elem === currElem) return setPreview(elem, trailer, cover);
+      if (elem === currElem) setTrailer(elem, trailer, cover);
+      return;
     }
 
     const { isUncensored, studio } = trailer;
@@ -245,9 +247,9 @@
     trailer = await guessStudio(code, studio);
     if (!trailer) return;
 
-    localStorage.setItem(`trailer_${mid}`, trailer);
+    localStorage.setItem(trailerMid, trailer);
     elem.dataset.trailer = trailer;
-    if (elem === currElem) return setPreview(elem, trailer, cover);
+    if (elem === currElem) setTrailer(elem, trailer, cover);
   };
 
   const getDetails = (dom) => {
@@ -258,15 +260,20 @@
     };
   };
 
-  const setPreview = (elem, trailer, cover) => {
+  const setTrailer = (elem, trailer, cover) => {
     const video = createVideo(trailer, cover);
     elem.append(video);
 
+    video.muted = true;
     video.focus();
-    setTimeout(() => {
-      video.classList.add("fade-in");
-      video.play();
-    }, 50);
+    video.play();
+
+    const ctx = new AudioContext();
+    const canAutoPlay = ctx.state === "running";
+    ctx.close();
+
+    if (canAutoPlay) video.muted = false;
+    setTimeout(() => video.classList.add("fade-in"), 50);
   };
 
   const onLeave = (elem) => {
