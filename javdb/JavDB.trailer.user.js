@@ -120,7 +120,7 @@
   ${selector} video.fade-in{opacity:1}
   `);
 
-  const interval = 600;
+  const interval = 500;
   const sensitivity = 0;
 
   let currElem = null;
