@@ -19,6 +19,7 @@
 // @grant           GM_openInTab
 // @grant           GM_setValue
 // @grant           GM_getValue
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -53,7 +54,47 @@
     });
   };
 
-  if (location.pathname.startsWith("/v/")) return; // 详情页暂不处理
+  const { pathname } = location;
+  if (pathname.startsWith("/v/")) {
+    window.addEventListener("beforeunload", () => DriveChannel.postMessage(pathname.split("/").pop()));
+    handleClick();
+
+    GM_addStyle(
+      "#x-query a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}",
+    );
+
+    const infoNode = document.querySelector(".movie-panel-info");
+    infoNode.insertAdjacentHTML(
+      "beforeend",
+      "<div class='panel-block'><strong>资源:</strong>&nbsp;<span class='value' id='x-query'>查询中...</span></div>",
+    );
+    const queryNode = infoNode.querySelector("#x-query");
+
+    const code = infoNode.querySelector(".first-block .value").textContent;
+    const { codes, regex } = Util.codeParse(code);
+
+    return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
+      if (!state) {
+        queryNode.textContent = "查询失败";
+        return;
+      }
+
+      data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+      GM_setValue(code, data);
+
+      if (!data.length) {
+        queryNode.textContent = "暂无资源";
+        return;
+      }
+
+      queryNode.innerHTML = data
+        .map(
+          ({ pc, cid, t, n }) =>
+            `<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
+        )
+        .join("");
+    });
+  }
 
   const childList = document.querySelectorAll(".movie-list .item");
   if (!childList.length) return;
