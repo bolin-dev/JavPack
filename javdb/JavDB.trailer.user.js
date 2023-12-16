@@ -266,6 +266,7 @@
     elem.append(video);
 
     video.muted = true;
+    video.currentTime = 4;
     video.focus();
     video.play();
 
