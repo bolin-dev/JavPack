@@ -17,7 +17,7 @@
 
 (function () {
   const hiddenList = [];
-  const highlightList = [/\[[A-Z]+-\d+\]/];
+  const highlightList = [];
   if (!hiddenList.length && !highlightList.length) return;
 
   const nodeList = document.querySelectorAll(".movie-list .item");
