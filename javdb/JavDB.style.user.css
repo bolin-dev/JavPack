@@ -385,7 +385,7 @@ br + .title {
 
   & img {
     width: 100% !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   &:hover img {
@@ -442,7 +442,7 @@ br + .title {
     aspect-ratio: var(--x-thumb-ratio);
 
     & img {
-      object-fit: contain !important;
+      object-fit: cover !important;
     }
   }
 }
