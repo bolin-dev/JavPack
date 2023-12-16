@@ -10,7 +10,8 @@
     "Req115": true,
     "Util": true,
     "Util115": true,
-    "UtilTrailer": true
+    "UtilTrailer": true,
+    "UtilSprite": true
   },
   "rules": {
     "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util" }],
