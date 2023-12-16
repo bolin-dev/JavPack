@@ -6,7 +6,7 @@
 // @description     布局调整
 // @match           https://javdb.com/*
 // @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
-// @resource        layout file:///Users/bolinc/Projects/JavPack/javdb/JavDB.layout.user.css
+// @resource        layout https://raw.githubusercontent.com/bolin-dev/JavPack/main/javdb/JavDB.layout.user.css
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
 // @grant           GM_getResourceText
