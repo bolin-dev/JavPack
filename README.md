@@ -22,6 +22,26 @@
 | JavDB.sprite     | 雪碧图         | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.sprite.user.js)     |
 | JavDB.offline115 | 115 网盘离线   | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.offline115.user.js) |
 
+## 使用
+
+- JavDB.search
+
+  - 快捷键 `/` 选取搜索框
+  - 快捷键 `Ctrl` + `/` 搜索粘贴板首项
+
+- JavDB.nav
+
+  - 方向键左右翻页
+
+- JavDB.openTab
+
+  - 鼠标左键前台新标签页打开，右键后台新标签页
+
+- JavDB.quickLook
+
+  - 鼠标悬停后，空格键弹窗预览影片详情，再次键入空格 / `Esc` 以关闭弹窗
+  - 预览时键入 `Enter` 访问详情页
+
 ## 许可
 
 The GPL-3.0 License.
