@@ -26,7 +26,7 @@
   const pc = searchParams.get("pickcode");
   if (!pc) return;
 
-  GM_addStyle("#x-del{background:rgb(175, 23, 0)}#js_common_mini-dialog{display:none !important}");
+  GM_addStyle("#x-del{background:rgb(175,23,0)}#js_common_mini-dialog{display:none !important}");
 
   document.addEventListener("DOMContentLoaded", () => {
     const htmlStr = "<a href='javascript:void(0);' class='btn-opendir' id='x-del'>删除目录</a>";
