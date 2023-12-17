@@ -16,7 +16,7 @@ class Util {
 
   static upStore() {
     const date = new Date().getDate();
-    if (GM_getValue("CD") === date.toString()) return;
+    if (GM_getValue("CD") === date) return;
 
     GM_listValues().forEach((key) => GM_deleteValue(key));
     GM_setValue("CD", date);
