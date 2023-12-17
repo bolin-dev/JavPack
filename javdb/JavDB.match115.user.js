@@ -16,6 +16,7 @@
 // @grant           GM_xmlhttpRequest
 // @grant           GM_deleteValue
 // @grant           GM_listValues
+// @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           GM_setValue
 // @grant           GM_getValue
@@ -64,36 +65,42 @@
     );
 
     const infoNode = document.querySelector(".movie-panel-info");
+
     infoNode.insertAdjacentHTML(
       "beforeend",
       "<div class='panel-block'><strong>资源:</strong>&nbsp;<span class='value' id='x-query'>查询中...</span></div>",
     );
-    const queryNode = infoNode.querySelector("#x-query");
 
+    const queryNode = infoNode.querySelector("#x-query");
     const code = infoNode.querySelector(".first-block .value").textContent;
     const { codes, regex } = Util.codeParse(code);
 
-    return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
-      if (!state) {
-        queryNode.textContent = "查询失败";
-        return;
-      }
+    const matchCode = () => {
+      return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
+        if (!state) {
+          queryNode.textContent = "查询失败";
+          return;
+        }
 
-      data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
-      GM_setValue(code, data);
+        data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+        GM_setValue(code, data);
 
-      if (!data.length) {
-        queryNode.textContent = "暂无资源";
-        return;
-      }
+        if (!data.length) {
+          queryNode.textContent = "暂无资源";
+          return;
+        }
 
-      queryNode.innerHTML = data
-        .map(
-          ({ pc, cid, t, n }) =>
-            `<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
-        )
-        .join("");
-    });
+        queryNode.innerHTML = data
+          .map(
+            ({ pc, cid, t, n }) =>
+              `<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
+          )
+          .join("");
+      });
+    };
+
+    unsafeWindow.matchCode = matchCode;
+    return matchCode();
   }
 
   const childList = document.querySelectorAll(".movie-list .item");
@@ -108,7 +115,7 @@
 
     static async add(items) {
       items = this.handleBefore(items);
-      if (!items?.length) return;
+      if (!items.length) return;
 
       this.list.push(...items);
       if (this.lock || !this.list.length) return;
