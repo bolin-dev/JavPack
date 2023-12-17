@@ -279,6 +279,7 @@
       const { file_id, videos } = await Util115.verifyTask(info_hash, (item) => regex.test(item.n));
       if (!videos.length) {
         Util115.lixianTaskDel([info_hash]);
+        if (file_id) Util115.rbDelete([file_id], cid);
         res.code = 1;
         res.msg = "离线验证失败";
         continue;
