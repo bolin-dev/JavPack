@@ -38,6 +38,7 @@ class Util115 extends Req115 {
     let videos = [];
 
     for (let index = 0; index < max_retry; index++) {
+      await this.sleep();
       const { tasks } = await this.lixianTaskLists();
       file_id = tasks.find((task) => task.info_hash === info_hash).file_id;
       if (file_id) break;
@@ -45,6 +46,7 @@ class Util115 extends Req115 {
     if (!file_id) return { file_id, videos };
 
     for (let index = 0; index < max_retry; index++) {
+      await this.sleep();
       const { data } = await this.videos(file_id);
       videos = data.filter(verifyFn);
       if (videos.length) break;
@@ -79,5 +81,11 @@ class Util115 extends Req115 {
   // Delete video folder
   static delDirByPc(pc) {
     return this.filesVideo(pc).then(({ parent_id }) => this.rbDelete([parent_id]));
+  }
+
+  static sleep(s = 1) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, s * 1000);
+    });
   }
 }
