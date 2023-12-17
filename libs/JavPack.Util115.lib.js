@@ -33,7 +33,7 @@ class Util115 extends Req115 {
   }
 
   // Verify offline task
-  static async verifyTask(info_hash, verifyFn, max_retry = 5) {
+  static async verifyTask(info_hash, verifyFn, max_retry = 10) {
     let file_id = "";
     let videos = [];
 
