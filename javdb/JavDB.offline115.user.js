@@ -24,7 +24,7 @@
 // @grant           GM_getResourceURL
 // @grant           GM_xmlhttpRequest
 // @grant           GM_notification
-// @grant           GM_addElement
+// @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           window.close
 // @grant           GM_getValue
@@ -36,25 +36,24 @@
 // ==/UserScript==
 
 (function () {
+  if (location.host === "captchaapi.115.com") {
+    return document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
+      setTimeout(() => {
+        if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") !== -1) {
+          GM_setValue("VERIFY_STATUS", "verified");
+          window.close();
+        }
+      }, 300);
+    });
+  }
+
   const config = [
     { name: "云下载", desc: "下载到云下载" },
     { name: "番号", dir: "番号/${prefix}" },
     { name: "系列", dir: "系列/${series}" },
     { name: "片商", dir: "片商/${maker}" },
   ];
-
   if (!config.length) return;
-
-  if (location.host === "captchaapi.115.com") {
-    const verified = () => {
-      GM_setValue("VERIFY_STATUS", "verified");
-      window.close();
-    };
-
-    window.addEventListener("beforeunload", verified);
-    window.addEventListener("popstate", verified);
-    return;
-  }
 
   const transToByte = Util.useTransByte();
 
@@ -225,7 +224,7 @@
     if (res.code === 0) {
       Util.notify({ text: res.msg, icon: "success" });
       Util.setTabBar({ text: `${code} 离线成功`, icon: "success" });
-      location.reload();
+      unsafeWindow.matchCode();
       return offlineEnd();
     }
 
@@ -239,7 +238,7 @@
 
     if (GM_getValue("VERIFY_STATUS") !== "pending") {
       GM_setValue("VERIFY_STATUS", "pending");
-      Util.notify({ text: "离线验证中，请稍后", icon: "warn" });
+      Util.notify({ text: "网盘待验证", icon: "warn" });
       Util.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
@@ -309,6 +308,7 @@
       ...details,
       zh: zh ? "[中字]" : "",
       crack: crack ? "[破解]" : "",
+      create: new Date().toISOString().slice(0, 10),
     });
     if (!regex.test(rename)) rename = `${code} ${rename}`;
 
