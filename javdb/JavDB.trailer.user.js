@@ -287,4 +287,11 @@
     video.classList.remove("fade-in");
     setTimeout(() => video.remove(), 200);
   };
+
+  document.addEventListener("visibilitychange", () => {
+    if (!currElem) return;
+
+    onLeave(currElem);
+    currElem = null;
+  });
 })();
