@@ -18,6 +18,8 @@
 // @connect         115.com
 // @connect         aliyuncs.com
 // @connect         jdbstatic.com
+// @connect         pixhost.to
+// @connect         javstore.net
 // @run-at          document-end
 // @grant           GM_removeValueChangeListener
 // @grant           GM_addValueChangeListener
@@ -260,7 +262,7 @@
       rename = "${zh}${crack} ${code} ${title}",
       tags = ["genres", "actors"],
       clean = true,
-      upload = true,
+      upload = ["cover", "sprite"],
     } = action;
 
     for (let index = 0, { length } = magnets; index < length; index++) {
@@ -296,7 +298,7 @@
 
       if (clean) await handleClean(file_id);
 
-      if (upload) await handleUpload(file_id);
+      if (upload?.length) await handleUpload({ upload, file_id });
 
       break;
     }
@@ -364,11 +366,20 @@
     if (rm_fids.length) await Util115.rbDelete(rm_fids, file_id);
   }
 
-  function handleUpload(cid) {
-    return Util115.handleUpload({
-      url: document.querySelector(".video-cover").src,
-      filename: `${code}.cover.jpg`,
-      cid,
-    });
+  function handleUpload({ upload, file_id: cid }) {
+    const reqList = [];
+
+    if (upload.includes("cover")) {
+      let url = document.querySelector(".video-cover")?.src;
+      if (!url) url = document.querySelector(".column-video-cover video")?.poster;
+      reqList.push(() => Util115.handleUpload({ cid, url, filename: `${code}.cover.jpg` }));
+    }
+
+    if (upload.includes("sprite")) {
+      const url = localStorage.getItem(`sprite_${location.pathname.split("/").pop()}`);
+      if (url) reqList.push(() => Util115.handleUpload({ cid, url, filename: `${code}.sprite.jpg` }));
+    }
+
+    return Promise.allSettled(reqList.map((fn) => fn()));
   }
 })();
