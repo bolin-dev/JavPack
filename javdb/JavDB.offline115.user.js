@@ -262,7 +262,7 @@
       rename = "${zh}${crack} ${code} ${title}",
       tags = ["genres", "actors"],
       clean = true,
-      upload = ["cover", "sprite"],
+      upload = ["cover"],
     } = action;
 
     for (let index = 0, { length } = magnets; index < length; index++) {
