@@ -142,10 +142,7 @@
     }
 
     static handleFilter = ({ tag, code, prefix, regex }) => {
-      let res = GM_getValue(code);
-      if (res) return this.setTag(tag, res);
-
-      res = GM_getValue(prefix);
+      const res = GM_getValue(code) ?? GM_getValue(prefix);
       if (!res) return true;
 
       this.setTag(
