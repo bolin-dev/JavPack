@@ -55,7 +55,9 @@ class Util {
     };
   }
 
-  static getIcon = (txt) => (txt.includes("//") ? txt : GM_getResourceURL(txt));
+  static getIcon = (txt) => {
+    return txt.includes("//") ? txt : GM_getResourceURL(txt);
+  };
 
   static notify(details) {
     if (typeof details === "string") details = { text: details };
