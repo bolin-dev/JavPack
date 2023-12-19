@@ -42,11 +42,20 @@ class UtilSprite extends Req {
 
         let img = link.href;
         if (!img || img.includes(".mp4")) return;
-        if (regex.test(img)) return img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
+        if (regex.test(img)) {
+          img = img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
+          return { method: "HEAD", url: img };
+        }
 
         img = link.querySelector("img")?.src;
         if (!img || img.includes(".mp4")) return;
-        if (regex.test(img)) return img.replace(".th.", ".");
+        if (regex.test(img)) {
+          img = img.replace(".th.", ".");
+          return { method: "HEAD", url: img };
+        }
+      },
+      (finalUrl) => {
+        if (finalUrl) return finalUrl;
       },
     ]);
   }
