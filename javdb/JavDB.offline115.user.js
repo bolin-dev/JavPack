@@ -62,7 +62,7 @@
   const defaultMagnetOptions = {
     filter: ({ size }) => {
       const magnetSize = parseFloat(size);
-      return magnetSize > parseFloat(transToByte("200MB")) && magnetSize < parseFloat(transToByte("10GB"));
+      return magnetSize > parseFloat(transToByte("200MB")) && magnetSize < parseFloat(transToByte("15GB"));
     },
     max: 5,
   };
