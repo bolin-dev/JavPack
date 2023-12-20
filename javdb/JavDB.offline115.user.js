@@ -50,10 +50,10 @@
   }
 
   const config = [
-    { name: "云下载", desc: "下载到云下载" },
-    { name: "番号", dir: "番号/${prefix}" },
-    { name: "系列", dir: "系列/${series}" },
-    { name: "片商", dir: "片商/${maker}" },
+    { name: "云下载" },
+    { name: "番号", dir: "番号/${prefix}", color: "is-success" },
+    { name: "片商", dir: "片商/${maker}", color: "is-warning" },
+    { name: "系列", dir: "系列/${series}", color: "is-danger" },
   ];
   if (!config.length) return;
 
