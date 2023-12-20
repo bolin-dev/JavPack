@@ -55,7 +55,7 @@ class UtilSprite extends Req {
         }
       },
       (finalUrl) => {
-        if (finalUrl) return finalUrl;
+        if (!finalUrl.includes("removed.png")) return finalUrl;
       },
     ]);
   }
