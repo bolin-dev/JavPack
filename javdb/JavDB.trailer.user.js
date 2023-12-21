@@ -27,8 +27,10 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-(async function () {
+(function () {
   Util.upLocal();
+
+  const guessStudio = UtilTrailer.useStudio();
 
   function getTrailer(dom = document) {
     return dom.querySelector("#preview-video source")?.getAttribute("src");
@@ -70,47 +72,43 @@
   const { pathname } = location;
   if (pathname.startsWith("/v/")) {
     const mid = `trailer_${pathname.split("/").pop()}`;
-
-    let trailer = localStorage.getItem(mid);
-    if (!trailer) trailer = getTrailer();
-    if (!trailer) {
-      const code = document.querySelector(".first-block .value").textContent;
-      const reqList = [() => UtilTrailer.javspyl(code)];
-
-      if (isUncensored()) {
-        const studio = getStudio();
-        if (studio) {
-          const guessStudio = UtilTrailer.useStudio();
-          reqList.push(() => guessStudio(code, studio));
-        }
-      }
-
-      const resList = await Promise.allSettled(reqList.map((fn) => fn()));
-
-      for (const { status, value } of resList) {
-        if (status !== "fulfilled" || !value) continue;
-        trailer = value;
-        break;
-      }
-    }
-    if (!trailer) return;
-
-    localStorage.setItem(mid, trailer);
     const container = document.querySelector(".column-video-cover > a");
-    const cover = container.querySelector("img");
-    const video = createVideo(trailer, cover.src);
-    cover.replaceWith(video);
 
-    return container.addEventListener("click", (e) => {
-      if (e.target.closest(".play-button")) return;
+    const setTrailer = (trailer) => {
+      if (!trailer || container.querySelector("video")) return;
 
-      e.preventDefault();
-      e.stopPropagation();
+      localStorage.setItem(mid, trailer);
+      const cover = container.querySelector("img");
+      const video = createVideo(trailer, cover.src);
+      cover.replaceWith(video);
 
-      video.style.zIndex = 11;
-      video.focus();
-      video.play();
-    });
+      container.addEventListener("click", (e) => {
+        if (e.target.closest(".play-button")) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        video.style.zIndex = 11;
+        video.focus();
+        video.play();
+      });
+    };
+
+    let trailer = getTrailer();
+    if (trailer) return setTrailer(trailer);
+
+    trailer = localStorage.getItem(mid);
+    if (trailer) return setTrailer(trailer);
+
+    const code = document.querySelector(".first-block .value").textContent;
+    UtilTrailer.javspyl(code).then(setTrailer);
+
+    if (isUncensored()) {
+      const studio = getStudio();
+      if (studio) guessStudio(code, studio).then(setTrailer);
+    }
+
+    return;
   }
 
   const selector = ".movie-list .cover";
@@ -134,16 +132,6 @@
   let lastX = null;
   let lastY = null;
   let lastTime = null;
-
-  const isElementInViewport = (elem) => {
-    const rect = elem.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  };
 
   const handleMouseover = (e) => {
     if (currElem) return;
@@ -184,6 +172,16 @@
     }
   };
 
+  const isElementInViewport = (elem) => {
+    const rect = elem.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  };
+
   const handleMouseout = ({ relatedTarget }) => {
     if (!currElem) return;
 
@@ -208,7 +206,7 @@
     destroy(elem);
 
     let { trailer, cover, mid, code } = elem.dataset;
-    if (trailer) return setTrailer(elem, trailer, cover);
+    if (trailer) return setVideo(elem, trailer, cover);
 
     if (!cover || !mid || !code) {
       const parentNode = elem.closest("a");
@@ -221,46 +219,32 @@
       elem.dataset.mid = mid;
       elem.dataset.code = code;
     }
-    const trailerMid = `trailer_${mid}`;
 
+    const trailerMid = `trailer_${mid}`;
     trailer = localStorage.getItem(trailerMid);
+
     if (trailer) {
       elem.dataset.trailer = trailer;
-      return setTrailer(elem, trailer, cover);
+      return setVideo(elem, trailer, cover);
     }
 
-    const reqList = [
-      () => UtilTrailer.javspyl(code),
-      () => UtilTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]),
-    ];
-    const resList = await Promise.allSettled(reqList.map((fn) => fn()));
+    const setTrailer = (trailer) => {
+      if (!trailer || elem.querySelector("video")) return;
 
-    for (const { status, value } of resList) {
-      if (status !== "fulfilled" || !value) continue;
-      trailer = value;
-      break;
-    }
-    if (!trailer) return;
+      if (!elem.dataset.trailer) {
+        localStorage.setItem(trailerMid, trailer);
+        elem.dataset.trailer = trailer;
+      }
 
-    if (trailer.trailer) trailer = trailer.trailer;
+      if (elem === currElem) setVideo(elem, trailer, cover);
+    };
 
-    if (typeof trailer === "string") {
-      localStorage.setItem(trailerMid, trailer);
-      elem.dataset.trailer = trailer;
-      if (elem === currElem) setTrailer(elem, trailer, cover);
-      return;
-    }
+    UtilTrailer.javspyl(code).then(setTrailer);
 
-    const { isUncensored, studio } = trailer;
-    if (!isUncensored || !studio) return;
-
-    const guessStudio = UtilTrailer.useStudio();
-    trailer = await guessStudio(code, studio);
-    if (!trailer) return;
-
-    localStorage.setItem(trailerMid, trailer);
-    elem.dataset.trailer = trailer;
-    if (elem === currElem) setTrailer(elem, trailer, cover);
+    UtilTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
+      if (trailer) return setTrailer(trailer);
+      if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
+    });
   };
 
   const getDetails = (dom) => {
@@ -271,7 +255,7 @@
     };
   };
 
-  const setTrailer = (elem, trailer, cover) => {
+  const setVideo = (elem, trailer, cover) => {
     const video = createVideo(trailer, cover);
     elem.append(video);
 
@@ -299,6 +283,13 @@
   };
 
   document.addEventListener("visibilitychange", () => {
+    if (!currElem) return;
+
+    onLeave(currElem);
+    currElem = null;
+  });
+
+  window.addEventListener("blur", () => {
     if (!currElem) return;
 
     onLeave(currElem);
