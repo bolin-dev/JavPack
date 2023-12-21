@@ -20,41 +20,38 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-(async function () {
+(function () {
   Util.upLocal();
 
   const mid = `sprite_${location.pathname.split("/").pop()}`;
-  let sprite = localStorage.getItem(mid);
 
-  if (!sprite) {
-    const code = document.querySelector(".movie-panel-info .first-block .value").textContent;
-    const resList = await Promise.allSettled([UtilSprite.blogjav(code), UtilSprite.javstore(code)]);
+  const setSprite = (sprite) => {
+    if (!sprite || document.querySelector("#x-sprite")) return;
 
-    for (const { status, value } of resList) {
-      if (status !== "fulfilled" || !value) continue;
-      sprite = value;
-      break;
+    localStorage.setItem(mid, sprite);
+    const box = document.querySelector(".tile-images.preview-images");
+    const innerHTML = `<a class="tile-item" id="x-sprite" href="${sprite}" data-fancybox="gallery" data-caption="雪碧图"><img src="${sprite}" alt="雪碧图" loading="lazy"></a>`;
+
+    if (!box) {
+      const target = document.querySelector(".video-meta-panel");
+      return target.insertAdjacentHTML(
+        "afterend",
+        `<div class="columns"><div class="column"><article class="message video-panel"><div class="message-body"><div class="tile-images preview-images">${innerHTML}</div></div></article></div></div>`,
+      );
     }
-  }
-  if (!sprite) return;
 
-  localStorage.setItem(mid, sprite);
+    const item = box.querySelector(".tile-item");
+    if (item) {
+      item.insertAdjacentHTML("beforebegin", innerHTML);
+    } else {
+      box.insertAdjacentHTML("beforeend", innerHTML);
+    }
+  };
 
-  const innerHTML = `<a class="tile-item" href="${sprite}" data-fancybox="gallery" data-caption="雪碧图"><img src="${sprite}" alt="雪碧图" loading="lazy"></a>`;
-  const box = document.querySelector(".tile-images.preview-images");
+  const sprite = localStorage.getItem(mid);
+  if (sprite) return setSprite(sprite);
 
-  if (!box) {
-    const target = document.querySelector(".video-meta-panel");
-    return target.insertAdjacentHTML(
-      "afterend",
-      `<div class="columns"><div class="column"><article class="message video-panel"><div class="message-body"><div class="tile-images preview-images">${innerHTML}</div></div></article></div></div>`,
-    );
-  }
-
-  const item = box.querySelector(".tile-item");
-  if (item) {
-    item.insertAdjacentHTML("beforebegin", innerHTML);
-  } else {
-    box.insertAdjacentHTML("beforeend", innerHTML);
-  }
+  const code = document.querySelector(".movie-panel-info .first-block .value").textContent;
+  UtilSprite.blogjav(code).then(setSprite);
+  UtilSprite.javstore(code).then(setSprite);
 })();
