@@ -42,6 +42,23 @@
   - 鼠标悬停后，空格键弹窗预览影片详情，再次键入空格 / `Esc` 以关闭弹窗
   - 预览时键入 `Enter` 访问详情页
 
+- JavDB.offline115
+  - `config[].name` 按钮名称
+  - `config[].color` 按钮样式
+  - `config[].desc` 按钮描述
+  - `config[].type` 按钮类型
+  - `config[].match` 类型匹配
+  - `config[].exclude` 类型排除
+  - `config[].magnetOptions.filter` 磁链筛选
+  - `config[].magnetOptions.sort` 磁链排序
+  - `config[].magnetOptions.max` 磁链最大数
+  - `config[].dir` 离线路径
+  - `config[].verify` 离线验证次数
+  - `config[].rename` 离线重命名
+  - `config[].tags` 自动打标
+  - `config[].clean` 自动清理
+  - `config[].upload` 图片上传
+
 ## 许可
 
 The GPL-3.0 License.
