@@ -3,7 +3,7 @@ class Req {
 
   static request(details) {
     if (typeof details === "string") details = { url: details };
-    details = { method: "GET", timeout: 10000, ...details };
+    details = { method: "GET", timeout: 5000, ...details };
 
     if (details.params) {
       const url = new URL(details.url);
@@ -43,6 +43,7 @@ class Req {
 
     return new Promise((resolve) => {
       GM_xmlhttpRequest({
+        ontimeout: () => resolve(false),
         onload: ({ status, finalUrl, response }) => {
           if (status >= 400) resolve(false);
           if (details.method === "HEAD") resolve(finalUrl);
