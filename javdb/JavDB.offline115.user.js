@@ -51,11 +51,28 @@
 
   const config = [
     { name: "云下载" },
-    { name: "番号", dir: "番号/${prefix}", color: "is-success" },
-    { name: "片商", dir: "片商/${maker}", color: "is-warning" },
-    { name: "系列", dir: "系列/${series}", color: "is-danger" },
+    { name: "番号", dir: "番号/${prefix}" },
+    { name: "片商", dir: "片商/${maker}" },
+    { name: "系列", dir: "系列/${series}" },
+    {
+      type: "genres",
+      name: "${genre}",
+      dir: "类别/${genre}",
+      match: ["屁股", "連褲襪", "巨乳", "亂倫"],
+      color: "is-warning",
+    },
+    {
+      type: "actors",
+      name: "${actor}",
+      dir: "演员/${actor}",
+      exclude: ["♂"],
+      color: "is-danger",
+    },
   ];
   if (!config.length) return;
+
+  const zhText = "[中字]";
+  const crackText = "[破解]";
 
   const transToByte = Util.useTransByte();
 
@@ -103,36 +120,78 @@
       if (label === "發行:") details.publisher = value;
       if (label === "系列:") details.series = value;
       if (label === "類別:") details.genres = value.split(",").map((item) => item.trim());
-      if (label !== "演員:") return;
+      if (label !== "演員:" || value.includes("N/A")) return;
       details.actors = value
         .split("\n")
-        .map((item) => item.replace(/♀|♂/, "").trim())
+        .map((item) => item.trim())
         .filter(Boolean);
     });
 
     const { regex, prefix } = Util.codeParse(code);
-    return { infoNode, regex, prefix, code, title, ...details };
+    return { infoNode, regex, prefix, code, title, create: new Date().toISOString().slice(0, 10), ...details };
   }
+
+  const parseMagnets = (magnets, options) => {
+    if (defaultMagnetOptions) options = { ...defaultMagnetOptions, ...options };
+    if (options.filter) magnets = magnets.filter(options.filter);
+    if (options.sort) magnets = magnets.toSorted(options.sort);
+    if (options.max) magnets = magnets.slice(0, options.max);
+    return magnets;
+  };
+
+  const parseDir = (dir, details) => {
+    dir = typeof dir === "string" ? dir.split("/") : dir;
+    return dir.map((item) => {
+      const key = item.match(Util.varReg)?.[1];
+      if (!key) return item;
+      return details.hasOwnProperty(key) ? details[key].toString() : null;
+    });
+  };
 
   function getActions(config, details, magnets) {
     return config
-      .map(({ magnetOptions = {}, dir = "云下载", ...item }) => {
-        let _magnets = magnets;
-        if (defaultMagnetOptions) magnetOptions = { ...defaultMagnetOptions, ...magnetOptions };
-        if (magnetOptions.filter) _magnets = _magnets.filter(magnetOptions.filter);
-        if (magnetOptions.sort) _magnets = _magnets.toSorted(magnetOptions.sort);
-        if (magnetOptions.max) _magnets = _magnets.slice(0, magnetOptions.max);
+      .map(
+        ({
+          magnetOptions = {},
+          type = "plain",
+          dir = "云下载",
+          match = [],
+          exclude = [],
+          rename = "${zh}${crack} ${code} ${title}",
+          name,
+          ...item
+        }) => {
+          if (!name) return null;
 
-        let _dir = typeof dir === "string" ? dir.split("/") : dir;
-        _dir = _dir.map((item) => {
-          const key = item.match(Util.varReg)?.[1];
-          if (!key) return item;
-          return details.hasOwnProperty(key) ? details[key].toString() : null;
-        });
+          const _magnets = parseMagnets(magnets, magnetOptions);
+          if (!_magnets.length) return null;
 
-        return { magnets: _magnets, dir: _dir, ...item };
-      })
-      .filter(({ magnets, dir }) => magnets.length && dir.every(Boolean));
+          if (type === "plain") return { ...item, name, rename, dir: parseDir(dir, details), magnets: _magnets };
+
+          let classes = details[type];
+          if (!classes?.length) return null;
+
+          if (match.length) classes = classes.filter((item) => match.includes(item));
+          if (exclude.length) classes = classes.filter((item) => !exclude.includes(item));
+          if (!classes.length) return null;
+
+          const typeItemKey = type.slice(0, -1);
+          const typeItem = "${" + typeItemKey + "}";
+
+          return classes.map((cls) => {
+            cls = cls.replace(/♀|♂/, "").trim();
+            return {
+              ...item,
+              name: name.replaceAll(typeItem, cls),
+              rename: rename.replaceAll(typeItem, cls),
+              dir: parseDir(dir, { ...details, [typeItemKey]: cls }),
+              magnets: _magnets,
+            };
+          });
+        },
+      )
+      .flat()
+      .filter((item) => Boolean(item) && item.dir.every(Boolean));
   }
 
   function filterMagnets(magnets) {
@@ -258,12 +317,7 @@
   async function handleSmartOffline({ magnets, cid, action }) {
     const res = { code: 0, msg: "" };
 
-    const {
-      rename = "${zh}${crack} ${code} ${title}",
-      tags = ["genres", "actors"],
-      clean = true,
-      upload = ["cover"],
-    } = action;
+    const { verify = 10, rename, tags = ["genres", "actors"], clean = true, upload = ["cover"] } = action;
 
     for (let index = 0, { length } = magnets; index < length; index++) {
       const isLast = index === length - 1;
@@ -278,7 +332,7 @@
         break;
       }
 
-      const { file_id, videos } = await Util115.verifyTask(info_hash, (item) => regex.test(item.n));
+      const { file_id, videos } = await Util115.verifyTask(info_hash, (item) => regex.test(item.n), verify);
       if (!videos.length) {
         Util115.lixianTaskDel([info_hash]);
         if (file_id) Util115.rbDelete([file_id], cid);
@@ -298,7 +352,10 @@
 
       if (clean) await handleClean(file_id);
 
-      if (upload?.length) await handleUpload({ upload, file_id });
+      if (upload?.length) {
+        res.msg += "，上传图片中...";
+        handleUpload({ upload, file_id }).then(() => Util.notify({ text: "上传成功", icon: "success" }));
+      }
 
       break;
     }
@@ -309,11 +366,10 @@
   function handleRename({ rename, zh, crack, file_id, videos }) {
     rename = replaceVar(rename, {
       ...details,
-      zh: zh ? "[中字]" : "",
-      crack: crack ? "[破解]" : "",
-      create: new Date().toISOString().slice(0, 10),
+      zh: zh ? zhText : "",
+      crack: crack ? crackText : "",
     });
-    if (!regex.test(rename)) rename = `${code} ${rename}`;
+    if (!regex.test(rename)) rename = `${code} ${rename}`.trim();
 
     const renameObj = { [file_id]: rename };
 
@@ -347,7 +403,9 @@
       .filter(Boolean);
 
     Util115.matchLabels(tags).then((labels) => {
-      if (labels?.length) videos.forEach(({ fid }) => Util115.filesEdit(fid, labels.join(",")));
+      if (!labels?.length) return;
+      labels = labels.join(",");
+      videos.forEach(({ fid }) => Util115.filesEdit(fid, labels));
     });
   }
 
