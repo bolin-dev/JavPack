@@ -166,11 +166,46 @@ body {
   margin-bottom: 0;
 }
 
+#magnets-content {
+  max-height: calc(54px * 5);
+  overflow-y: overlay;
+}
+
 #magnets-content > .columns {
+  align-items: center;
   padding: 0;
   margin: 0;
 
-  & .buttons {
+  & br {
+    display: none;
+  }
+
+  & .magnet-name > * {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  & .magnet-name .name {
+    flex-shrink: 0;
+    width: 60%;
+  }
+
+  & .magnet-name :is(.meta, .tags) {
+    flex-shrink: 0;
+    width: 20%;
+  }
+
+  & .magnet-name .tags {
+    padding-top: 0;
+  }
+
+  & .date {
+    min-width: 120px;
+  }
+
+  & .buttons,
+  & .buttons button:last-child {
     margin-bottom: 0;
   }
 }
