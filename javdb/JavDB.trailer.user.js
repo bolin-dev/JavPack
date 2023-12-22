@@ -18,6 +18,7 @@
 // @connect         javspyl.tk
 // @connect         1pondo.tv
 // @connect         heyzo.com
+// @connect         jav.land
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
