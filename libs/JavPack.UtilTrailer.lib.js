@@ -78,4 +78,67 @@ class UtilTrailer extends Req {
       return trailer;
     };
   }
+
+  static javland(code) {
+    return this.tasks(`https://jav.land/tw/id_search.php?keys=${code}`, [
+      (dom) => {
+        const script = dom.body.querySelector("script").textContent;
+        const vid = script.match(/videoid\s=\s"(.*)";/)?.[1];
+        if (!vid) return;
+
+        return {
+          method: "POST",
+          url: "https://www.jav.land/ajax/ajax_get_play_sample.php",
+          data: { vid, action: "get" },
+        };
+      },
+      ({ videourl }) => {
+        const video = new DOMParser().parseFromString(videourl, "text/html");
+        return video.querySelector("source").getAttribute("src");
+      },
+    ]);
+  }
+
+  static dmmDVD(code) {
+    const href = "https://www.dmm.co.jp/mono/dvd/-";
+    const reqDetails = {
+      headers: { "accept-language": "ja-JP" },
+      cookie: "age_check_done=1",
+    };
+
+    return this.tasks(
+      {
+        url: `${href}/search/=/searchstr=${code}/`,
+        ...reqDetails,
+      },
+      [
+        (dom) => {
+          let url = dom.querySelector("#list li .tmb a")?.href;
+          if (!url) return;
+
+          url = new URL(url).pathname.split("/").filter(Boolean).pop();
+          return {
+            url: `${href}/detail/ajax-movie/=/${url}/`,
+            ...reqDetails,
+          };
+        },
+        (dom) => {
+          const url = dom.querySelector("#DMMSample_player_now")?.src;
+          return url ? { url, ...reqDetails } : null;
+        },
+        (dom) => {
+          const script = dom.querySelector("#dmmplayer + script")?.textContent;
+          if (!script) return;
+
+          let args = script.match(/args\s=\s(.*);/)?.[1];
+          if (!args) return;
+
+          args = JSON.parse(args);
+          const { bitrates = [], src } = args;
+
+          return bitrates.find((item) => item.bitrate === 1000)?.src ?? src;
+        },
+      ],
+    );
+  }
 }
