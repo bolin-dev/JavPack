@@ -26,6 +26,7 @@
 // @grant           GM_getResourceURL
 // @grant           GM_xmlhttpRequest
 // @grant           GM_notification
+// @grant           GM_addElement
 // @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           window.close
@@ -217,6 +218,11 @@
 
   const actions = getActions(config, details, magnets);
   if (!actions.length) return;
+
+  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_info.script.icon });
+  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("success") });
+  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("error") });
+  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("warn") });
 
   infoNode.insertAdjacentHTML(
     "beforeend",
