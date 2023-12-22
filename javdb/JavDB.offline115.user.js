@@ -171,8 +171,8 @@
           let classes = details[type];
           if (!classes?.length) return null;
 
-          if (match.length) classes = classes.filter((item) => match.includes(item));
-          if (exclude.length) classes = classes.filter((item) => !exclude.includes(item));
+          if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
+          if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
           if (!classes.length) return null;
 
           const typeItemKey = type.slice(0, -1);
