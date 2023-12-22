@@ -58,8 +58,17 @@
     video.controls = true;
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
+    const arrowTime = { ArrowLeft: -2.5, ArrowRight: 5 };
+
     video.addEventListener("keydown", (e) => {
       if (e.key === "m") video.muted = !video.muted;
+
+      const time = arrowTime[e.key];
+      if (!time) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      video.currentTime += time;
     });
 
     video.addEventListener("volumechange", ({ target }) => {
@@ -90,7 +99,7 @@
 
         video.style.zIndex = 11;
         video.focus();
-        video.play();
+        video.paused ? video.play() : video.pause();
       });
     };
 
@@ -106,6 +115,8 @@
     if (isUncensored()) {
       const studio = getStudio();
       if (studio) guessStudio(code, studio).then(setTrailer);
+    } else {
+      UtilTrailer.javland(code).then(setTrailer);
     }
 
     return;
@@ -241,6 +252,8 @@
 
     UtilTrailer.javspyl(code).then(setTrailer);
 
+    UtilTrailer.javland(code).then(setTrailer);
+
     UtilTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
       if (trailer) return setTrailer(trailer);
       if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
@@ -275,9 +288,10 @@
   const onLeave = (elem) => {
     destroy(elem);
 
-    const video = elem.querySelector("video");
+    const video = elem.querySelector("video") ?? document.querySelector(`${selector} video`);
     if (!video) return;
 
+    video.pause();
     video.classList.remove("fade-in");
     setTimeout(() => video.remove(), 200);
   };
