@@ -11,7 +11,8 @@
     "Util": true,
     "Util115": true,
     "UtilTrailer": true,
-    "UtilSprite": true
+    "UtilSprite": true,
+    "UtilMagnet": true
   },
   "rules": {
     "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util" }],
