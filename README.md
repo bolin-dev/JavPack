@@ -53,10 +53,11 @@
   - `config[].magnetOptions.sort` 磁链排序
   - `config[].magnetOptions.max` 磁链最大数
   - `config[].dir` 离线路径
-  - `config[].verify` 离线验证次数
+  - `config[].verifyOptions.max` 离线验证最大次数
+  - `config[].verifyOptions.clean` 离线验证失败清理
   - `config[].rename` 离线重命名
   - `config[].tags` 自动打标
-  - `config[].clean` 自动清理
+  - `config[].clean` 文件清理
   - `config[].upload` 图片上传
 
 ## 许可
