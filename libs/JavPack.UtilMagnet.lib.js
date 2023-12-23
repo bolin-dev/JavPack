@@ -33,11 +33,11 @@ class UtilMagnet extends Req {
       reqList.map((item) => this.request(`${host}/${item.getAttribute("href")}`)),
     );
 
-    const magnetReg = /(magnet:\?xt=urn:[a-z0-9]+:[a-z0-9]{32,40})/i;
+    const magnetReg = /((magnet:\?xt=urn:[a-z0-9]+:)?[a-z0-9]{32,40})/i;
     const sizeReg = /(\d+(\.\d+)?\s?[TGMK]+i?B?)/i;
-    const nameReg = /名称】：/;
+    const nameReg = /名称/;
 
-    return resList
+    const magnetList = resList
       .filter(({ status }) => status === "fulfilled")
       .map(({ value }) => {
         const params = value
@@ -46,18 +46,23 @@ class UtilMagnet extends Req {
           .map((item) => item.trim())
           .filter(Boolean);
 
-        const magnet = params.find((item) => magnetReg.test(item))?.match(magnetReg)[1];
+        let magnet = params.find((item) => magnetReg.test(item))?.match(magnetReg)[1];
         if (!magnet) return null;
+        if (!magnet.startsWith("magnet:")) magnet = `magnet:?xt=urn:btih:${magnet}`;
 
         return {
           magnet,
           size: params.find((item) => sizeReg.test(item))?.match(sizeReg)[1],
           name: params
             .find((item) => nameReg.test(item))
-            ?.split(nameReg)[1]
+            ?.split("：")[1]
             .trim(),
         };
       })
       .filter(Boolean);
+
+    return Array.from(new Set(magnetList.map((item) => item.magnet))).map((item) => {
+      return magnetList.find(({ magnet }) => magnet === item);
+    });
   }
 }
