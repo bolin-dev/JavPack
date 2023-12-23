@@ -85,6 +85,11 @@
     max: 5,
   };
 
+  const defaultVerifyOptions = {
+    clean: true,
+    max: 10,
+  };
+
   function getMagnets(dom = document) {
     return [...dom.querySelectorAll("#magnets-content > .item")]
       .map((item) => {
@@ -323,7 +328,8 @@
   async function handleSmartOffline({ magnets, cid, action }) {
     const res = { code: 0, msg: "" };
 
-    const { verify = 10, rename, tags = ["genres", "actors"], clean = true, upload = ["cover"] } = action;
+    let { verifyOptions = {}, rename, tags = ["genres", "actors"], clean = true, upload = ["cover"] } = action;
+    if (defaultVerifyOptions) verifyOptions = { ...defaultVerifyOptions, ...verifyOptions };
 
     for (let index = 0, { length } = magnets; index < length; index++) {
       const isLast = index === length - 1;
@@ -338,10 +344,12 @@
         break;
       }
 
-      const { file_id, videos } = await Util115.verifyTask(info_hash, (item) => regex.test(item.n), verify);
+      const { file_id, videos } = await Util115.verifyTask(info_hash, (item) => regex.test(item.n), verifyOptions.max);
       if (!videos.length) {
-        Util115.lixianTaskDel([info_hash]);
-        if (file_id) Util115.rbDelete([file_id], cid);
+        if (verifyOptions.clean) {
+          Util115.lixianTaskDel([info_hash]);
+          if (file_id) Util115.rbDelete([file_id], cid);
+        }
         res.code = 1;
         res.msg = "离线验证失败";
         continue;
