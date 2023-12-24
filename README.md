@@ -43,6 +43,11 @@
   - 预览时键入 `Enter` 访问详情页
 
 - JavDB.offline115
+
+  ```
+  注：用于下载的目录需设置为时间排序，且各目录可单独设置排序
+  ```
+
   - `config[].name` 按钮名称
   - `config[].color` 按钮样式
   - `config[].desc` 按钮描述
