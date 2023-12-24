@@ -4,7 +4,7 @@ class Util {
   static numReg = /\d+\.\d+|\d+/;
   static varReg = /^\$\{(.*?)\}$/;
   static varRep = /\${([^}]+)}/g;
-  static zhReg = /中字|字幕|中文字幕|-c|(?<![a-z])ch/i;
+  static zhReg = /中字|字幕|中文字幕|-c|.+(?<![a-z])ch/i;
 
   static upLocal() {
     const date = new Date().getDate();
