@@ -167,7 +167,7 @@ body {
 }
 
 #magnets-content {
-  max-height: calc(54px * 5);
+  max-height: calc(54px * 10);
   overflow-y: overlay;
 }
 
