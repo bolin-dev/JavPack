@@ -148,5 +148,5 @@
     Util.openTab(`${btdigHost}/${hash}`);
   });
 
-  unsafeWindow.updateActions?.();
+  unsafeWindow.updateMagnets?.();
 })();
