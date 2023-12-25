@@ -112,21 +112,17 @@
     .map(({ url, name, meta, zh, crack, hd, date }, idx) => {
       const odd = !(idx % 2) ? " odd" : "";
       const hash = url.split(":").pop();
+      zh = zh ? '<span class="tag is-warning is-small is-light">字幕</span>' : "";
+      crack = crack ? '<span class="tag is-info is-small is-light">破解</span>' : "";
+      hd = hd ? '<span class="tag is-primary is-small is-light">高清</span>' : "";
+
       return `
       <div class="item columns is-desktop${odd}">
         <div class="magnet-name column is-four-fifths">
-          <a
-            href="${url}"
-            data-url="${btdigHost}/${hash}"
-            title="右键点击跳转以查看链接详情"
-          >
+          <a href="${url}" data-hash="${hash}" title="右键点击跳转以查看链接详情">
             <span class="name">${name}</span><br>
             <span class="meta">${meta}</span><br>
-            <div class="tags">
-              ${zh ? '<span class="tag is-warning is-small is-light">字幕</span>' : ""}
-              ${crack ? '<span class="tag is-info is-small is-light">破解</span>' : ""}
-              ${hd ? '<span class="tag is-primary is-small is-light">高清</span>' : ""}
-            </div>
+            <div class="tags">${zh}${crack}${hd}</div>
           </a>
         </div>
         <div class="date column"><span class="time">${date}</span></div>
@@ -143,11 +139,11 @@
     const target = e.target.closest("a");
     if (!target) return;
 
-    const { url } = target.dataset;
-    if (!url) return;
+    const { hash } = target.dataset;
+    if (!hash) return;
 
     e.preventDefault();
     e.stopPropagation();
-    Util.openTab(url);
+    Util.openTab(`${btdigHost}/${hash}`);
   });
 })();
