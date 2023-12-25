@@ -15,11 +15,11 @@
 // @resource        error https://s1.ax1x.com/2022/04/01/q5lcQK.png
 // @resource        warn https://s1.ax1x.com/2022/04/01/q5lgsO.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @connect         115.com
-// @connect         aliyuncs.com
 // @connect         jdbstatic.com
-// @connect         pixhost.to
 // @connect         javstore.net
+// @connect         aliyuncs.com
+// @connect         pixhost.to
+// @connect         115.com
 // @run-at          document-end
 // @grant           GM_removeValueChangeListener
 // @grant           GM_addValueChangeListener
@@ -77,12 +77,14 @@
 
   const transToByte = Util.useTransByte();
 
+  const minMagnetSize = parseFloat(transToByte("200MB"));
+  const maxMagnetSize = parseFloat(transToByte("15GB"));
   const defaultMagnetOptions = {
     filter: ({ size }) => {
       const magnetSize = parseFloat(size);
-      return magnetSize > parseFloat(transToByte("200MB")) && magnetSize < parseFloat(transToByte("15GB"));
+      return magnetSize > minMagnetSize && magnetSize < maxMagnetSize;
     },
-    max: 5,
+    max: 10,
   };
 
   const defaultVerifyOptions = {
@@ -161,65 +163,57 @@
 
   function getActions(config, details, magnets) {
     return config
-      .map(
-        (
-          {
-            magnetOptions = {},
-            type = "plain",
-            dir = "云下载",
-            match = [],
-            exclude = [],
-            rename = "${zh}${crack} ${code} ${title}",
-            name,
-            ...item
-          },
-          index,
-        ) => {
-          if (!name) return null;
+      .map(({ magnetOptions = {}, type = "plain", match = [], exclude = [], ...item }, index) => {
+        const { color = "is-info", name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
+        if (!name) return null;
 
-          const _magnets = parseMagnets(magnets, magnetOptions);
-          if (!_magnets.length) return null;
+        const _magnets = parseMagnets(magnets, magnetOptions);
+        if (!_magnets.length) return null;
 
-          if (type === "plain") {
-            return {
-              ...item,
-              name: parseVar(name, details),
-              rename,
-              dir: parseDir(dir, details),
-              magnets: _magnets,
-              index,
-              idx: 0,
-            };
-          }
+        if (type === "plain") {
+          return {
+            ...item,
+            color,
+            name: parseVar(name, details),
+            magnets: _magnets,
+            dir: parseDir(dir, details),
+            rename,
+            index,
+            idx: 0,
+          };
+        }
 
-          let classes = details[type];
-          if (!classes?.length) return null;
+        let classes = details[type];
+        if (!classes?.length) return null;
 
-          if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
-          if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
-          if (!classes.length) return null;
+        if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
+        if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
+        if (!classes.length) return null;
 
-          const typeItemKey = type.slice(0, -1);
-          const typeItemTxt = "${" + typeItemKey + "}";
+        const typeItemKey = type.slice(0, -1);
+        const typeItemTxt = "${" + typeItemKey + "}";
 
-          return classes.map((cls, idx) => {
-            cls = cls.replace(/♀|♂/, "").trim();
-            const _details = { ...details, [typeItemKey]: cls };
+        return classes.map((cls, idx) => {
+          cls = cls.replace(/♀|♂/, "").trim();
+          const _details = { ...details, [typeItemKey]: cls };
 
-            return {
-              ...item,
-              name: parseVar(name, _details),
-              rename: rename.replaceAll(typeItemTxt, cls),
-              dir: parseDir(dir, _details),
-              magnets: _magnets,
-              index,
-              idx,
-            };
-          });
-        },
-      )
+          return {
+            ...item,
+            color,
+            name: parseVar(name, _details),
+            magnets: _magnets,
+            dir: parseDir(dir, _details),
+            rename: rename.replaceAll(typeItemTxt, cls),
+            index,
+            idx,
+          };
+        });
+      })
       .flat()
-      .filter((item) => Boolean(item) && item.dir.every(Boolean));
+      .filter((item) => Boolean(item) && item.dir.every(Boolean))
+      .map(({ desc, ...item }) => {
+        return { ...item, desc: desc ?? item.dir.join(" / ") };
+      });
   }
 
   GM_addElement(document.head, "link", { rel: "prefetch", href: GM_info.script.icon });
@@ -239,8 +233,7 @@
         <div class="column">
           <div id="x-offline" class="buttons are-small">
           ${actions
-            .map(({ name, desc, color = "is-info", dir, index, idx }) => {
-              desc ??= dir.join(" / ");
+            .map(({ color, index, idx, desc, name }) => {
               return `
               <button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}">
                 ${name}
@@ -253,6 +246,40 @@
     </div>`,
   );
   const offlineNode = infoNode.querySelector("#x-offline");
+
+  unsafeWindow.updateMagnets = () => {
+    const _magnets = getMagnets();
+    if (_magnets.length === magnets.length) return;
+
+    const _actions = getActions(config, details, _magnets);
+    if (!_actions.length) return;
+
+    const disabled = offlineNode.querySelector("button.is-loading") ? "disabled" : "";
+
+    _actions.forEach((item) => {
+      const { color, index, idx, desc, name } = item;
+      const _index = actions.findIndex((ac) => ac.index === index && ac.idx === idx);
+
+      if (_index !== -1) {
+        actions[_index].magnets = item.magnets;
+      } else {
+        actions.push(item);
+
+        offlineNode.insertAdjacentHTML(
+          "beforeend",
+          `<button
+            class="button ${color}"
+            data-index="${index}"
+            data-idx="${idx}"
+            title="${desc}"
+            ${disabled}
+          >
+            ${name}
+          </button>`,
+        );
+      }
+    });
+  };
 
   offlineNode.addEventListener("click", (e) => offlineStart(e.target));
 
