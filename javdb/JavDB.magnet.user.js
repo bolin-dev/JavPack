@@ -13,6 +13,7 @@
 // @connect         btdig.com
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
+// @grant           unsafeWindow
 // @grant           GM_openInTab
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
@@ -146,4 +147,6 @@
     e.stopPropagation();
     Util.openTab(`${btdigHost}/${hash}`);
   });
+
+  unsafeWindow.updateActions();
 })();
