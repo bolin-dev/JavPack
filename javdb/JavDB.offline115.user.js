@@ -51,10 +51,24 @@
   }
 
   const config = [
-    { name: "云下载" },
-    { name: "番号", dir: "番号/${prefix}" },
-    { name: "片商", dir: "片商/${maker}" },
-    { name: "系列", dir: "系列/${series}" },
+    {
+      name: "云下载",
+      color: "is-primary",
+    },
+    {
+      name: "${prefix}",
+      dir: "番号/${prefix}",
+      color: "is-link",
+    },
+    {
+      name: "片商",
+      dir: "片商/${maker}",
+    },
+    {
+      name: "系列",
+      dir: "系列/${series}",
+      color: "is-success",
+    },
     {
       type: "genres",
       name: "${genre}",
