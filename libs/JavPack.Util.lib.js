@@ -2,8 +2,8 @@ class Util {
   static sepReg = /-|_/;
   static crackReg = /破解/i;
   static numReg = /\d+\.\d+|\d+/;
-  static varReg = /^\$\{(.*?)\}$/;
-  static varRep = /\${([^}]+)}/g;
+  static varReg = /\$\{([a-z]+)\}/;
+  static varRep = /\$\{([a-z]+)\}/g;
   static zhReg = /中字|字幕|中文字幕|-c|.+(?<![a-z])ch/i;
 
   static upLocal() {
