@@ -6,7 +6,7 @@
 // @description     影片筛选
 // @match           https://javdb.com/*
 // @exclude         https://javdb.com/v/*
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
+// @icon            https://javdb.com/favicon.ico
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-end
 // @grant           GM_addStyle

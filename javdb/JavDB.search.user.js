@@ -5,7 +5,7 @@
 // @author          blc
 // @description     快捷搜索
 // @match           https://javdb.com/*
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
+// @icon            https://javdb.com/favicon.ico
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start

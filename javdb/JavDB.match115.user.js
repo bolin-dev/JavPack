@@ -5,7 +5,7 @@
 // @author          blc
 // @description     115 网盘匹配
 // @match           https://javdb.com/*
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
+// @icon            https://javdb.com/favicon.ico
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util.lib.js
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req.lib.js
 // @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req115.lib.js

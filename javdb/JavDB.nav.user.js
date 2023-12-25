@@ -6,7 +6,7 @@
 // @description     快捷翻页
 // @match           https://javdb.com/*
 // @exclude         https://javdb.com/v/*
-// @icon            https://s1.ax1x.com/2022/04/01/q5lzYn.png
+// @icon            https://javdb.com/favicon.ico
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
 // @license         GPL-3.0-only
