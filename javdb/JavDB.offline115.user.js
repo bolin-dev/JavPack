@@ -157,22 +157,27 @@
   function getActions(config, details, magnets) {
     return config
       .map(
-        ({
-          magnetOptions = {},
-          type = "plain",
-          dir = "云下载",
-          match = [],
-          exclude = [],
-          rename = "${zh}${crack} ${code} ${title}",
-          name,
-          ...item
-        }) => {
+        (
+          {
+            magnetOptions = {},
+            type = "plain",
+            dir = "云下载",
+            match = [],
+            exclude = [],
+            rename = "${zh}${crack} ${code} ${title}",
+            name,
+            ...item
+          },
+          index,
+        ) => {
           if (!name) return null;
 
           const _magnets = parseMagnets(magnets, magnetOptions);
           if (!_magnets.length) return null;
 
-          if (type === "plain") return { ...item, name, rename, dir: parseDir(dir, details), magnets: _magnets };
+          if (type === "plain") {
+            return { ...item, name, rename, dir: parseDir(dir, details), magnets: _magnets, index, idx: 0 };
+          }
 
           let classes = details[type];
           if (!classes?.length) return null;
@@ -184,7 +189,7 @@
           const typeItemKey = type.slice(0, -1);
           const typeItem = "${" + typeItemKey + "}";
 
-          return classes.map((cls) => {
+          return classes.map((cls, idx) => {
             cls = cls.replace(/♀|♂/, "").trim();
             return {
               ...item,
@@ -192,6 +197,8 @@
               rename: rename.replaceAll(typeItem, cls),
               dir: parseDir(dir, { ...details, [typeItemKey]: cls }),
               magnets: _magnets,
+              index,
+              idx,
             };
           });
         },
@@ -236,9 +243,12 @@
         <div class="column">
           <div id="x-offline" class="buttons are-small">
           ${actions
-            .map(({ name, desc, color = "is-info", dir }, idx) => {
+            .map(({ name, desc, color = "is-info", dir, index, idx }) => {
               desc ??= dir.join(" / ");
-              return `<button id="x-offline-idx${idx}" class="button ${color}" title="${desc}">${name}</button>`;
+              return `
+              <button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}">
+                ${name}
+              </button>`;
             })
             .join("")}
           </div>
@@ -246,21 +256,20 @@
       </div>
     </div>`,
   );
-  const offlineNode = infoNode.querySelector("#x-offline");
-  const offlineBtns = offlineNode.querySelectorAll("button");
 
   const offlineEnd = () => {
-    offlineBtns.forEach((btn) => {
+    infoNode.querySelectorAll("#x-offline button").forEach((btn) => {
       btn.classList.remove("is-loading");
       btn.disabled = false;
     });
   };
 
   const offlineStart = async (target, currIdx = 0) => {
-    if (!target.classList.contains("button")) return;
+    const offlineNode = target.closest("#x-offline");
+    if (!offlineNode || !target.classList.contains("button")) return;
 
     target.classList.add("is-loading");
-    offlineBtns.forEach((item) => {
+    offlineNode.querySelectorAll("button").forEach((item) => {
       item.disabled = true;
     });
 
@@ -270,8 +279,9 @@
       return offlineEnd();
     }
 
-    const idx = target.id.replace("x-offline-idx", "");
-    let { magnets, cid, dir, ...action } = actions[idx];
+    const { index, idx } = target.dataset;
+    const _index = actions.findIndex((item) => item.index === Number(index) && item.idx === Number(idx));
+    let { magnets, cid, dir, ...action } = actions[_index];
 
     magnets = await filterMagnets(magnets.slice(currIdx, surplus));
     if (!magnets.length) {
@@ -287,7 +297,7 @@
         return offlineEnd();
       }
 
-      actions[idx].cid = cid;
+      actions[_index].cid = cid;
     }
 
     Util.setTabBar(`${code} 离线任务中...`);
@@ -323,7 +333,7 @@
     });
   };
 
-  offlineNode.addEventListener("click", (e) => offlineStart(e.target));
+  infoNode.addEventListener("click", (e) => offlineStart(e.target));
 
   async function handleSmartOffline({ magnets, cid, action }) {
     const res = { code: 0, msg: "" };
