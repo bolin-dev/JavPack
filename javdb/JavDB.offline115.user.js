@@ -417,7 +417,7 @@
 
       if (upload?.length) {
         res.msg += "，上传图片中...";
-        handleUpload({ upload, file_id }).then(() => Util.notify({ text: "上传结束", icon: "success" }));
+        handleUpload({ upload, file_id }).then(() => Util.notify({ text: "上传结束", icon: "success", tag: "upload" }));
       }
 
       break;
