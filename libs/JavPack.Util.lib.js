@@ -61,15 +61,17 @@ class Util {
 
   static notify(details) {
     if (typeof details === "string") details = { text: details };
-    details = { icon: GM_info.script.icon, ...details };
+    const { tag, icon } = details;
+    const { name: defaultTitle, namespace: defaultTag, icon: defaultIcon } = GM_info.script;
+
+    details.tag = tag ? `${defaultTag}:${tag}` : defaultTag;
+    details.image = icon ? this.getIcon(icon) : defaultIcon;
 
     GM_notification({
       silent: true,
       timeout: 3000,
       highlight: false,
-      title: GM_info.script.name,
-      tag: GM_info.script.namespace,
-      image: this.getIcon(details.icon),
+      title: defaultTitle,
       ...details,
     });
   }
