@@ -72,8 +72,8 @@
   ];
   if (!config.length) return;
 
-  const zhText = "[中字]";
-  const crackText = "[破解]";
+  const zhTxt = "[中字]";
+  const crackTxt = "[破解]";
 
   const transToByte = Util.useTransByte();
 
@@ -89,20 +89,6 @@
     clean: true,
     max: 10,
   };
-
-  function getMagnets(dom = document) {
-    return [...dom.querySelectorAll("#magnets-content > .item")]
-      .map((item) => {
-        const name = item.querySelector(".name")?.textContent ?? "";
-        return {
-          crack: Util.crackReg.test(name),
-          url: item.querySelector(".magnet-name a").href.split("&")[0],
-          zh: !!item.querySelector(".tag.is-warning") || Util.zhReg.test(name),
-          size: transToByte((item.querySelector(".meta")?.textContent ?? "").split(",")[0].trim()),
-        };
-      })
-      .toSorted(Util.magnetSort);
-  }
 
   function getDetails(dom = document) {
     const infoNode = dom.querySelector(".movie-panel-info");
@@ -137,21 +123,40 @@
     return { infoNode, regex, prefix, code, title, create: new Date().toISOString().slice(0, 10), ...details };
   }
 
+  function getMagnets(dom = document) {
+    return [...dom.querySelectorAll("#magnets-content > .item")]
+      .map((item) => {
+        const name = item.querySelector(".name")?.textContent ?? "";
+        return {
+          crack: Util.crackReg.test(name),
+          url: item.querySelector(".magnet-name a").href.split("&")[0],
+          zh: !!item.querySelector(".tag.is-warning") || Util.zhReg.test(name),
+          size: transToByte((item.querySelector(".meta")?.textContent ?? "").split(",")[0].trim()),
+        };
+      })
+      .toSorted(Util.magnetSort);
+  }
+
+  const parseVar = (txt, params) => {
+    return txt.replace(Util.varRep, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : "")).trim();
+  };
+
+  const parseDir = (dir, params) => {
+    dir = typeof dir === "string" ? dir.split("/") : dir;
+    return dir.map((item) => {
+      const vars = item.match(Util.varRep);
+      if (!vars?.length) return item.trim();
+      if (!vars.every((key) => params.hasOwnProperty(key.match(Util.varReg)[1]))) return null;
+      return parseVar(item, params);
+    });
+  };
+
   const parseMagnets = (magnets, options) => {
     if (defaultMagnetOptions) options = { ...defaultMagnetOptions, ...options };
     if (options.filter) magnets = magnets.filter(options.filter);
     if (options.sort) magnets = magnets.toSorted(options.sort);
     if (options.max) magnets = magnets.slice(0, options.max);
     return magnets;
-  };
-
-  const parseDir = (dir, details) => {
-    dir = typeof dir === "string" ? dir.split("/") : dir;
-    return dir.map((item) => {
-      const key = item.match(Util.varReg)?.[1];
-      if (!key) return item;
-      return details.hasOwnProperty(key) ? details[key].toString() : null;
-    });
   };
 
   function getActions(config, details, magnets) {
@@ -176,7 +181,15 @@
           if (!_magnets.length) return null;
 
           if (type === "plain") {
-            return { ...item, name, rename, dir: parseDir(dir, details), magnets: _magnets, index, idx: 0 };
+            return {
+              ...item,
+              name: parseVar(name, details),
+              rename,
+              dir: parseDir(dir, details),
+              magnets: _magnets,
+              index,
+              idx: 0,
+            };
           }
 
           let classes = details[type];
@@ -187,15 +200,17 @@
           if (!classes.length) return null;
 
           const typeItemKey = type.slice(0, -1);
-          const typeItem = "${" + typeItemKey + "}";
+          const typeItemTxt = "${" + typeItemKey + "}";
 
           return classes.map((cls, idx) => {
             cls = cls.replace(/♀|♂/, "").trim();
+            const _details = { ...details, [typeItemKey]: cls };
+
             return {
               ...item,
-              name: name.replaceAll(typeItem, cls),
-              rename: rename.replaceAll(typeItem, cls),
-              dir: parseDir(dir, { ...details, [typeItemKey]: cls }),
+              name: parseVar(name, _details),
+              rename: rename.replaceAll(typeItemTxt, cls),
+              dir: parseDir(dir, _details),
               magnets: _magnets,
               index,
               idx,
@@ -207,34 +222,15 @@
       .filter((item) => Boolean(item) && item.dir.every(Boolean));
   }
 
-  function filterMagnets(magnets) {
-    return Util115.offlineSpace().then(({ size }) => {
-      const spaceSize = parseFloat(transToByte(size));
-      return magnets.filter((item) => parseFloat(item.size) <= spaceSize);
-    });
-  }
-
-  function replaceVar(txt, params) {
-    return txt
-      .replace(Util.varRep, (_, key) => {
-        return params.hasOwnProperty(key) ? params[key].toString() : "";
-      })
-      .trim();
-  }
-
-  const magnets = getMagnets();
-  if (!magnets.length) return;
-
-  const { infoNode, regex, ...details } = getDetails();
-  const { code } = details;
-
-  const actions = getActions(config, details, magnets);
-  if (!actions.length) return;
-
   GM_addElement(document.head, "link", { rel: "prefetch", href: GM_info.script.icon });
   GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("success") });
   GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("error") });
   GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("warn") });
+
+  const { infoNode, regex, ...details } = getDetails();
+  const { code } = details;
+  const magnets = getMagnets();
+  const actions = getActions(config, details, magnets);
 
   infoNode.insertAdjacentHTML(
     "beforeend",
@@ -256,17 +252,12 @@
       </div>
     </div>`,
   );
+  const offlineNode = infoNode.querySelector("#x-offline");
 
-  const offlineEnd = () => {
-    infoNode.querySelectorAll("#x-offline button").forEach((btn) => {
-      btn.classList.remove("is-loading");
-      btn.disabled = false;
-    });
-  };
+  offlineNode.addEventListener("click", (e) => offlineStart(e.target));
 
   const offlineStart = async (target, currIdx = 0) => {
-    const offlineNode = target.closest("#x-offline");
-    if (!offlineNode || !target.classList.contains("button")) return;
+    if (!target.classList.contains("button")) return;
 
     target.classList.add("is-loading");
     offlineNode.querySelectorAll("button").forEach((item) => {
@@ -333,7 +324,14 @@
     });
   };
 
-  infoNode.addEventListener("click", (e) => offlineStart(e.target));
+  function filterMagnets(magnets) {
+    return Util115.offlineSpace().then(({ size }) => {
+      const spaceSize = parseFloat(transToByte(size));
+      return magnets.filter((item) => parseFloat(item.size) <= spaceSize);
+    });
+  }
+
+  const verifyFile = (file) => regex.test(file.n);
 
   async function handleSmartOffline({ magnets, cid, action }) {
     const res = { code: 0, msg: "" };
@@ -354,7 +352,7 @@
         break;
       }
 
-      const { file_id, videos } = await Util115.verifyTask(info_hash, (item) => regex.test(item.n), verifyOptions.max);
+      const { file_id, videos } = await Util115.verifyTask(info_hash, verifyFile, verifyOptions.max);
       if (!videos.length) {
         if (verifyOptions.clean) {
           Util115.lixianTaskDel([info_hash]);
@@ -378,7 +376,7 @@
 
       if (upload?.length) {
         res.msg += "，上传图片中...";
-        handleUpload({ upload, file_id }).then(() => Util.notify({ text: "上传成功", icon: "success" }));
+        handleUpload({ upload, file_id }).then(() => Util.notify({ text: "上传结束", icon: "success" }));
       }
 
       break;
@@ -388,10 +386,10 @@
   }
 
   function handleRename({ rename, zh, crack, file_id, videos }) {
-    rename = replaceVar(rename, {
+    rename = parseVar(rename, {
       ...details,
-      zh: zh ? zhText : "",
-      crack: crack ? crackText : "",
+      zh: zh ? zhTxt : "",
+      crack: crack ? crackTxt : "",
     });
     if (!regex.test(rename)) rename = `${code} ${rename}`.trim();
 
@@ -464,4 +462,11 @@
 
     return Promise.allSettled(reqList.map((fn) => fn()));
   }
+
+  const offlineEnd = () => {
+    offlineNode.querySelectorAll("button").forEach((item) => {
+      item.classList.remove("is-loading");
+      item.disabled = false;
+    });
+  };
 })();
