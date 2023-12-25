@@ -1,68 +1,26 @@
 class UtilMagnet extends Req {
-  static async sehuatang(code) {
-    const host = "https://sehuatang.org";
-    const search = `${host}/search.php`;
-
-    const reqList = await this.tasks(search, [
+  static btdig(code) {
+    const spaceReg = /\s/g;
+    return this.tasks(`https://btdig.com/search?q=${code}`, [
       (dom) => {
-        const form = dom.querySelector(".searchform");
-        if (!form) return;
+        const resList = dom.querySelectorAll(".one_result");
+        if (!resList.length) return;
 
-        return {
-          method: "POST",
-          url: search,
-          params: { mod: "forum" },
-          data: {
-            formhash: form.querySelector('input[name="formhash"]').value,
-            searchsubmit: "yes",
-            srchtxt: code,
-          },
-          responseType: "document",
-        };
-      },
-      (dom) => {
-        return [...dom.querySelectorAll("#threadlist .pbw .xs3 a")].filter(({ textContent }) => {
-          return textContent.toUpperCase().includes(code);
-        });
+        return [...resList]
+          .map((item) => {
+            const name = item.querySelector(".torrent_name").textContent;
+            if (!name.toUpperCase().includes(code.toUpperCase())) return null;
+
+            return {
+              name,
+              url: item.querySelector(".torrent_magnet a").href,
+              size: item.querySelector(".torrent_size").textContent.replace(spaceReg, ""),
+              files: item.querySelector(".torrent_files")?.textContent ?? "1",
+              date: item.querySelector(".torrent_age").textContent,
+            };
+          })
+          .filter(Boolean);
       },
     ]);
-
-    if (!reqList?.length) return;
-
-    const resList = await Promise.allSettled(
-      reqList.map((item) => this.request(`${host}/${item.getAttribute("href")}`)),
-    );
-
-    const magnetReg = /((magnet:\?xt=urn:[a-z0-9]+:)?[a-z0-9]{32,40})/i;
-    const sizeReg = /(\d+(\.\d+)?\s?[TGMK]+i?B?)/i;
-    const nameReg = /名称/;
-
-    const magnetList = resList
-      .filter(({ status }) => status === "fulfilled")
-      .map(({ value }) => {
-        const params = value
-          .querySelector("#postlist > div[id] .t_f")
-          .textContent.split("\n")
-          .map((item) => item.trim())
-          .filter(Boolean);
-
-        let magnet = params.find((item) => magnetReg.test(item))?.match(magnetReg)[1];
-        if (!magnet) return null;
-        if (!magnet.startsWith("magnet:")) magnet = `magnet:?xt=urn:btih:${magnet}`;
-
-        return {
-          magnet,
-          size: params.find((item) => sizeReg.test(item))?.match(sizeReg)[1],
-          name: params
-            .find((item) => nameReg.test(item))
-            ?.split("：")[1]
-            .trim(),
-        };
-      })
-      .filter(Boolean);
-
-    return Array.from(new Set(magnetList.map((item) => item.magnet))).map((item) => {
-      return magnetList.find(({ magnet }) => magnet === item);
-    });
   }
 }
