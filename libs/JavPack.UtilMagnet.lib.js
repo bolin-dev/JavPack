@@ -1,6 +1,7 @@
 class UtilMagnet extends Req {
   static btdig(code) {
     const spaceReg = /\s/g;
+
     return this.tasks(`https://btdig.com/search?q=${code}`, [
       (dom) => {
         const resList = dom.querySelectorAll(".one_result");
