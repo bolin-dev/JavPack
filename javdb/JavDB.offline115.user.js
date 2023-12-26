@@ -305,7 +305,13 @@
       item.disabled = true;
     });
 
-    const { surplus } = await Util115.lixianGetQuotaPackageInfo();
+    const { errcode, surplus } = await Util115.lixianGetQuotaPackageInfo();
+
+    if (errcode === 99) {
+      Util.notify({ text: "网盘未登录", icon: "error" });
+      return offlineEnd();
+    }
+
     if (surplus < 1) {
       Util.notify({ text: "离线配额不足", icon: "error" });
       return offlineEnd();
@@ -478,7 +484,7 @@
   }
 
   async function handleClean(file_id) {
-    const { data } = await Util115.files(file_id);
+    const { data } = await Util115.filesByOrder(file_id);
 
     const rm_fids = data
       .filter((item) => !regex.test(item.n) || item.class !== "AVI")
