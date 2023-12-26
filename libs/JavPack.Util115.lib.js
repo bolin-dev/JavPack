@@ -4,6 +4,14 @@ class Util115 extends Req115 {
     return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
 
+  static async filesByOrder(cid, params = {}) {
+    const res = await this.files(cid, params);
+    const { errNo, order: o, is_asc: asc, fc_mix } = res;
+
+    if (errNo === 20130827 && o === "file_name") return this.natsortFiles(cid, { ...params, o, asc, fc_mix });
+    return res;
+  }
+
   // Get video list
   static videos(cid) {
     return this.files(cid, { type: 4 });
