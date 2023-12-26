@@ -14,12 +14,12 @@ class Util115 extends Req115 {
 
   // Get video list
   static videos(cid) {
-    return this.files(cid, { type: 4 });
+    return this.filesByOrder(cid, { type: 4 });
   }
 
   // Get folder list
   static folders(cid) {
-    return this.files(cid).then((res) => {
+    return this.filesByOrder(cid).then((res) => {
       if (res?.data?.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
       return res;
     });
