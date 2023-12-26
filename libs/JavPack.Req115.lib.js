@@ -32,6 +32,32 @@ class Req115 extends Req {
     });
   }
 
+  static natsortFiles(cid = "0", params = {}) {
+    return this.request({
+      url: "https://aps.115.com/natsort/files.php",
+      params: {
+        aid: 1,
+        cid,
+        o: "file_name",
+        asc: 0,
+        offset: 0,
+        show_dir: 1,
+        limit: 11500,
+        code: "",
+        scid: "",
+        snap: 0,
+        natsort: 1,
+        record_open_time: 1,
+        count_folders: 1,
+        source: "",
+        format: "json",
+        fc_mix: 0,
+        ...params,
+      },
+      responseType: "json",
+    });
+  }
+
   // Search for files
   static filesSearch(search_value, params = {}) {
     return this.request({
