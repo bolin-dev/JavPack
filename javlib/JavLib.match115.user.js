@@ -6,10 +6,10 @@
 // @description     115 网盘匹配
 // @match           https://www.javlibrary.com/*
 // @icon            https://www.javlibrary.com/favicon.ico
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util.lib.js
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req.lib.js
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req115.lib.js
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util115.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         115.com
 // @run-at          document-end

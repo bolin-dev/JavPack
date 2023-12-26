@@ -6,9 +6,9 @@
 // @description     播放页删除目录
 // @match           https://v.anxia.com/*
 // @icon            https://v.anxia.com/m_r/favicon.ico
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req.lib.js
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Req115.lib.js
-// @require         https://raw.githubusercontent.com/bolin-dev/JavPack/main/libs/JavPack.Util115.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @connect         115.com
