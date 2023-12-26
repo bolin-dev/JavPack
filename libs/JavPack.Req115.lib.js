@@ -10,7 +10,7 @@ class Req115 extends Req {
         asc: 0,
         offset: 0,
         show_dir: 1,
-        limit: 10000,
+        limit: 11500,
         code: "",
         scid: "",
         snap: 0,
@@ -38,7 +38,7 @@ class Req115 extends Req {
       url: "https://webapi.115.com/files/search",
       params: {
         offset: 0,
-        limit: 10000,
+        limit: 11500,
         search_value,
         date: "",
         aid: 1,
@@ -168,7 +168,7 @@ class Req115 extends Req {
   static labelList() {
     return this.request({
       url: "https://webapi.115.com/label/list",
-      params: { keyword: "", limit: 11150 },
+      params: { keyword: "", limit: 11500 },
       responseType: "json",
     });
   }
