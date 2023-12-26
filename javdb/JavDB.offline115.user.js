@@ -419,7 +419,7 @@
 
       await handleMove({ videos, file_id });
 
-      if (clean) await handleClean(file_id);
+      if (clean) await handleClean({ videos, file_id });
 
       if (upload?.length) {
         res.msg += "，上传图片中...";
@@ -483,14 +483,14 @@
     if (mv_fids.length) return Util115.filesMove(mv_fids, file_id);
   }
 
-  async function handleClean(file_id) {
+  async function handleClean({ videos, file_id }) {
     const { data } = await Util115.filesByOrder(file_id);
 
     const rm_fids = data
-      .filter((item) => !regex.test(item.n) || item.class !== "AVI")
+      .filter((item) => !videos.some(({ fid }) => fid === item.fid))
       .map((item) => item.fid ?? item.cid);
 
-    if (rm_fids.length) await Util115.rbDelete(rm_fids, file_id);
+    if (rm_fids.length) return Util115.rbDelete(rm_fids, file_id);
   }
 
   function handleUpload({ upload, file_id: cid }) {
