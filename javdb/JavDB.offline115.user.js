@@ -56,7 +56,7 @@
       color: "is-primary",
     },
     {
-      name: "${prefix}",
+      name: "番号",
       dir: "番号/${prefix}",
       color: "is-link",
     },
