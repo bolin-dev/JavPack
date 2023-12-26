@@ -1,4 +1,4 @@
-![JavPack](./static/icon.png)
+![JavPack](./assets/icon.png)
 
 # JavPack
 

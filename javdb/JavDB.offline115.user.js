@@ -11,9 +11,9 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
-// @resource        success https://github.com/bolin-dev/JavPack/raw/main/static/success.png
-// @resource        error https://github.com/bolin-dev/JavPack/raw/main/static/error.png
-// @resource        warn https://github.com/bolin-dev/JavPack/raw/main/static/warn.png
+// @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
+// @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
+// @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         jdbstatic.com
 // @connect         javstore.net
