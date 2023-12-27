@@ -70,7 +70,7 @@
 
   - `config[].magnetOptions.filter : filterCallbackFn` 磁链筛选；默认 200MB < `magnet.size` < 15GB
 
-    filterCallbackFn 该函数被调用时传入参数 `magnet` 如下：
+    `filterCallbackFn` 函数被调用时传入参数 `magnet`：
 
     - `magnet.url : string` 磁力链接
     - `magnet.name : string` 磁力名称
