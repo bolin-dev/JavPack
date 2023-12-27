@@ -73,17 +73,26 @@ class Util115 extends Req115 {
     return this.upload({ ...res, filename, file });
   }
 
-  // Match existing tags
-  static async matchLabels(tags) {
-    const { data } = await this.labelList();
-    if (!data?.list?.length) return;
+  static filesEditDesc(fids, desc) {
+    const formData = new FormData();
+    fids.forEach((fid) => formData.append("fid[]", fid));
+    formData.append("file_desc", desc);
+    return this.filesEdit(formData);
+  }
 
-    const labels = [];
-    tags.forEach((tag) => {
-      const item = data.list.find(({ name }) => name === tag);
-      if (item) labels.push(item.id);
+  static async filesBatchLabelName(files, labels) {
+    const res = await this.labelList();
+    const labelList = res?.data.list;
+    if (!labelList?.length) return;
+
+    const file_label = [];
+    labels.forEach((label) => {
+      const item = labelList.find(({ name }) => name === label);
+      if (item) file_label.push(item.id);
     });
-    return labels;
+
+    if (!file_label.length) return;
+    return this.filesBatchLabel(files.map((file) => file.fid ?? file.cid).toString(), file_label.toString());
   }
 
   // Delete video folder
