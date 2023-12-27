@@ -42,8 +42,6 @@
 
 - 方向键左右翻页
 
-- JavDB.openTab
-
 - 鼠标左键前台新标签页打开，右键后台新标签页
 
 ### JavDB.quickLook
@@ -101,28 +99,35 @@
 
 - `config[].upload : string[]` 图片上传；`cover` `sprite` 可选；默认 `["cover"]`
 
+<details><summary>动态参数</summary>
+
+```JavaScript
+// code        番号
+// prefix      番号前缀
+// title       标题
+// date        影片日期
+// create      操作日期
+// director    导演
+// maker       片商
+// publisher   发行
+// series      系列
+// genres      类别
+// actors      演员
+
+// genre genres[]，仅 type = "genres" 可用
+// actor actors[]，仅 type = "actors" 可用
+
+// zh 字幕资源，仅 rename 可用
+// crack 破解资源，仅 rename 可用
+
 ```
-动态参数
 
-code        番号
-prefix      番号前缀
-title       标题
-date        影片日期
-create      操作日期
-director    导演
-maker       片商
-publisher   发行
-series      系列
-genres      类别
-actors      演员
-
-genre       类别，仅 type = genres 可用
-actor       演员，仅 type = actors 可用
-
-zh          字幕资源，仅 rename 可用
-crack       破解资源，仅 rename 可用
-```
+</details>
 
 ## 许可
 
 The GPL-3.0 License.
+
+```
+
+```
