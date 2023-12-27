@@ -68,9 +68,18 @@
 
   - `config[].exclude : string[]` 类型排除；仅 `genres` `actors` 类型下支持
 
-  - `config[].magnetOptions.filter : fn` 磁链筛选；默认 200MB < `magnet.size` < 15GB
+  - `config[].magnetOptions.filter : filterCallbackFn` 磁链筛选；默认 200MB < `magnet.size` < 15GB
 
-  - `config[].magnetOptions.sort : fn` 磁链排序；默认 `magnet.zh` → `magnet.crack` → `magnet.size`
+    filterCallbackFn 该函数被调用时传入参数如下：
+
+    - `magnet.url : string` 磁力链接
+    - `magnet.name : string` 磁力名称
+    - `magnet.meta : string` 磁力信息，如 `5.21GB, 4个文件`
+    - `magnet.size : string` byte size
+    - `magnet.zh : bool` 是否有字幕
+    - `magnet.crack : bool` 是否为破解
+
+  - `config[].magnetOptions.sort : sortCompareFn` 磁链排序；默认 `magnet.zh` → `magnet.crack` → `magnet.size`
 
   - `config[].magnetOptions.max : number` 磁链最大数；默认 10
 
