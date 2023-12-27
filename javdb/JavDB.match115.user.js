@@ -39,6 +39,11 @@
       contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
     };
 
+    const handleClose = async (target) => {
+      await Util115.sleep();
+      tabClose(target);
+    };
+
     const handleClick = (e) => {
       const { target } = e;
       if (!target.classList.contains(SELECTOR)) return;
@@ -53,7 +58,7 @@
       if (!val) return;
 
       const tab = Util.openTab(config.url.replace("%s", val));
-      tab.onclose = () => Util115.sleep().then(tabClose(target));
+      tab.onclose = () => handleClose(target);
     };
 
     document.addEventListener("click", handleClick);
