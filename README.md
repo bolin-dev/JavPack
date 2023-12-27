@@ -56,48 +56,25 @@
 >
 > 避免单目录下直接子项数量 ≥ 11500
 
-- `config[].name : string` 按钮名称；支持 `动态参数`；必填
-
-- `config[].color : string` 按钮样式；参考 [Bulma](https://bulma.io/documentation/elements/button/#colors)；默认 `is-info`
-
-- `config[].desc : string` 按钮描述；默认 `离线路径`
-
-- `config[].type : string` 按钮类型，`plain` `genres` `actors` 可选，默认 `plain`
-
-- `config[].match : string[]` 类型匹配；仅 `genres` `actors` 类型下支持
-
-- `config[].exclude : string[]` 类型排除；仅 `genres` `actors` 类型下支持
-
-- `config[].magnetOptions.filter : filterCallbackFn` 磁链筛选；默认 200MB < `magnet.size` < 15GB
-
-  `filterCallbackFn` 函数被调用时传入参数 `magnet`：
-
-  - `magnet.url : string` 磁力链接
-  - `magnet.name : string` 磁力名称
-  - `magnet.meta : string` 磁力信息，如 `5.21GB, 4个文件`
-  - `magnet.size : string` byte size
-  - `magnet.zh : bool` 是否有字幕
-  - `magnet.crack : bool` 是否为破解
-
-- `config[].magnetOptions.sort : sortCompareFn` 磁链排序；默认 `magnet.zh` → `magnet.crack` → `magnet.size`
-
-- `config[].magnetOptions.max : number` 磁链最大数；默认 10
-
-- `config[].dir : string | string[]` 离线路径；支持 `动态参数`；默认 `云下载`
-
-- `config[].verifyOptions.requireVdi : bool` 根据完整而又不严谨的观察，`vdi` 表示视频已转码 (可观看)；默认 `true`
-
-- `config[].verifyOptions.clean : bool` 离线验证失败清理对应任务和文件夹；默认 `true`
-
-- `config[].verifyOptions.max : number` 离线验证最大次数；默认 10
-
-- `config[].rename : string` 离线重命名；支持 `动态参数`；默认 `${zh}${crack} ${code} ${title}`
-
-- `config[].tags : string[]` 自动打标；`genres` `actors` 可选；默认 `["genres", "actors"]`
-
-- `config[].clean : bool` 文件清理；默认 `true`
-
-- `config[].upload : string[]` 图片上传；`cover` `sprite` 可选；默认 `["cover"]`
+| `config[]` 选项            | 类型                              | 说明                              | 默认                                         | 动态参数 |
+| :------------------------- | :-------------------------------- | :-------------------------------- | :------------------------------------------- | :------- |
+| `name`                     | `string`                          | 按钮名称                          | 必填                                         | ✅       |
+| `color`                    | `string`                          | 按钮样式                          | `"is-info"`                                  |          |
+| `desc`                     | `string`                          | 按钮描述                          | `离线路径`                                   |          |
+| `type`                     | `"plain" \| "genres" \| "actors"` | 按钮类型                          | `"plain"`                                    |          |
+| `match`                    | `string[]`                        | 类型匹配，非 `"plain"` 类型下可用 | `[]`                                         |          |
+| `exclude`                  | `string[]`                        | 类型排除，非 `"plain"` 类型下可用 | `[]`                                         |          |
+| `magnetOptions.filter`     | `function`                        | `filterCallbackFn` 磁链筛选       | `200MB` < `magnet.size` < `15GB`             |          |
+| `magnetOptions.sort`       | `function`                        | `sortCompareFn` 磁链排序          | `magnet.zh` → `magnet.crack` → `magnet.size` |          |
+| `magnetOptions.max`        | `number`                          | 磁链最大数                        | `10`                                         |          |
+| `dir`                      | `string \| string[]`              | 离线路径                          | `"云下载"`                                   | ✅       |
+| `verifyOptions.requireVdi` | `boolean`                         | 验证已转码                        | `true`                                       |          |
+| `verifyOptions.clean`      | `boolean`                         | 验证失败清理任务                  | `true`                                       |          |
+| `verifyOptions.max`        | `number`                          | 验证最大次数                      | `10`                                         |          |
+| `rename`                   | `string`                          | 重命名                            | `"${zh}${crack} ${code} ${title}"`           | ✅       |
+| `tags`                     | `["genres", "actors"]`            | 设置标签                          | `["genres", "actors"]`                       |          |
+| `clean`                    | `boolean`                         | 清理垃圾                          | `true`                                       |          |
+| `upload`                   | `["cover", "sprite"]`             | 上传图片                          | `["cover"]`                                  |          |
 
 <details><summary>动态参数</summary>
 
