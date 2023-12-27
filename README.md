@@ -70,7 +70,7 @@
 
   - `config[].magnetOptions.filter : fn` 磁链筛选；默认 200MB < `magnet.size` < 15GB
 
-  - `config[].magnetOptions.sort : fn` 磁链排序；默认 `magnet.zh` ➡️ `magnet.crack` ➡️ `magnet.size`
+  - `config[].magnetOptions.sort : fn` 磁链排序；默认 `magnet.zh` → `magnet.crack` → `magnet.size`
 
   - `config[].magnetOptions.max : number` 磁链最大数；默认 10
 
