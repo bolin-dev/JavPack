@@ -142,12 +142,15 @@
   function getMagnets(dom = document) {
     return [...dom.querySelectorAll("#magnets-content > .item")]
       .map((item) => {
-        const name = item.querySelector(".name")?.textContent ?? "";
+        const name = item.querySelector(".name")?.textContent.trim() ?? "";
+        const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
         return {
-          crack: Util.crackReg.test(name),
-          url: item.querySelector(".magnet-name a").href.split("&")[0],
+          url: item.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
           zh: !!item.querySelector(".tag.is-warning") || Util.zhReg.test(name),
-          size: transToByte((item.querySelector(".meta")?.textContent ?? "").split(",")[0].trim()),
+          size: transToByte(meta.split(",")[0]),
+          crack: Util.crackReg.test(name),
+          meta,
+          name,
         };
       })
       .toSorted(Util.magnetSort);
