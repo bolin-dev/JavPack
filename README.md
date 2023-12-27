@@ -54,6 +54,7 @@
 
 - JavDB.offline115
 
+  > [!NOTE]
   > **应避免单目录下直接子项数量 ≥ 11500**
 
   - `config[].name : string` 按钮名称；支持 `动态参数`；必填
