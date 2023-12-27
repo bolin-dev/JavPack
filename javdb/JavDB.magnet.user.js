@@ -44,8 +44,8 @@
       </a>
     </div>`,
   );
-
   const btdigNode = document.querySelector("#x-btdig");
+
   const mid = `btdig_${location.pathname.split("/").pop()}`;
   let btdigMagnets = localStorage.getItem(mid);
 
@@ -54,7 +54,13 @@
     btdigMagnets = await UtilMagnet.btdig(code);
     btdigNode.classList.remove("is-loading");
 
-    if (btdigMagnets) localStorage.setItem(mid, JSON.stringify(btdigMagnets));
+    if (btdigMagnets) {
+      localStorage.setItem(mid, JSON.stringify(btdigMagnets));
+    } else {
+      btdigMagnets = [];
+      btdigNode.classList.replace("is-success", "is-warning");
+      btdigNode.querySelector("i").classList.replace("icon-check-circle", "icon-close");
+    }
   } else {
     btdigMagnets = JSON.parse(btdigMagnets);
   }
@@ -84,7 +90,7 @@
         date: item.querySelector(".time")?.textContent ?? "",
       };
     })
-    .concat(btdigMagnets ?? [])
+    .concat(btdigMagnets)
     .map(({ url, name, meta, files, size, zh, hd, ...item }) => {
       url = url.split("&")[0].toLowerCase();
 
@@ -106,7 +112,14 @@
       return { ...item, url, name, meta, size, zh, crack, hd };
     })
     .reduce((acc, cur) => {
-      if (!acc.find((item) => item.url === cur.url)) acc.push(cur);
+      const index = acc.findIndex((item) => item.url === cur.url);
+
+      if (index === -1) {
+        acc.push(cur);
+      } else if (!acc[index].meta.includes(",")) {
+        acc[index].meta = cur.meta;
+      }
+
       return acc;
     }, [])
     .toSorted(Util.magnetSort)
