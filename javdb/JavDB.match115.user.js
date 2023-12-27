@@ -68,17 +68,17 @@
 
     infoNode.insertAdjacentHTML(
       "beforeend",
-      "<div class='panel-block'><strong>资源:</strong>&nbsp;<span class='value' id='x-query'>查询中...</span></div>",
+      '<div class="panel-block"><strong>115 资源:</strong>&nbsp;<span class="value" id="x-match-res">查询中...</span></div>',
     );
 
-    const queryNode = infoNode.querySelector("#x-query");
+    const matchResNode = infoNode.querySelector("#x-match-res");
     const code = infoNode.querySelector(".first-block .value").textContent;
     const { codes, regex } = Util.codeParse(code);
 
     const matchResource = () => {
       return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
         if (!state) {
-          queryNode.textContent = "查询失败";
+          matchResNode.textContent = "查询失败，请检查登录状态";
           return;
         }
 
@@ -86,11 +86,11 @@
         GM_setValue(code, data);
 
         if (!data.length) {
-          queryNode.textContent = "暂无资源";
+          matchResNode.textContent = "暂无资源";
           return;
         }
 
-        queryNode.innerHTML = data
+        matchResNode.innerHTML = data
           .map(
             ({ pc, cid, t, n }) =>
               `<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
