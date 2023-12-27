@@ -1,5 +1,4 @@
 class Util115 extends Req115 {
-  // Search for videos
   static videosSearch(search_value) {
     return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
@@ -12,12 +11,10 @@ class Util115 extends Req115 {
     return res;
   }
 
-  // Get video list
   static videos(cid) {
     return this.filesByOrder(cid, { type: 4 });
   }
 
-  // Get folder list
   static folders(cid) {
     return this.filesByOrder(cid).then((res) => {
       if (res?.data?.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
@@ -25,7 +22,6 @@ class Util115 extends Req115 {
     });
   }
 
-  // Generate download directory ID
   static async generateCid(routes) {
     let cid = "0";
 
@@ -40,7 +36,6 @@ class Util115 extends Req115 {
     return cid;
   }
 
-  // Verify offline task
   static async verifyTask(info_hash, verifyFn, max_retry = 10) {
     const statusCodes = [0, 1, 2];
     let file_id = "";
@@ -68,7 +63,6 @@ class Util115 extends Req115 {
     return { file_id, videos };
   }
 
-  // Upload URL
   static async handleUpload({ url, cid, filename }) {
     const file = await this.request({ url, responseType: "blob" });
     if (!file) return file;
@@ -101,7 +95,6 @@ class Util115 extends Req115 {
     return this.filesBatchLabel(files.map((file) => file.fid ?? file.cid).toString(), file_label.toString());
   }
 
-  // Delete video folder
   static delDirByPc(pc) {
     return this.filesVideo(pc).then(({ parent_id }) => this.rbDelete([parent_id]));
   }
