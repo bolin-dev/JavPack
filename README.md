@@ -102,4 +102,4 @@
 
 ## 许可
 
-The GPL-3.0 License.
+[The GPL-3.0 License](./LICENSE)
