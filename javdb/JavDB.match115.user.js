@@ -205,10 +205,7 @@
     }
   }
 
-  DriveChannel.onmessage = ({ data }) => {
-    const nodeList = document.querySelectorAll(`.movie-list .x-${data}`);
-    if (nodeList.length) QueueMatch.add(nodeList);
-  };
+  DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
   const intersectionCallback = (entries, observer) => {
     const intersected = [];
@@ -217,7 +214,7 @@
       observer.unobserve(target);
       intersected.push(target);
     });
-    if (intersected.length) QueueMatch.add(intersected);
+    QueueMatch.add(intersected);
   };
   const intersectionObserver = new IntersectionObserver(intersectionCallback, { threshold: 0.2 });
 
