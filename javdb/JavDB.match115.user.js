@@ -75,7 +75,7 @@
     const code = infoNode.querySelector(".first-block .value").textContent;
     const { codes, regex } = Util.codeParse(code);
 
-    const matchCode = () => {
+    const matchResource = () => {
       return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
         if (!state) {
           queryNode.textContent = "查询失败";
@@ -99,8 +99,8 @@
       });
     };
 
-    unsafeWindow.matchCode = matchCode;
-    return matchCode();
+    unsafeWindow.match115Resource = matchResource;
+    return matchResource();
   }
 
   const childList = document.querySelectorAll(".movie-list .item");
