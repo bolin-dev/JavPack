@@ -178,7 +178,7 @@
   function getActions(config, details, magnets) {
     return config
       .map(({ magnetOptions = {}, type = "plain", match = [], exclude = [], ...item }, index) => {
-        const { color = "is-info", name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
+        const { name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
         if (!name) return null;
 
         const _magnets = parseMagnets(magnets, magnetOptions);
@@ -187,13 +187,12 @@
         if (type === "plain") {
           return {
             ...item,
-            color,
             name: parseVar(name, details),
-            magnets: _magnets,
             dir: parseDir(dir, details),
+            magnets: _magnets,
             rename,
-            index,
             idx: 0,
+            index,
           };
         }
 
@@ -213,11 +212,10 @@
 
           return {
             ...item,
-            color,
-            name: parseVar(name, _details),
-            magnets: _magnets,
-            dir: parseDir(dir, _details),
             rename: rename.replaceAll(typeItemTxt, cls),
+            name: parseVar(name, _details),
+            dir: parseDir(dir, _details),
+            magnets: _magnets,
             index,
             idx,
           };
@@ -225,9 +223,28 @@
       })
       .flat()
       .filter((item) => Boolean(item) && item.dir.every(Boolean))
-      .map(({ desc, ...item }) => {
-        return { ...item, desc: desc ?? item.dir.join(" / ") };
-      });
+      .map(
+        ({
+          desc,
+          clean = true,
+          color = "is-info",
+          verifyOptions = {},
+          upload = ["cover"],
+          tags = ["genres", "actors"],
+          ...item
+        }) => {
+          if (defaultVerifyOptions) verifyOptions = { ...defaultVerifyOptions, ...verifyOptions };
+          return {
+            ...item,
+            desc: desc ?? item.dir.join(" / "),
+            verifyOptions,
+            upload,
+            color,
+            clean,
+            tags,
+          };
+        },
+      );
   }
 
   GM_addElement(document.head, "link", { rel: "prefetch", href: GM_info.script.icon });
@@ -381,10 +398,8 @@
   }
 
   async function handleSmartOffline({ magnets, cid, action }) {
+    const { verifyOptions, rename, tags, clean, upload } = action;
     const res = { code: 0, msg: "" };
-
-    let { verifyOptions = {}, rename, tags = ["genres", "actors"], clean = true, upload = ["cover"] } = action;
-    if (defaultVerifyOptions) verifyOptions = { ...defaultVerifyOptions, ...verifyOptions };
 
     let verifyFile = (file) => regex.test(file.n);
     if (verifyOptions.requireVdi) verifyFile = (file) => regex.test(file.n) && file.hasOwnProperty("vdi");
