@@ -115,6 +115,21 @@
   const childList = document.querySelectorAll(".movie-list .item");
   if (!childList.length) return;
 
+  GM_addStyle(`
+  .movie-list .item:has(.video-title .is-success) {
+    border: 3px solid #34a873;
+  }
+  .movie-list .item:has(.video-title .is-warning) {
+    border: 3px solid #ffd257;
+  }
+  [data-theme="dark"] .movie-list .item:has(.video-title .is-success) {
+    border: 2px solid #48c78e;
+  }
+  [data-theme="dark"] .movie-list .item:has(.video-title .is-warning) {
+    border: 2px solid #ffe08a;
+  }
+  `);
+
   class QueueMatch {
     static list = [];
     static lock = false;
