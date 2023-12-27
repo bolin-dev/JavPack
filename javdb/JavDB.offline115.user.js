@@ -327,11 +327,13 @@
       return offlineEnd();
     }
 
-    if (!cid && cid !== 0) {
+    // eslint-disable-next-line eqeqeq, no-eq-null
+    if (cid == null) {
       cid = await Util115.generateCid(dir);
 
-      if (!cid && cid !== 0) {
-        Util.notify({ text: "生成下载目录失败", icon: "error" });
+      // eslint-disable-next-line eqeqeq, no-eq-null
+      if (cid == null) {
+        Util.notify({ text: "生成下载目录 id 失败", icon: "error" });
         return offlineEnd();
       }
 
@@ -344,7 +346,7 @@
     if (res.code === 0) {
       Util.notify({ text: res.msg, icon: "success" });
       Util.setTabBar({ text: `${code} 离线成功`, icon: "success" });
-      unsafeWindow.matchCode();
+      unsafeWindow.match115Resource?.();
       return offlineEnd();
     }
 
