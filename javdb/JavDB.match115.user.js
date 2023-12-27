@@ -53,7 +53,7 @@
       if (!val) return;
 
       const tab = Util.openTab(config.url.replace("%s", val));
-      tab.onclose = () => tabClose(target);
+      tab.onclose = () => Util115.sleep().then(tabClose(target));
     };
 
     document.addEventListener("click", handleClick);
@@ -69,7 +69,6 @@
     );
 
     const infoNode = document.querySelector(".movie-panel-info");
-
     infoNode.insertAdjacentHTML(
       "beforeend",
       '<div class="panel-block"><strong>115 资源:</strong>&nbsp;<span class="value" id="x-match-res">查询中...</span></div>',
@@ -103,10 +102,8 @@
       });
     };
 
-    const tabClose = () => Util115.sleep().then(matchResource);
-    listenClick(tabClose);
-
     unsafeWindow.match115Resource = matchResource;
+    listenClick(matchResource);
     return matchResource();
   }
 
@@ -213,13 +210,13 @@
   const tabClose = (target) => {
     const item = target.closest(".item");
 
+    const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
     const code = item.querySelector(".video-title strong").textContent;
     const { prefix } = Util.codeParse(code);
+
     GM_deleteValue(code);
     GM_deleteValue(prefix);
-
-    const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
-    Util115.sleep().then(() => QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`)));
+    QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`));
   };
   listenClick(tabClose);
 
