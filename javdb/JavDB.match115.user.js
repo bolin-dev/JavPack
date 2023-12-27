@@ -33,32 +33,39 @@
   const VOID = "javascript:void(0);";
   const DriveChannel = new BroadcastChannel("DriveChannel");
 
-  const handleClick = () => {
+  const handleClick = (tabClose) => {
     document.addEventListener("click", (e) => {
-      if (!e.target.classList.contains(SELECTOR)) return;
+      const { target } = e;
+      if (!target.classList.contains(SELECTOR)) return;
 
       e.preventDefault();
       e.stopPropagation();
 
-      const { pc } = e.target.dataset;
-      if (pc) Util.openTab(`https://v.anxia.com/?pickcode=${pc}`);
+      const { pc } = target.dataset;
+      if (!pc) return;
+
+      const tab = Util.openTab(`https://v.anxia.com/?pickcode=${pc}`);
+      tab.onclose = () => tabClose(target);
     });
 
     document.addEventListener("contextmenu", (e) => {
-      if (!e.target.classList.contains(SELECTOR)) return;
+      const { target } = e;
+      if (!target.classList.contains(SELECTOR)) return;
 
       e.preventDefault();
       e.stopPropagation();
 
-      const { cid } = e.target.dataset;
-      if (cid) Util.openTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`);
+      const { cid } = target.dataset;
+      if (!cid) return;
+
+      const tab = Util.openTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`);
+      tab.onclose = () => tabClose(target);
     });
   };
 
   const { pathname } = location;
   if (pathname.startsWith("/v/")) {
     window.addEventListener("beforeunload", () => DriveChannel.postMessage(pathname.split("/").pop()));
-    handleClick();
 
     GM_addStyle(
       "#x-match-res a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}",
@@ -99,14 +106,15 @@
       });
     };
 
+    const tabClose = () => Util115.sleep().then(matchResource);
+    handleClick(tabClose);
+
     unsafeWindow.match115Resource = matchResource;
     return matchResource();
   }
 
   const childList = document.querySelectorAll(".movie-list .item");
   if (!childList.length) return;
-
-  handleClick();
 
   class QueueMatch {
     static list = [];
@@ -204,6 +212,19 @@
       tag.setAttribute("class", `${SELECTOR} tag is-normal ${className}`);
     }
   }
+
+  const tabClose = (target) => {
+    const item = target.closest(".item");
+
+    const code = item.querySelector(".video-title strong").textContent;
+    const { prefix } = Util.codeParse(code);
+    GM_deleteValue(code);
+    GM_deleteValue(prefix);
+
+    const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
+    Util115.sleep().then(() => QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`)));
+  };
+  handleClick(tabClose);
 
   DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
