@@ -115,15 +115,25 @@ class Req115 extends Req {
   }
 
   /**
-   * Edit file tags
-   * @param {string} fid File ID
-   * @param {string} file_label label_id,label_id
+   * Bulk label files
+   * @param {string} file_ids
+   * @param {string} file_label
+   * @returns
    */
-  static filesEdit(fid, file_label) {
+  static filesBatchLabel(file_ids, file_label, action = "add") {
+    return this.request({
+      method: "POST",
+      url: "https://webapi.115.com/files/batch_label",
+      data: { file_ids, file_label, action },
+    });
+  }
+
+  // Edit file
+  static filesEdit(data) {
     return this.request({
       method: "POST",
       url: "https://webapi.115.com/files/edit",
-      data: { fid, file_label },
+      data,
     });
   }
 
