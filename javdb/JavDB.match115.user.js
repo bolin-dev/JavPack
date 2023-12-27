@@ -61,7 +61,7 @@
     handleClick();
 
     GM_addStyle(
-      "#x-query a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}",
+      "#x-match-res a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}",
     );
 
     const infoNode = document.querySelector(".movie-panel-info");
