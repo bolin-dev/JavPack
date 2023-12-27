@@ -56,25 +56,25 @@
 >
 > 避免单目录下直接子项数量 ≥ 11500
 
-| `config[]` 选项            | 类型                              | 说明                              | 默认                                         | 动态参数 |
-| :------------------------- | :-------------------------------- | :-------------------------------- | :------------------------------------------- | :------- |
-| `name`                     | `string`                          | 按钮名称                          | 必填                                         | ✅       |
-| `color`                    | `string`                          | 按钮样式                          | `"is-info"`                                  |          |
-| `desc`                     | `string`                          | 按钮描述                          | `离线路径`                                   |          |
-| `type`                     | `"plain" \| "genres" \| "actors"` | 按钮类型                          | `"plain"`                                    |          |
-| `match`                    | `string[]`                        | 类型匹配，非 `"plain"` 类型下可用 | `[]`                                         |          |
-| `exclude`                  | `string[]`                        | 同 `match`                        | `[]`                                         |          |
-| `magnetOptions.filter`     | `function`                        | `filterCallbackFn` 磁链筛选       | `200MB` < `magnet.size` < `15GB`             |          |
-| `magnetOptions.sort`       | `function`                        | `sortCompareFn` 磁链排序          | `magnet.zh` → `magnet.crack` → `magnet.size` |          |
-| `magnetOptions.max`        | `number`                          | 磁链最大数                        | `10`                                         |          |
-| `dir`                      | `string \| string[]`              | 离线路径                          | `"云下载"`                                   | ✅       |
-| `verifyOptions.requireVdi` | `boolean`                         | 验证视频已转码                    | `true`                                       |          |
-| `verifyOptions.clean`      | `boolean`                         | 验证失败清理任务                  | `true`                                       |          |
-| `verifyOptions.max`        | `number`                          | 验证最大次数                      | `10`                                         |          |
-| `rename`                   | `string`                          | 重命名                            | `"${zh}${crack} ${code} ${title}"`           | ✅       |
-| `tags`                     | `["genres", "actors"]`            | 设置标签                          | `["genres", "actors"]`                       |          |
-| `clean`                    | `boolean`                         | 清理垃圾                          | `true`                                       |          |
-| `upload`                   | `["cover", "sprite"]`             | 上传图片                          | `["cover"]`                                  |          |
+| `config[]` 选项            | 类型                              | 说明                                                                           | 默认                                         | 动态参数 |
+| :------------------------- | :-------------------------------- | :----------------------------------------------------------------------------- | :------------------------------------------- | :------- |
+| `name`                     | `string`                          | 按钮名称                                                                       | 必填                                         | ✅       |
+| `color`                    | `string`                          | 按钮样式，参考 [bulma](https://bulma.io/documentation/elements/button/#colors) | `"is-info"`                                  |          |
+| `desc`                     | `string`                          | 按钮描述                                                                       | `离线路径`                                   |          |
+| `type`                     | `"plain" \| "genres" \| "actors"` | 按钮类型                                                                       | `"plain"`                                    |          |
+| `match`                    | `string[]`                        | 类型匹配，非 `"plain"` 类型下可用                                              | `[]`                                         |          |
+| `exclude`                  | `string[]`                        | 同 `match`                                                                     | `[]`                                         |          |
+| `magnetOptions.filter`     | `function`                        | `filterCallbackFn` 磁链筛选                                                    | `200MB` < `magnet.size` < `15GB`             |          |
+| `magnetOptions.sort`       | `function`                        | `sortCompareFn` 磁链排序                                                       | `magnet.zh` → `magnet.crack` → `magnet.size` |          |
+| `magnetOptions.max`        | `number`                          | 磁链最大数                                                                     | `10`                                         |          |
+| `dir`                      | `string \| string[]`              | 离线路径                                                                       | `"云下载"`                                   | ✅       |
+| `verifyOptions.requireVdi` | `boolean`                         | 验证视频已转码                                                                 | `true`                                       |          |
+| `verifyOptions.clean`      | `boolean`                         | 验证失败清理任务                                                               | `true`                                       |          |
+| `verifyOptions.max`        | `number`                          | 验证最大次数                                                                   | `10`                                         |          |
+| `rename`                   | `string`                          | 重命名                                                                         | `"${zh}${crack} ${code} ${title}"`           | ✅       |
+| `tags`                     | `["genres", "actors"]`            | 设置标签                                                                       | `["genres", "actors"]`                       |          |
+| `clean`                    | `boolean`                         | 清理垃圾                                                                       | `true`                                       |          |
+| `upload`                   | `["cover", "sprite"]`             | 上传图片                                                                       | `["cover"]`                                  |          |
 
 <details><summary>动态参数</summary>
 
@@ -91,12 +91,11 @@
 // genres      类别
 // actors      演员
 
-// genre genres[]，仅 type = "genres" 可用
-// actor actors[]，仅 type = "actors" 可用
+// genre       genres[]，仅 type = "genres" 可用
+// actor       actors[]，仅 type = "actors" 可用
 
-// zh 字幕资源，仅 rename 可用
-// crack 破解资源，仅 rename 可用
-
+// zh          字幕资源，仅 rename 可用
+// crack       破解资源，仅 rename 可用
 ```
 
 </details>
@@ -104,7 +103,3 @@
 ## 许可
 
 The GPL-3.0 License.
-
-```
-
-```
