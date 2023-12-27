@@ -33,34 +33,31 @@
   const VOID = "javascript:void(0);";
   const DriveChannel = new BroadcastChannel("DriveChannel");
 
-  const handleClick = (tabClose) => {
-    document.addEventListener("click", (e) => {
+  const listenClick = (tabClose) => {
+    const eventCfg = {
+      click: { key: "pc", url: "https://v.anxia.com/?pickcode=%s" },
+      contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
+    };
+
+    const handleClick = (e) => {
       const { target } = e;
       if (!target.classList.contains(SELECTOR)) return;
 
       e.preventDefault();
       e.stopPropagation();
 
-      const { pc } = target.dataset;
-      if (!pc) return;
+      const config = eventCfg[e.type];
+      if (!config) return;
 
-      const tab = Util.openTab(`https://v.anxia.com/?pickcode=${pc}`);
+      const val = target.dataset[config.key];
+      if (!val) return;
+
+      const tab = Util.openTab(config.url.replace("%s", val));
       tab.onclose = () => tabClose(target);
-    });
+    };
 
-    document.addEventListener("contextmenu", (e) => {
-      const { target } = e;
-      if (!target.classList.contains(SELECTOR)) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      const { cid } = target.dataset;
-      if (!cid) return;
-
-      const tab = Util.openTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`);
-      tab.onclose = () => tabClose(target);
-    });
+    document.addEventListener("click", handleClick);
+    document.addEventListener("contextmenu", handleClick);
   };
 
   const { pathname } = location;
@@ -107,7 +104,7 @@
     };
 
     const tabClose = () => Util115.sleep().then(matchResource);
-    handleClick(tabClose);
+    listenClick(tabClose);
 
     unsafeWindow.match115Resource = matchResource;
     return matchResource();
@@ -224,7 +221,7 @@
     const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
     Util115.sleep().then(() => QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`)));
   };
-  handleClick(tabClose);
+  listenClick(tabClose);
 
   DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
