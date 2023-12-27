@@ -70,6 +70,6 @@
   };
 
   const callback = useCallback();
-  const intersectionObserver = new IntersectionObserver(callback);
+  const intersectionObserver = new IntersectionObserver(callback, { rootMargin: "300px" });
   intersectionObserver.observe(loading);
 })();
