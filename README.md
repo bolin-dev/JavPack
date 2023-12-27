@@ -56,7 +56,7 @@
 
   > **应避免单目录下直接子项数量 ≥ 11500**
 
-  - `config[].name : string` 按钮名称；支持动态参数；必填
+  - `config[].name : string` 按钮名称；支持 `动态参数`；必填
 
   - `config[].color : string` 按钮样式；参考 [Bulma](https://bulma.io/documentation/elements/button/#colors)；默认 `is-info`
 
@@ -74,15 +74,15 @@
 
   - `config[].magnetOptions.max : number` 磁链最大数；默认 10
 
-  - `config[].dir : string | string[]` 离线路径；支持动态参数；默认 `云下载`
+  - `config[].dir : string | string[]` 离线路径；支持 `动态参数`；默认 `云下载`
 
-  - `config[].verifyOptions.requireVdi : bool` 根据完整而又不严谨的观察，vdi 表示视频已转码（可观看）；默认 `true`
+  - `config[].verifyOptions.requireVdi : bool` 根据完整而又不严谨的观察，`vdi` 表示视频已转码 (可观看)；默认 `true`
 
   - `config[].verifyOptions.clean : bool` 离线验证失败清理对应任务和文件夹；默认 `true`
 
   - `config[].verifyOptions.max : number` 离线验证最大次数；默认 10
 
-  - `config[].rename : string` 离线重命名；支持动态参数；默认 `${zh}${crack} ${code} ${title}`
+  - `config[].rename : string` 离线重命名；支持 `动态参数`；默认 `${zh}${crack} ${code} ${title}`
 
   - `config[].tags : string[]` 自动打标；`genres` `actors` 可选；默认 `["genres", "actors"]`
 
