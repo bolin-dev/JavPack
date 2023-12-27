@@ -456,11 +456,7 @@
   }
 
   function handleRename({ rename, zh, crack, file_id, videos }) {
-    rename = parseVar(rename, {
-      ...details,
-      zh: zh ? zhTxt : "",
-      crack: crack ? crackTxt : "",
-    });
+    rename = parseVar(rename, { ...details, zh: zh ? zhTxt : "", crack: crack ? crackTxt : "" });
     if (!regex.test(rename)) rename = `${code} ${rename}`.trim();
 
     const renameObj = { [file_id]: rename };
