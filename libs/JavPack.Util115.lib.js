@@ -42,20 +42,26 @@ class Util115 extends Req115 {
 
   // Verify offline task
   static async verifyTask(info_hash, verifyFn, max_retry = 10) {
+    const statusCodes = [0, 1, 2];
     let file_id = "";
     let videos = [];
 
     for (let index = 0; index < max_retry; index++) {
-      await this.sleep();
+      if (index) await this.sleep();
       const { tasks } = await this.lixianTaskLists();
-      file_id = tasks.find((task) => task.info_hash === info_hash).file_id;
+
+      const task = tasks.find((task) => task.info_hash === info_hash);
+      if (!task || !statusCodes.includes(task.status)) break;
+
+      file_id = task.file_id;
       if (file_id) break;
     }
     if (!file_id) return { file_id, videos };
 
     for (let index = 0; index < max_retry; index++) {
-      await this.sleep();
+      if (index) await this.sleep();
       const { data } = await this.videos(file_id);
+
       videos = data.filter(verifyFn);
       if (videos.length) break;
     }
@@ -73,9 +79,9 @@ class Util115 extends Req115 {
     return this.upload({ ...res, filename, file });
   }
 
-  static filesEditDesc(fids, desc) {
+  static filesEditDesc(files, desc) {
     const formData = new FormData();
-    fids.forEach((fid) => formData.append("fid[]", fid));
+    files.forEach((file) => formData.append("fid[]", file.fid ?? file.cid));
     formData.append("file_desc", desc);
     return this.filesEdit(formData);
   }
