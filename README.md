@@ -56,37 +56,39 @@
 
   > **应避免单目录下直接子项数量 ≥ 11500**
 
-  - `config[].name` 按钮名称；支持动态参数；必填
+  - `config[].name : string` 按钮名称；支持动态参数；必填
 
-  - `config[].color` 按钮样式；参考 [Bulma](https://bulma.io/documentation/elements/button/#colors)；默认 `is-info`
+  - `config[].color : string` 按钮样式；参考 [Bulma](https://bulma.io/documentation/elements/button/#colors)；默认 `is-info`
 
-  - `config[].desc` 按钮描述；默认 `离线路径`
+  - `config[].desc : string` 按钮描述；默认 `离线路径`
 
-  - `config[].type` 按钮类型，`plain` `genres` `actors` 可选，默认 `plain`
+  - `config[].type : string` 按钮类型，`plain` `genres` `actors` 可选，默认 `plain`
 
-  - `config[].match` 类型匹配；仅 `genres` `actors` 类型下支持
+  - `config[].match : string[]` 类型匹配；仅 `genres` `actors` 类型下支持
 
-  - `config[].exclude` 类型排除；仅 `genres` `actors` 类型下支持
+  - `config[].exclude : string[]` 类型排除；仅 `genres` `actors` 类型下支持
 
-  - `config[].magnetOptions.filter` 磁链筛选；默认 200MB < `magnet.size` < 15GB
+  - `config[].magnetOptions.filter : fn` 磁链筛选；默认 200MB < `magnet.size` < 15GB
 
-  - `config[].magnetOptions.sort` 磁链排序；默认 `magnet.zh` ➡️ `magnet.crack` ➡️ `magnet.size`
+  - `config[].magnetOptions.sort : fn` 磁链排序；默认 `magnet.zh` ➡️ `magnet.crack` ➡️ `magnet.size`
 
-  - `config[].magnetOptions.max` 磁链最大数；默认 10
+  - `config[].magnetOptions.max : number` 磁链最大数；默认 10
 
-  - `config[].dir` 离线路径；支持动态参数；默认 `云下载`
+  - `config[].dir : string | string[]` 离线路径；支持动态参数；默认 `云下载`
 
-  - `config[].verifyOptions.max` 离线验证最大次数；默认 10
+  - `config[].verifyOptions.requireVdi : bool` 根据完整而又不严谨的观察，vdi 表示视频已转码（可观看）；默认 `true`
 
-  - `config[].verifyOptions.clean` 离线验证失败清理；默认 `true`
+  - `config[].verifyOptions.clean : bool` 离线验证失败清理对应任务和文件夹；默认 `true`
 
-  - `config[].rename` 离线重命名；支持动态参数；默认 `${zh}${crack} ${code} ${title}`
+  - `config[].verifyOptions.max : number` 离线验证最大次数；默认 10
 
-  - `config[].tags` 自动打标；`genres` `actors` 可选；默认 `["genres", "actors"]`
+  - `config[].rename : string` 离线重命名；支持动态参数；默认 `${zh}${crack} ${code} ${title}`
 
-  - `config[].clean` 文件清理；默认 `true`
+  - `config[].tags : string[]` 自动打标；`genres` `actors` 可选；默认 `["genres", "actors"]`
 
-  - `config[].upload` 图片上传；`cover` `sprite` 可选；默认 `["cover"]`
+  - `config[].clean : bool` 文件清理；默认 `true`
+
+  - `config[].upload : string[]` 图片上传；`cover` `sprite` 可选；默认 `["cover"]`
 
   ```
   动态参数
