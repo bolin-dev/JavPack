@@ -1,13 +1,9 @@
 class UtilMagnet extends Req {
   static btdig(code) {
     const spaceReg = /\s/g;
-
     return this.tasks(`https://btdig.com/search?q=${code}`, [
       (dom) => {
-        const resList = dom.querySelectorAll(".one_result");
-        if (!resList.length) return;
-
-        return [...resList]
+        return [...dom.querySelectorAll(".one_result")]
           .map((item) => {
             const name = item.querySelector(".torrent_name").textContent;
             if (!name.toUpperCase().includes(code.toUpperCase())) return null;
