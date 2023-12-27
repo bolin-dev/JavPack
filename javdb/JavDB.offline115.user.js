@@ -88,11 +88,10 @@
 
   const zhTxt = "[中字]";
   const crackTxt = "[破解]";
-
   const transToByte = Util.useTransByte();
-
   const minMagnetSize = parseFloat(transToByte("200MB"));
   const maxMagnetSize = parseFloat(transToByte("15GB"));
+
   const defaultMagnetOptions = {
     filter: ({ size }) => {
       const magnetSize = parseFloat(size);
@@ -102,6 +101,7 @@
   };
 
   const defaultVerifyOptions = {
+    requireVdi: true,
     clean: true,
     max: 10,
   };
@@ -378,13 +378,14 @@
     });
   }
 
-  const verifyFile = (file) => regex.test(file.n);
-
   async function handleSmartOffline({ magnets, cid, action }) {
     const res = { code: 0, msg: "" };
 
     let { verifyOptions = {}, rename, tags = ["genres", "actors"], clean = true, upload = ["cover"] } = action;
     if (defaultVerifyOptions) verifyOptions = { ...defaultVerifyOptions, ...verifyOptions };
+
+    let verifyFile = (file) => regex.test(file.n);
+    if (verifyOptions.requireVdi) verifyFile = (file) => regex.test(file.n) && file.hasOwnProperty("vdi");
 
     for (let index = 0, { length } = magnets; index < length; index++) {
       const isLast = index === length - 1;
@@ -412,6 +413,8 @@
         res.code = 0;
         res.msg = "离线成功";
       }
+
+      Util115.filesEditDesc(videos, info_hash);
 
       if (rename) handleRename({ rename, zh, crack, file_id, videos });
 
@@ -471,11 +474,7 @@
       .flat()
       .filter(Boolean);
 
-    Util115.matchLabels(tags).then((labels) => {
-      if (!labels?.length) return;
-      labels = labels.join(",");
-      videos.forEach(({ fid }) => Util115.filesEdit(fid, labels));
-    });
+    Util115.filesBatchLabelName(videos, tags);
   }
 
   function handleMove({ videos, file_id }) {
