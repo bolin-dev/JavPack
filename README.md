@@ -63,12 +63,12 @@
 | `desc`                     | `string`                          | 按钮描述                          | `离线路径`                                   |          |
 | `type`                     | `"plain" \| "genres" \| "actors"` | 按钮类型                          | `"plain"`                                    |          |
 | `match`                    | `string[]`                        | 类型匹配，非 `"plain"` 类型下可用 | `[]`                                         |          |
-| `exclude`                  | `string[]`                        | 类型排除，非 `"plain"` 类型下可用 | `[]`                                         |          |
+| `exclude`                  | `string[]`                        | 同 `match`                        | `[]`                                         |          |
 | `magnetOptions.filter`     | `function`                        | `filterCallbackFn` 磁链筛选       | `200MB` < `magnet.size` < `15GB`             |          |
 | `magnetOptions.sort`       | `function`                        | `sortCompareFn` 磁链排序          | `magnet.zh` → `magnet.crack` → `magnet.size` |          |
 | `magnetOptions.max`        | `number`                          | 磁链最大数                        | `10`                                         |          |
 | `dir`                      | `string \| string[]`              | 离线路径                          | `"云下载"`                                   | ✅       |
-| `verifyOptions.requireVdi` | `boolean`                         | 验证已转码                        | `true`                                       |          |
+| `verifyOptions.requireVdi` | `boolean`                         | 验证视频已转码                    | `true`                                       |          |
 | `verifyOptions.clean`      | `boolean`                         | 验证失败清理任务                  | `true`                                       |          |
 | `verifyOptions.max`        | `number`                          | 验证最大次数                      | `10`                                         |          |
 | `rename`                   | `string`                          | 重命名                            | `"${zh}${crack} ${code} ${title}"`           | ✅       |
