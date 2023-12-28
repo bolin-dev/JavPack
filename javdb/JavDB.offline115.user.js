@@ -169,11 +169,9 @@
     });
   };
 
-  const parseMagnets = (magnets, options) => {
-    if (defaultMagnetOptions) options = { ...defaultMagnetOptions, ...options };
-    if (options.filter) magnets = magnets.filter(options.filter);
-    if (options.sort) magnets = magnets.toSorted(options.sort);
-    if (options.max) magnets = magnets.slice(0, options.max);
+  const parseMagnets = (magnets, { filter, sort }) => {
+    if (filter) magnets = magnets.filter(filter);
+    if (sort) magnets = magnets.toSorted(sort);
     return magnets;
   };
 
@@ -183,8 +181,11 @@
         const { name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
         if (!name) return null;
 
+        if (defaultMagnetOptions) magnetOptions = { ...defaultMagnetOptions, ...magnetOptions };
         const _magnets = parseMagnets(magnets, magnetOptions);
         if (!_magnets.length) return null;
+
+        const { max: magnetMax } = magnetOptions;
 
         if (type === "plain") {
           return {
@@ -192,6 +193,7 @@
             name: parseVar(name, details),
             dir: parseDir(dir, details),
             magnets: _magnets,
+            magnetMax,
             rename,
             idx: 0,
             index,
@@ -218,6 +220,7 @@
             name: parseVar(name, _details),
             dir: parseDir(dir, _details),
             magnets: _magnets,
+            magnetMax,
             index,
             idx,
           };
@@ -366,18 +369,25 @@
   }
 
   async function handleSmartOffline({ magnets, cid, action }) {
-    const { verifyOptions, rename, tags, clean, upload } = action;
+    const { verifyOptions, magnetMax, rename, tags, clean, upload } = action;
     const res = { code: 0, msg: "" };
 
     let verifyFile = (file) => regex.test(file.n);
     if (verifyOptions.requireVdi) verifyFile = (file) => regex.test(file.n) && file.hasOwnProperty("vdi");
 
+    const taskList = [];
     for (let index = 0, { length } = magnets; index < length; index++) {
+      if (taskList.length > magnetMax - 1) break;
+      taskList.push(index);
+
       const { url, zh, crack } = magnets[index];
 
       const { state, errcode, error_msg, info_hash } = await Util115.lixianAddTaskUrl(url, cid);
       if (!state) {
-        if (errcode === 10008 && index !== length - 1) continue;
+        if (errcode === 10008 && index !== length - 1) {
+          taskList.pop();
+          continue;
+        }
         res.code = errcode;
         res.msg = error_msg;
         res.currIdx = index;
