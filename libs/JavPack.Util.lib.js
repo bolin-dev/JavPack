@@ -39,11 +39,19 @@ class Util {
       { unit: /mb/i, trans: (size) => size * 1000 ** 2 },
       { unit: /gb/i, trans: (size) => size * 1000 ** 3 },
       { unit: /tb/i, trans: (size) => size * 1000 ** 4 },
+      { unit: /pb/i, trans: (size) => size * 1000 ** 5 },
+      { unit: /eb/i, trans: (size) => size * 1000 ** 6 },
+      { unit: /zb/i, trans: (size) => size * 1000 ** 7 },
+      { unit: /yb/i, trans: (size) => size * 1000 ** 8 },
 
       { unit: /kib/i, trans: (size) => size * 1024 },
       { unit: /mib/i, trans: (size) => size * 1024 ** 2 },
       { unit: /gib/i, trans: (size) => size * 1024 ** 3 },
       { unit: /tib/i, trans: (size) => size * 1024 ** 4 },
+      { unit: /pib/i, trans: (size) => size * 1024 ** 5 },
+      { unit: /eib/i, trans: (size) => size * 1024 ** 6 },
+      { unit: /zib/i, trans: (size) => size * 1024 ** 7 },
+      { unit: /yib/i, trans: (size) => size * 1024 ** 8 },
     ];
 
     return (str) => {
