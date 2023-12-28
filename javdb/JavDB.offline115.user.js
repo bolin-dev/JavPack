@@ -27,7 +27,6 @@
 // @grant           GM_xmlhttpRequest
 // @grant           GM_notification
 // @grant           GM_addElement
-// @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           window.close
 // @grant           GM_getValue
@@ -146,7 +145,7 @@
         const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
         return {
           url: item.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
-          zh: !!item.querySelector(".tag.is-warning") || Util.zhReg.test(name),
+          zh: !!item.querySelector(".tag.is-warning"),
           size: transToByte(meta.split(",")[0]),
           crack: Util.crackReg.test(name),
           meta,
@@ -279,42 +278,8 @@
       </div>
     </div>`,
   );
+
   const offlineNode = infoNode.querySelector("#x-offline");
-
-  unsafeWindow.updateMagnets = () => {
-    const _magnets = getMagnets();
-    if (_magnets.length === magnets.length) return;
-
-    const _actions = getActions(config, details, _magnets);
-    if (!_actions.length) return;
-
-    const disabled = offlineNode.querySelector("button.is-loading") ? "disabled" : "";
-
-    _actions.forEach((item) => {
-      const { color, index, idx, desc, name } = item;
-      const _index = actions.findIndex((ac) => ac.index === index && ac.idx === idx);
-
-      if (_index !== -1) {
-        actions[_index].magnets = item.magnets;
-      } else {
-        actions.push(item);
-
-        offlineNode.insertAdjacentHTML(
-          "beforeend",
-          `<button
-            class="button ${color}"
-            data-index="${index}"
-            data-idx="${idx}"
-            title="${desc}"
-            ${disabled}
-          >
-            ${name}
-          </button>`,
-        );
-      }
-    });
-  };
-
   offlineNode.addEventListener("click", (e) => offlineStart(e.target));
 
   const offlineStart = async (target, currIdx = 0) => {
@@ -531,4 +496,37 @@
       item.disabled = false;
     });
   };
+
+  const callback = () => {
+    const _magnets = getMagnets();
+    if (_magnets.length === magnets.length) return;
+
+    const _actions = getActions(config, details, _magnets);
+    if (!_actions.length) return;
+
+    const disabled = offlineNode.querySelector("button.is-loading") ? "disabled" : "";
+
+    _actions.forEach((item) => {
+      const { color, index, idx, desc, name } = item;
+      const _index = actions.findIndex((ac) => ac.index === index && ac.idx === idx);
+
+      if (_index !== -1) {
+        actions[_index].magnets = item.magnets;
+      } else {
+        actions.push(item);
+
+        offlineNode.insertAdjacentHTML(
+          "beforeend",
+          `<button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}" ${disabled}>
+            ${name}
+          </button>`,
+        );
+      }
+    });
+  };
+  const observer = new MutationObserver(callback);
+
+  const target = document.querySelector("#magnets-content");
+  const options = { childList: true, attributes: false, characterData: false };
+  observer.observe(target, options);
 })();
