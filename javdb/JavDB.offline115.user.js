@@ -361,7 +361,7 @@
   function filterMagnets(magnets) {
     return Util115.offlineSpace().then(({ size }) => {
       const spaceSize = parseFloat(transToByte(size));
-      return magnets.filter((item) => parseFloat(item.size) <= spaceSize);
+      return magnets.filter((item) => parseFloat(item.size) < spaceSize);
     });
   }
 
