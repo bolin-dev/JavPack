@@ -373,12 +373,11 @@
     if (verifyOptions.requireVdi) verifyFile = (file) => regex.test(file.n) && file.hasOwnProperty("vdi");
 
     for (let index = 0, { length } = magnets; index < length; index++) {
-      const isLast = index === length - 1;
       const { url, zh, crack } = magnets[index];
 
       const { state, errcode, error_msg, info_hash } = await Util115.lixianAddTaskUrl(url, cid);
       if (!state) {
-        if (errcode === 10008 && !isLast) continue;
+        if (errcode === 10008 && index !== length - 1) continue;
         res.code = errcode;
         res.msg = error_msg;
         res.currIdx = index;
