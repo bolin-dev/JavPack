@@ -6,9 +6,7 @@ class Util115 extends Req115 {
   static async filesByOrder(cid, params = {}) {
     const res = await this.files(cid, params);
     const { errNo, order: o, is_asc: asc, fc_mix } = res;
-
-    if (errNo === 20130827 && o === "file_name") return this.natsortFiles(cid, { ...params, o, asc, fc_mix });
-    return res;
+    return errNo === 20130827 && o === "file_name" ? this.natsortFiles(cid, { ...params, o, asc, fc_mix }) : res;
   }
 
   static videos(cid) {
@@ -17,7 +15,7 @@ class Util115 extends Req115 {
 
   static folders(cid) {
     return this.filesByOrder(cid).then((res) => {
-      if (res?.data?.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
+      if (res?.data.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
       return res;
     });
   }
@@ -80,18 +78,17 @@ class Util115 extends Req115 {
     return this.filesEdit(formData);
   }
 
-  static async filesBatchLabelName(files, labels) {
-    const res = await this.labelList();
-    const labelList = res?.data.list;
+  static async filesBatchLabelName(files, labelNames) {
+    const labelList = (await this.labelList())?.data.list;
     if (!labelList?.length) return;
 
     const file_label = [];
-    labels.forEach((label) => {
-      const item = labelList.find(({ name }) => name === label);
-      if (item) file_label.push(item.id);
+    labelNames.forEach((labelName) => {
+      const label = labelList.find(({ name }) => name === labelName);
+      if (label) file_label.push(label.id);
     });
-
     if (!file_label.length) return;
+
     return this.filesBatchLabel(files.map((file) => file.fid ?? file.cid).toString(), file_label.toString());
   }
 
