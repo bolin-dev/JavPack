@@ -27,6 +27,7 @@
 // @grant           GM_xmlhttpRequest
 // @grant           GM_notification
 // @grant           GM_addElement
+// @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           window.close
 // @grant           GM_getValue
