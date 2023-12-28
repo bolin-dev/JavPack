@@ -1,4 +1,6 @@
 class Req115 extends Req {
+  static limit = 11500;
+
   // Get file list
   static files(cid = "0", params = {}) {
     return this.request({
@@ -10,7 +12,7 @@ class Req115 extends Req {
         asc: 0,
         offset: 0,
         show_dir: 1,
-        limit: 11500,
+        limit: this.limit,
         code: "",
         scid: "",
         snap: 0,
@@ -32,6 +34,7 @@ class Req115 extends Req {
     });
   }
 
+  // Get file list by file name
   static natsortFiles(cid = "0", params = {}) {
     return this.request({
       url: "https://aps.115.com/natsort/files.php",
@@ -42,7 +45,7 @@ class Req115 extends Req {
         asc: 0,
         offset: 0,
         show_dir: 1,
-        limit: 11500,
+        limit: this.limit,
         code: "",
         scid: "",
         snap: 0,
@@ -64,7 +67,7 @@ class Req115 extends Req {
       url: "https://webapi.115.com/files/search",
       params: {
         offset: 0,
-        limit: 11500,
+        limit: this.limit,
         search_value,
         date: "",
         aid: 1,
@@ -116,8 +119,8 @@ class Req115 extends Req {
 
   /**
    * Bulk label files
-   * @param {string} file_ids
-   * @param {string} file_label
+   * @param {string} file_ids fid1,fid2,fid3...
+   * @param {string} file_label label_id1,label_id2,label_id3...
    * @returns
    */
   static filesBatchLabel(file_ids, file_label, action = "add") {
@@ -204,7 +207,7 @@ class Req115 extends Req {
   static labelList() {
     return this.request({
       url: "https://webapi.115.com/label/list",
-      params: { keyword: "", limit: 11500 },
+      params: { keyword: "", limit: this.limit },
       responseType: "json",
     });
   }
