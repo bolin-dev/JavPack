@@ -16,23 +16,20 @@
 // ==/UserScript==
 
 (function () {
+  const { origin, pathname } = location;
+  const exclude = ["INPUT", "TEXTAREA"];
+  const input = document.querySelector("#video-search");
+
   document.addEventListener("keydown", async (e) => {
-    if (e.ctrlKey && e.key === "/") {
-      const text = (await navigator.clipboard.readText())?.trim();
-      if (!text) return;
+    if (e.ctrlKey && e.code === "Slash") {
+      const txt = (await navigator.clipboard.readText())?.trim();
+      if (!txt) return;
 
-      const { origin, pathname } = location;
-      const url = `${origin}/search?q=${text}`;
+      const url = `${origin}/search?q=${txt}`;
       pathname === "/search" ? (location.href = url) : Util.openTab(url);
+    } else if (e.code === "Slash" && !exclude.includes(document.activeElement.nodeName)) {
+      input.focus();
+      input.select();
     }
-  });
-
-  document.addEventListener("keyup", (e) => {
-    if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName)) return;
-    if (e.key !== "/") return;
-
-    const input = document.querySelector("#video-search");
-    input.focus();
-    input.select();
   });
 })();
