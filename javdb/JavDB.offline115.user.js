@@ -184,8 +184,6 @@
 
         if (defaultMagnetOptions) magnetOptions = { ...defaultMagnetOptions, ...magnetOptions };
         const _magnets = parseMagnets(magnets, magnetOptions);
-        if (!_magnets.length) return null;
-
         const { max: magnetMax } = magnetOptions;
 
         if (type === "plain") {
@@ -270,9 +268,10 @@
         <div class="column">
           <div id="x-offline" class="buttons are-small">
           ${actions
-            .map(({ color, index, idx, desc, name }) => {
+            .map(({ color, index, idx, desc, name, magnets }) => {
+              const hidden = magnets.length ? "" : "is-hidden";
               return `
-              <button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}">
+              <button class="button ${color} ${hidden}" data-index="${index}" data-idx="${idx}" title="${desc}">
                 ${name}
               </button>`;
             })
@@ -514,24 +513,11 @@
     const _actions = getActions(config, details, _magnets);
     if (!_actions.length) return;
 
-    const disabled = offlineNode.querySelector("button.is-loading") ? "disabled" : "";
+    _actions.forEach(({ magnets, index, idx }) => {
+      if (!magnets.length) return;
 
-    _actions.forEach((item) => {
-      const { color, index, idx, desc, name } = item;
-      const _index = actions.findIndex((ac) => ac.index === index && ac.idx === idx);
-
-      if (_index !== -1) {
-        actions[_index].magnets = item.magnets;
-      } else {
-        actions.push(item);
-
-        offlineNode.insertAdjacentHTML(
-          "beforeend",
-          `<button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}" ${disabled}>
-            ${name}
-          </button>`,
-        );
-      }
+      actions[actions.findIndex((ac) => ac.index === index && ac.idx === idx)].magnets = magnets;
+      offlineNode.querySelector(`button[data-index="${index}"][data-idx="${idx}"]`).classList.remove("is-hidden");
     });
   };
   const observer = new MutationObserver(callback);
