@@ -110,17 +110,16 @@
     const infoNode = dom.querySelector(".movie-panel-info");
     const code = infoNode.querySelector(".first-block .value").textContent;
 
-    let title = dom.querySelector(".title.is-4");
-    title = `${title.querySelector("strong").textContent}${
-      (title.querySelector(".origin-title") ?? title.querySelector(".current-title")).textContent
-    }`;
+    const titleNode = dom.querySelector(".title.is-4");
+    let title = titleNode.querySelector("strong").textContent;
+    title += (titleNode.querySelector(".origin-title") ?? titleNode.querySelector(".current-title")).textContent;
     title = title.replaceAll(code, "").trim();
 
     const details = {};
     infoNode.querySelectorAll(".movie-panel-info > .panel-block").forEach((item) => {
       const label = item.querySelector("strong")?.textContent;
       const value = item.querySelector(".value")?.textContent;
-      if (!label || !value) return;
+      if (!label || !value || value.includes("N/A")) return;
 
       if (label === "日期:") details.date = value;
       if (label === "導演:") details.director = value;
@@ -128,7 +127,7 @@
       if (label === "發行:") details.publisher = value;
       if (label === "系列:") details.series = value;
       if (label === "類別:") details.genres = value.split(",").map((item) => item.trim());
-      if (label !== "演員:" || value.includes("N/A")) return;
+      if (label !== "演員:") return;
       details.actors = value
         .split("\n")
         .map((item) => item.trim())
@@ -156,17 +155,15 @@
       .toSorted(Util.magnetSort);
   }
 
-  const parseVar = (txt, params) => {
-    return txt.replace(Util.varRep, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : "")).trim();
+  const parseVar = (txt, params, rep = "") => {
+    return txt.replace(Util.varReg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
   };
 
   const parseDir = (dir, params) => {
-    dir = typeof dir === "string" ? dir.split("/") : dir;
-    return dir.map((item) => {
-      const vars = item.match(Util.varRep);
-      if (!vars?.length) return item.trim();
-      if (!vars.every((key) => params.hasOwnProperty(key.match(Util.varReg)[1]))) return null;
-      return parseVar(item, params);
+    const rep = "$0";
+    return (typeof dir === "string" ? dir.split("/") : dir).map((item) => {
+      const txt = parseVar(item, params, rep);
+      return txt.includes(rep) ? null : txt;
     });
   };
 
@@ -268,7 +265,7 @@
         <div class="column">
           <div id="x-offline" class="buttons are-small">
           ${actions
-            .map(({ color, index, idx, desc, name, magnets }) => {
+            .map(({ magnets, color, index, idx, desc, name }) => {
               const hidden = magnets.length ? "" : "is-hidden";
               return `
               <button class="button ${color} ${hidden}" data-index="${index}" data-idx="${idx}" title="${desc}">
@@ -376,12 +373,13 @@
     if (verifyOptions.requireVdi) verifyFile = (file) => regex.test(file.n) && file.hasOwnProperty("vdi");
 
     const taskList = [];
+    const taskLenMax = magnetMax - 1;
+
     for (let index = 0, { length } = magnets; index < length; index++) {
-      if (taskList.length > magnetMax - 1) break;
+      if (taskList.length > taskLenMax) break;
       taskList.push(index);
 
       const { url, zh, crack } = magnets[index];
-
       const { state, errcode, error_msg, info_hash } = await Util115.lixianAddTaskUrl(url, cid);
       if (!state) {
         if (errcode === 10008 && index !== length - 1) {
@@ -431,7 +429,7 @@
 
   function handleRename({ rename, zh, crack, file_id, videos }) {
     rename = parseVar(rename, { ...details, zh: zh ? zhTxt : "", crack: crack ? crackTxt : "" });
-    if (!regex.test(rename)) rename = `${code} ${rename}`.trim();
+    if (!regex.test(rename)) rename = `${code} ${rename}`;
 
     const renameObj = { [file_id]: rename };
 
