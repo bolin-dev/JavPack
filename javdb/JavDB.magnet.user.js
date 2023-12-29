@@ -24,6 +24,7 @@
 
   const btdigHost = "https://btdig.com";
   const transToByte = Util.useTransByte();
+  const minMagnetSize = parseFloat(transToByte("200MB"));
   const hdSize = parseFloat(transToByte("2GB"));
 
   const code = document.querySelector(".first-block .value").textContent;
@@ -106,6 +107,7 @@
 
           return { ...item, url, name, meta, size, zh, crack, hd };
         })
+        .filter(({ size }) => parseFloat(size) > minMagnetSize)
         .reduce((acc, cur) => {
           const index = acc.findIndex((item) => item.url === cur.url);
 
