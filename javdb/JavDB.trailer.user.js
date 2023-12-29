@@ -53,18 +53,22 @@
     const video = document.createElement("video");
 
     video.src = src;
-    video.loop = false;
     video.title = "";
     video.poster = poster;
     video.controls = true;
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
-    const arrowTime = { ArrowLeft: -2.5, ArrowRight: 5 };
+    const arrowTime = {
+      ArrowLeft: -2.5,
+      KeyA: -2.5,
+      ArrowRight: 5,
+      KeyD: 5,
+    };
 
     video.addEventListener("keydown", (e) => {
-      if (e.key === "m") video.muted = !video.muted;
+      if (e.code === "KeyM") video.muted = !video.muted;
 
-      const time = arrowTime[e.key];
+      const time = arrowTime[e.code];
       if (!time) return;
 
       e.preventDefault();
