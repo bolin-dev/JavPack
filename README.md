@@ -16,11 +16,11 @@
 | JavDB.layout                         | 布局调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.layout.user.js)     |
 | [JavDB.search](#javdbsearch)         | 快捷搜索     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.search.user.js)     |
 | [JavDB.nav](#javdbnav)               | 快捷翻页     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.nav.user.js)        |
-| JavDB.openTab                        | 新标签页打开 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.openTab.user.js)    |
+| [JavDB.openTab](#javdbopentab)       | 新标签页打开 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.openTab.user.js)    |
 | [JavDB.quickLook](#javdbquicklook)   | 快速查看     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.quickLook.user.js)  |
 | JavDB.scroll                         | 滚动加载     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.scroll.user.js)     |
 | JavDB.filter                         | 影片筛选     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.filter.user.js)     |
-| JavDB.trailer                        | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
+| [JavDB.trailer](#javdbtrailer)       | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
 | JavDB.match115                       | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.match115.user.js)   |
 | JavDB.sprite                         | 雪碧图       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.sprite.user.js)     |
 | JavDB.magnet                         | 磁链扩展     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.magnet.user.js)     |
@@ -42,13 +42,19 @@
 
 - 方向键左右翻页
 
+### JavDB.openTab
+
 - 鼠标左键前台新标签页打开，右键后台新标签页
 
 ### JavDB.quickLook
 
-- 鼠标悬停后，键入 `Space` 弹窗预览影片详情，再次键入 `Space` / `Esc` 以关闭弹窗
+- 鼠标悬停卡片后，键入 `Space` 弹窗预览影片详情，再次键入 `Space` / `Esc` 以关闭弹窗
 
 - 预览时键入 `Enter` 访问详情页
+
+### JavDB.trailer
+
+- 方向键或 `keyA` `keyD` 控制播放进度
 
 ### JavDB.offline115
 
