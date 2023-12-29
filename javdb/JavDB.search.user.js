@@ -8,7 +8,7 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @run-at          document-start
+// @run-at          document-body
 // @grant           GM_openInTab
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
@@ -27,9 +27,14 @@
 
       const url = `${origin}/search?q=${txt}`;
       pathname === "/search" ? (location.href = url) : Util.openTab(url);
-    } else if (e.code === "Slash" && !exclude.includes(document.activeElement.nodeName)) {
-      input.focus();
-      input.select();
     }
+  });
+
+  document.addEventListener("keyup", (e) => {
+    if (e.code !== "Slash") return;
+    if (exclude.includes(document.activeElement.nodeName)) return;
+
+    input.focus();
+    input.select();
   });
 })();
