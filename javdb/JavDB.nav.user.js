@@ -15,13 +15,13 @@
 // ==/UserScript==
 
 (function () {
-  const keyMap = {
+  const actionMap = {
     ArrowLeft: "previous",
     ArrowRight: "next",
   };
 
   document.addEventListener("keyup", (e) => {
-    const action = keyMap[e.key];
+    const action = actionMap[e.code];
     if (!action) return;
 
     const active = document.activeElement;
