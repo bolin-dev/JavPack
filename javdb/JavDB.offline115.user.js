@@ -89,7 +89,7 @@
   const zhTxt = "[中字]";
   const crackTxt = "[破解]";
   const transToByte = Util.useTransByte();
-  const minMagnetSize = parseFloat(transToByte("200MB"));
+  const minMagnetSize = parseFloat(transToByte("300MB"));
   const maxMagnetSize = parseFloat(transToByte("15GB"));
 
   const defaultMagnetOptions = {
