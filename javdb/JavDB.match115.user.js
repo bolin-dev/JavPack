@@ -123,10 +123,10 @@
     border: 3px solid #ffd257;
   }
   [data-theme="dark"] .movie-list .item:has(.video-title .is-success) {
-    border: 2px solid #48c78e;
+    border-color: #48c78e;
   }
   [data-theme="dark"] .movie-list .item:has(.video-title .is-warning) {
-    border: 2px solid #ffe08a;
+    border-color: #ffe08a;
   }
   `);
 
