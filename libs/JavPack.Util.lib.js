@@ -26,7 +26,7 @@ class Util {
     return {
       codes,
       prefix: codes[0],
-      regex: new RegExp(`(?<![a-z])${codes.join("(0|-|_){0,2}")}(?!\\d)`, "i"),
+      regex: new RegExp(`(?<![a-z])${codes.join("(0|-|_｜\\s){0,2}")}(?!\\d)`, "i"),
     };
   }
 
