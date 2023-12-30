@@ -21,6 +21,7 @@
 // @grant           GM_setValue
 // @grant           GM_getValue
 // @grant           GM_addStyle
+// @grant           GM_info
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -107,8 +108,7 @@
       });
     };
 
-    unsafeWindow.match115 ??= {};
-    unsafeWindow.match115.matchCode = matchCode;
+    Util.setWindow("matchCode", matchCode);
     listenClick(matchCode);
     return matchCode();
   }
