@@ -57,7 +57,7 @@
       const val = target.dataset[config.key];
       if (!val) return;
 
-      const tab = Util.openTab(config.url.replace("%s", val));
+      const tab = Util.openTab(config.url.replaceAll("%s", val));
       tab.onclose = () => handleClose(target);
     };
 
@@ -83,7 +83,7 @@
     const code = infoNode.querySelector(".first-block .value").textContent;
     const { codes, regex } = Util.codeParse(code);
 
-    const matchResource = () => {
+    const matchCode = () => {
       return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
         if (!state) {
           matchResNode.textContent = "查询失败，请检查登录状态";
@@ -107,9 +107,10 @@
       });
     };
 
-    unsafeWindow.match115Resource = matchResource;
-    listenClick(matchResource);
-    return matchResource();
+    unsafeWindow.match115 ??= {};
+    unsafeWindow.match115.matchCode = matchCode;
+    listenClick(matchCode);
+    return matchCode();
   }
 
   const childList = document.querySelectorAll(".movie-list .item");
