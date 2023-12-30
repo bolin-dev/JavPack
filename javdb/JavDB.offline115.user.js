@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     115 网盘离线
-// @match           https://javdb.com/*
+// @match           https://javdb.com/v/*
 // @match           https://captchaapi.115.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
@@ -86,7 +86,6 @@
     },
   ];
   if (!config.length) return;
-  if (!pathname.startsWith("/v/")) return Util.setWindow("config", config);
 
   const zhTxt = "[中字]";
   const crackTxt = "[破解]";
