@@ -75,10 +75,12 @@
     );
 
     const infoNode = document.querySelector(".movie-panel-info");
-    infoNode.insertAdjacentHTML(
-      "beforeend",
-      '<div class="panel-block"><strong>115 资源:</strong>&nbsp;<span class="value" id="x-match-res">查询中...</span></div>',
-    );
+    infoNode
+      .querySelector(".review-buttons")
+      .insertAdjacentHTML(
+        "afterend",
+        '<div class="panel-block"><strong>115 资源:</strong>&nbsp;<span class="value" id="x-match-res">查询中...</span></div>',
+      );
 
     const matchResNode = infoNode.querySelector("#x-match-res");
     const code = infoNode.querySelector(".first-block .value").textContent;
