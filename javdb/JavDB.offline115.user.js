@@ -4,7 +4,7 @@
 // @version         0.0.1
 // @author          blc
 // @description     115 网盘离线
-// @match           https://javdb.com/v/*
+// @match           https://javdb.com/*
 // @match           https://captchaapi.115.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
@@ -39,7 +39,8 @@
 // ==/UserScript==
 
 (function () {
-  if (location.host === "captchaapi.115.com") {
+  const { host, pathname } = location;
+  if (host === "captchaapi.115.com") {
     return document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
       setTimeout(() => {
         if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") !== -1) {
@@ -85,6 +86,7 @@
     },
   ];
   if (!config.length) return;
+  if (!pathname.startsWith("/v/")) return Util.setWindow("config", config);
 
   const zhTxt = "[中字]";
   const crackTxt = "[破解]";
@@ -331,7 +333,7 @@
     if (res.code === 0) {
       Util.notify({ text: res.msg, icon: "success" });
       Util.setTabBar({ text: `${code} 离线成功`, icon: "success" });
-      unsafeWindow.match115Resource?.();
+      Util.getWindow("matchCode", "match115")?.();
       return offlineEnd();
     }
 
@@ -490,7 +492,7 @@
     }
 
     if (upload.includes("sprite")) {
-      const url = localStorage.getItem(`sprite_${location.pathname.split("/").pop()}`);
+      const url = localStorage.getItem(`sprite_${pathname.split("/").pop()}`);
       if (url) reqList.push(() => Util115.handleUpload({ cid, url, filename: `${code}.sprite.jpg` }));
     }
 
