@@ -21,6 +21,16 @@ class Util {
     GM_setValue("CD", date);
   }
 
+  static setWindow(key, val, pre) {
+    pre = pre ? pre.toString() : GM_info.script.name.split(".").at(-1);
+    unsafeWindow[pre] ??= {};
+    unsafeWindow[pre][key] = val;
+  }
+
+  static getWindow(key, pre) {
+    return unsafeWindow[pre]?.[key];
+  }
+
   static codeParse(code) {
     const codes = code.split(this.sepReg);
     return {
