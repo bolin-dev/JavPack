@@ -34,12 +34,12 @@ class Util115 extends Req115 {
     return cid;
   }
 
-  static async verifyTask(info_hash, verifyFn, max_retry = 10) {
+  static async verifyTask(info_hash, verifyFn, retry = 10) {
     const statusCodes = [0, 1, 2];
     let file_id = "";
     let videos = [];
 
-    for (let index = 0; index < max_retry; index++) {
+    for (let index = 0; index < retry; index++) {
       if (index) await this.sleep();
       const { tasks } = await this.lixianTaskLists();
 
@@ -51,7 +51,7 @@ class Util115 extends Req115 {
     }
     if (!file_id) return { file_id, videos };
 
-    for (let index = 0; index < max_retry; index++) {
+    for (let index = 0; index < retry; index++) {
       if (index) await this.sleep();
       const { data } = await this.videos(file_id);
 
