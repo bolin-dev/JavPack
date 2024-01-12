@@ -78,11 +78,11 @@
   ];
   if (!config.length) return;
 
-  const zhTxt = "[中字]";
-  const crackTxt = "[破解]";
+  const zhTxt = Util115.zhTxt;
+  const crackTxt = Util115.crackTxt;
   const transToByte = Util.useTransByte();
-  const minMagnetSize = parseFloat(transToByte("300MB"));
-  const maxMagnetSize = parseFloat(transToByte("15GB"));
+  const minMagnetSize = parseFloat(transToByte(Util115.minMagnetSize));
+  const maxMagnetSize = parseFloat(transToByte(Util115.maxMagnetSize));
 
   const defaultMagnetOptions = {
     filter: ({ size }) => {

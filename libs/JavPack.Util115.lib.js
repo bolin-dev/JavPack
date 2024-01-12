@@ -1,4 +1,9 @@
 class Util115 extends Req115 {
+  static zhTxt = "[中文]";
+  static crackTxt = "[破解]";
+  static minMagnetSize = "300MB";
+  static maxMagnetSize = "15GB";
+
   static videosSearch(search_value) {
     return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
