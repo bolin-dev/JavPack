@@ -101,4 +101,17 @@ class Util115 extends Req115 {
       setTimeout(resolve, s * 1000);
     });
   }
+
+  static captcha(dom = document) {
+    const hint = dom.querySelector(".vcode-hint");
+
+    dom.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
+      setTimeout(() => {
+        if (hint.getAttribute("style").indexOf("none") !== -1) {
+          GM_setValue("VERIFY_STATUS", "verified");
+          window.close();
+        }
+      }, 300);
+    });
+  }
 }
