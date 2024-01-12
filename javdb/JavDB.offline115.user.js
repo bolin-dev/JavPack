@@ -40,16 +40,7 @@
 
 (function () {
   const { host, pathname } = location;
-  if (host === "captchaapi.115.com") {
-    return document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
-      setTimeout(() => {
-        if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") !== -1) {
-          GM_setValue("VERIFY_STATUS", "verified");
-          window.close();
-        }
-      }, 300);
-    });
-  }
+  if (host === "captchaapi.115.com") return Util115.captcha();
 
   const config = [
     {
