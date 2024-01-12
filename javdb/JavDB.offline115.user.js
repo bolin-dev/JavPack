@@ -40,7 +40,16 @@
 
 (function () {
   const { host, pathname } = location;
-  if (host === "captchaapi.115.com") return Util115.captcha();
+  if (host === "captchaapi.115.com") {
+    return document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
+      setTimeout(() => {
+        if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") !== -1) {
+          GM_setValue("VERIFY_STATUS", "verified");
+          window.close();
+        }
+      }, 300);
+    });
+  }
 
   const config = [
     {
@@ -78,11 +87,11 @@
   ];
   if (!config.length) return;
 
-  const zhTxt = Util115.zhTxt;
-  const crackTxt = Util115.crackTxt;
+  const zhTxt = "[中字]";
+  const crackTxt = "[破解]";
   const transToByte = Util.useTransByte();
-  const minMagnetSize = parseFloat(transToByte(Util115.minMagnetSize));
-  const maxMagnetSize = parseFloat(transToByte(Util115.maxMagnetSize));
+  const minMagnetSize = parseFloat(transToByte("300MB"));
+  const maxMagnetSize = parseFloat(transToByte("15GB"));
 
   const defaultMagnetOptions = {
     filter: ({ size }) => {

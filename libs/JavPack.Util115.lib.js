@@ -1,9 +1,4 @@
 class Util115 extends Req115 {
-  static zhTxt = "[中文]";
-  static crackTxt = "[破解]";
-  static minMagnetSize = "300MB";
-  static maxMagnetSize = "15GB";
-
   static videosSearch(search_value) {
     return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
@@ -104,19 +99,6 @@ class Util115 extends Req115 {
   static sleep(s = 1) {
     return new Promise((resolve) => {
       setTimeout(resolve, s * 1000);
-    });
-  }
-
-  static captcha(dom = document) {
-    const hint = dom.querySelector(".vcode-hint");
-
-    dom.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
-      setTimeout(() => {
-        if (hint.getAttribute("style").indexOf("none") !== -1) {
-          GM_setValue("VERIFY_STATUS", "verified");
-          window.close();
-        }
-      }, 300);
     });
   }
 }
