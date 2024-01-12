@@ -409,13 +409,16 @@
 
       Util115.filesEditDesc(videos, info_hash);
 
-      if (rename) handleRename({ rename, zh, crack, file_id, videos });
+      const srt = await handleFindSrt(file_id);
+      const files = srt ? [srt, ...videos] : videos;
+
+      if (rename) handleRename({ rename, zh, crack, file_id, files });
 
       if (tags?.length) handleTags({ tags, videos });
 
-      await handleMove({ videos, file_id });
+      await handleMove({ files, file_id });
 
-      if (clean) await handleClean({ videos, file_id });
+      if (clean) await handleClean({ files, file_id });
 
       if (upload?.length) {
         res.msg += "，上传图片中...";
@@ -428,13 +431,18 @@
     return res;
   }
 
-  function handleRename({ rename, zh, crack, file_id, videos }) {
+  async function handleFindSrt(file_id) {
+    const { data } = await Util115.filesByOrder(file_id, { suffix: "srt" });
+    return data.find(({ n }) => regex.test(n));
+  }
+
+  function handleRename({ rename, zh, crack, file_id, files }) {
     rename = parseVar(rename, { ...details, zh: zh ? zhTxt : "", crack: crack ? crackTxt : "" });
     if (!regex.test(rename)) rename = `${code} ${rename}`;
 
     const renameObj = { [file_id]: rename };
 
-    const icoMap = videos.reduce((acc, { ico, ...item }) => {
+    const icoMap = files.reduce((acc, { ico, ...item }) => {
       acc[ico] ??= [];
       acc[ico].push(item);
       return acc;
@@ -466,16 +474,16 @@
     Util115.filesBatchLabelName(videos, tags);
   }
 
-  function handleMove({ videos, file_id }) {
-    const mv_fids = videos.filter((item) => item.cid !== file_id).map((item) => item.fid);
+  function handleMove({ files, file_id }) {
+    const mv_fids = files.filter((item) => item.cid !== file_id).map((item) => item.fid);
     if (mv_fids.length) return Util115.filesMove(mv_fids, file_id);
   }
 
-  async function handleClean({ videos, file_id }) {
+  async function handleClean({ files, file_id }) {
     const { data } = await Util115.filesByOrder(file_id);
 
     const rm_fids = data
-      .filter((item) => !videos.some(({ fid }) => fid === item.fid))
+      .filter((item) => !files.some(({ fid }) => fid === item.fid))
       .map((item) => item.fid ?? item.cid);
 
     if (rm_fids.length) return Util115.rbDelete(rm_fids, file_id);
