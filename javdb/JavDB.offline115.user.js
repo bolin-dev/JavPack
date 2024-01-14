@@ -422,7 +422,10 @@
 
       if (upload?.length) {
         res.msg += "，上传图片中...";
-        handleUpload({ upload, file_id }).then(() => Util.notify({ text: "上传结束", icon: "success", tag: "upload" }));
+        handleUpload({ upload, file_id }).then(([coverRes]) => {
+          Util.notify({ text: "上传结束", icon: "success", tag: "upload" });
+          if (upload.includes("cover")) handleCover(coverRes.value?.data);
+        });
       }
 
       break;
@@ -504,6 +507,10 @@
     }
 
     return Promise.allSettled(reqList.map((fn) => fn()));
+  }
+
+  function handleCover({ cid: fid, file_id: fid_cover }) {
+    return Util115.filesEdit({ fid, fid_cover });
   }
 
   const offlineEnd = () => {
