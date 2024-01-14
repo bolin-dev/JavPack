@@ -49,6 +49,22 @@
       ?.querySelector(".value").textContent;
   }
 
+  const handleKeydown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { code, target } = e;
+    if (code === "KeyM") target.muted = !target.muted;
+    if (code === "KeyW" || code === "ArrowUp") target.volume += 0.1;
+    if (code === "KeyA" || code === "ArrowLeft") target.currentTime -= 2.5;
+    if (code === "KeyS" || code === "ArrowDown") target.volume -= 0.1;
+    if (code === "KeyD" || code === "ArrowRight") target.currentTime += 5;
+  };
+
+  const handleVolumechange = ({ target }) => {
+    localStorage.setItem("volume", target.volume);
+  };
+
   function createVideo(src, poster) {
     const video = document.createElement("video");
 
@@ -58,27 +74,8 @@
     video.controls = true;
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
-    const arrowTime = {
-      ArrowLeft: -2.5,
-      KeyA: -2.5,
-      ArrowRight: 5,
-      KeyD: 5,
-    };
-
-    video.addEventListener("keydown", (e) => {
-      if (e.code === "KeyM") video.muted = !video.muted;
-
-      const time = arrowTime[e.code];
-      if (!time) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-      video.currentTime += time;
-    });
-
-    video.addEventListener("volumechange", ({ target }) => {
-      localStorage.setItem("volume", target.volume);
-    });
+    video.addEventListener("keydown", handleKeydown);
+    video.addEventListener("volumechange", handleVolumechange);
 
     return video;
   }
