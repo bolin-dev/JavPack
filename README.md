@@ -50,11 +50,13 @@
 
 - 鼠标悬停卡片后，键入 `Space` 弹窗预览影片详情，再次键入 `Space` / `Esc` 以关闭弹窗
 
-- 预览时键入 `Enter` 访问详情页
+- 弹窗预览时键入 `Enter` 访问详情页
 
 ### JavDB.trailer
 
-- 左右方向键或 `keyA` `keyD` 控制播放进度
+- 方向键或 `keyW` `keyA` `keyS` `keyD` 分别控制播放进度和音量
+
+- `KeyM` 控制静音
 
 ### JavDB.offline115
 
