@@ -229,6 +229,8 @@
         ({
           desc,
           clean = true,
+          setHash = true,
+          setCover = true,
           color = "is-info",
           verifyOptions = {},
           upload = ["cover"],
@@ -240,6 +242,8 @@
             ...item,
             desc: desc ?? item.dir.join(" / "),
             verifyOptions,
+            setCover,
+            setHash,
             upload,
             color,
             clean,
@@ -367,7 +371,7 @@
   }
 
   async function handleSmartOffline({ magnets, cid, action }) {
-    const { verifyOptions, magnetMax, rename, tags, clean, upload } = action;
+    const { verifyOptions, magnetMax, setHash, rename, tags, clean, upload, setCover } = action;
     const res = { code: 0, msg: "" };
 
     let verifyFile = (file) => regex.test(file.n);
@@ -407,7 +411,7 @@
         res.msg = "离线成功";
       }
 
-      Util115.filesEditDesc(videos, info_hash);
+      if (setHash) Util115.filesEditDesc(videos, info_hash);
 
       const srt = await handleFindSrt(file_id);
       const files = srt ? [srt, ...videos] : videos;
@@ -424,7 +428,7 @@
         res.msg += "，上传图片中...";
         handleUpload({ upload, file_id }).then(([coverRes]) => {
           Util.notify({ text: "上传结束", icon: "success", tag: "upload" });
-          if (upload.includes("cover")) handleCover(coverRes.value?.data);
+          if (setCover && upload.includes("cover")) handleCover(coverRes.value?.data);
         });
       }
 
