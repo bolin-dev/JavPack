@@ -79,10 +79,12 @@
 | `verifyOptions.requireVdi` | `boolean`                         | 验证视频已转码                                                                                                                              | `true`                                       |
 | `verifyOptions.clean`      | `boolean`                         | 验证失败清理任务                                                                                                                            | `true`                                       |
 | `verifyOptions.max`        | `number`                          | 验证最大次数                                                                                                                                | `10`                                         |
+| `setHash`                  | `boolean`                         | 文件备注磁链 hash                                                                                                                           | `true`                                       |
 | `rename`                   | `string`                          | 重命名，支持 `动态参数`                                                                                                                     | `"${zh}${crack} ${code} ${title}"`           |
 | `tags`                     | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
 | `clean`                    | `boolean`                         | 清理垃圾                                                                                                                                    | `true`                                       |
 | `upload`                   | `["cover", "sprite"]`             | 上传图片                                                                                                                                    | `["cover"]`                                  |
+| `setCover`                 | `boolean`                         | 设置文件夹封面，需 `upload = ["cover", ...]`                                                                                                | `true`                                       |
 
 <details><summary>动态参数</summary>
 
