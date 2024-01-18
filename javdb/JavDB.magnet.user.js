@@ -7,6 +7,7 @@
 // @match           https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilMagnet.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -20,10 +21,11 @@
 // ==/UserScript==
 
 (function () {
-  Util.upLocal();
+  UtilDB.upLocal();
 
   const btdigHost = "https://btdig.com";
-  const transToByte = Util.useTransByte();
+  const transToByte = UtilDB.useTransByte();
+  const isUncensored = UtilDB.isUncensored();
   const hdSize = parseFloat(transToByte("2GB"));
   const minSize = parseFloat(transToByte("300MB"));
 
@@ -98,9 +100,9 @@
 
           size = transToByte(size);
 
-          if (!zh) zh = Util.zhReg.test(name);
+          if (!zh) zh = UtilDB.zhReg.test(name);
 
-          const crack = Util.crackReg.test(name);
+          const crack = !isUncensored && UtilDB.crackReg.test(name);
 
           if (!hd) hd = parseFloat(size) >= hdSize;
 
@@ -118,7 +120,7 @@
 
           return acc;
         }, [])
-        .toSorted(Util.magnetSort)
+        .toSorted(UtilDB.magnetSort)
         .map(({ url, name, meta, zh, crack, hd, date }, idx) => {
           const odd = !(idx % 2) ? " odd" : "";
           const hash = url.split(":").pop();
@@ -155,6 +157,6 @@
 
     e.preventDefault();
     e.stopPropagation();
-    Util.openTab(`${btdigHost}/${hash}`);
+    UtilDB.openTab(`${btdigHost}/${hash}`);
   });
 })();
