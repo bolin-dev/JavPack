@@ -92,8 +92,8 @@
   const crackTxt = "[破解]";
   const transToByte = UtilDB.useTransByte();
   const isUncensored = UtilDB.isUncensored();
-  const minMagnetSize = parseFloat(transToByte("300MB"));
-  const maxMagnetSize = parseFloat(transToByte("15GB"));
+  const minMagnetSize = parseFloat(transToByte(UtilDB.minMagnetSize));
+  const maxMagnetSize = parseFloat(transToByte(UtilDB.maxMagnetSize));
 
   const defaultMagnetOptions = {
     filter: ({ size }) => {
