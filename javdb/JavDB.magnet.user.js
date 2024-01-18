@@ -98,8 +98,7 @@
 
           size = transToByte(size);
 
-          // eslint-disable-next-line no-eq-null, eqeqeq
-          if (zh == null) zh = Util.zhReg.test(name);
+          if (!zh) zh = Util.zhReg.test(name);
 
           const crack = Util.crackReg.test(name);
 
