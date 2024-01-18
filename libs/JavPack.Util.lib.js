@@ -5,6 +5,9 @@ class Util {
   static crackReg = /破解|-u(ncensored|c)?(?![a-z])/i;
   static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch/i;
 
+  static minMagnetSize = "300MB";
+  static maxMagnetSize = "15GB";
+
   static upLocal() {
     const date = new Date().getDate();
     if (localStorage.getItem("CD") === date.toString()) return;
