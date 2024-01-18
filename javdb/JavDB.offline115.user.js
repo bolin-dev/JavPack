@@ -8,6 +8,7 @@
 // @match           https://captchaapi.115.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
@@ -89,7 +90,8 @@
 
   const zhTxt = "[中字]";
   const crackTxt = "[破解]";
-  const transToByte = Util.useTransByte();
+  const transToByte = UtilDB.useTransByte();
+  const isUncensored = UtilDB.isUncensored();
   const minMagnetSize = parseFloat(transToByte("300MB"));
   const maxMagnetSize = parseFloat(transToByte("15GB"));
 
@@ -135,7 +137,7 @@
         .filter(Boolean);
     });
 
-    const { regex, prefix } = Util.codeParse(code);
+    const { regex, prefix } = UtilDB.codeParse(code);
     return { infoNode, regex, prefix, code, title, create: new Date().toISOString().slice(0, 10), ...details };
   }
 
@@ -146,18 +148,18 @@
         const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
         return {
           url: item.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
-          zh: !!item.querySelector(".tag.is-warning"),
+          zh: !!item.querySelector(".tag.is-warning") || UtilDB.zhReg.test(name),
           size: transToByte(meta.split(",")[0]),
-          crack: Util.crackReg.test(name),
+          crack: !isUncensored && UtilDB.crackReg.test(name),
           meta,
           name,
         };
       })
-      .toSorted(Util.magnetSort);
+      .toSorted(UtilDB.magnetSort);
   }
 
   const parseVar = (txt, params, rep = "") => {
-    return txt.replace(Util.varReg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
+    return txt.replace(UtilDB.varReg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
   };
 
   const parseDir = (dir, params) => {
@@ -298,12 +300,12 @@
     const { errcode, surplus } = await Util115.lixianGetQuotaPackageInfo();
 
     if (errcode === 99) {
-      Util.notify({ text: "网盘未登录", icon: "error" });
+      UtilDB.notify({ text: "网盘未登录", icon: "error" });
       return offlineEnd();
     }
 
     if (surplus < 1) {
-      Util.notify({ text: "离线配额不足", icon: "error" });
+      UtilDB.notify({ text: "离线配额不足", icon: "error" });
       return offlineEnd();
     }
 
@@ -313,7 +315,7 @@
 
     magnets = await filterMagnets(magnets.slice(currIdx, surplus));
     if (!magnets.length) {
-      Util.notify({ text: "网盘空间不足", icon: "error" });
+      UtilDB.notify({ text: "网盘空间不足", icon: "error" });
       return offlineEnd();
     }
 
@@ -323,35 +325,35 @@
 
       // eslint-disable-next-line eqeqeq, no-eq-null
       if (cid == null) {
-        Util.notify({ text: "生成下载目录 id 失败", icon: "error" });
+        UtilDB.notify({ text: "生成下载目录 id 失败", icon: "error" });
         return offlineEnd();
       }
 
       actions[_index].cid = cid;
     }
 
-    Util.setTabBar(`${code} 离线任务中...`);
+    UtilDB.setTabBar(`${code} 离线任务中...`);
     const res = await handleSmartOffline({ magnets, cid, action });
 
     if (res.code === 0) {
-      Util.notify({ text: res.msg, icon: "success" });
-      Util.setTabBar({ text: `${code} 离线成功`, icon: "success" });
-      Util.getWindow("matchCode", "match115")?.();
+      UtilDB.notify({ text: res.msg, icon: "success" });
+      UtilDB.setTabBar({ text: `${code} 离线成功`, icon: "success" });
+      UtilDB.getWindow("matchCode", "match115")?.();
       return offlineEnd();
     }
 
     if (res.code !== 911) {
-      Util.notify({ text: res.msg, icon: "warn" });
-      Util.setTabBar({ text: `${code} 离线失败`, icon: "warn" });
+      UtilDB.notify({ text: res.msg, icon: "warn" });
+      UtilDB.setTabBar({ text: `${code} 离线失败`, icon: "warn" });
       return offlineEnd();
     }
 
-    Util.setTabBar({ text: `${code} 离线验证中...`, icon: "warn" });
+    UtilDB.setTabBar({ text: `${code} 离线验证中...`, icon: "warn" });
 
     if (GM_getValue("VERIFY_STATUS") !== "pending") {
       GM_setValue("VERIFY_STATUS", "pending");
-      Util.notify({ text: "网盘待验证", icon: "warn" });
-      Util.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
+      UtilDB.notify({ text: "网盘待验证", icon: "warn" });
+      UtilDB.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
     // eslint-disable-next-line max-params
@@ -427,7 +429,7 @@
       if (upload?.length) {
         res.msg += "，上传图片中...";
         handleUpload({ upload, file_id }).then(([coverRes]) => {
-          Util.notify({ text: "上传结束", icon: "success", tag: "upload" });
+          UtilDB.notify({ text: "上传结束", icon: "success", tag: "upload" });
           if (setCover && upload.includes("cover")) handleCover(coverRes.value?.data);
         });
       }
