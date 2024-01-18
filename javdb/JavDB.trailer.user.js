@@ -7,6 +7,7 @@
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilTrailer.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -29,16 +30,12 @@
 // ==/UserScript==
 
 (function () {
-  Util.upLocal();
+  UtilDB.upLocal();
 
   const guessStudio = UtilTrailer.useStudio();
 
   function getTrailer(dom = document) {
     return dom.querySelector("#preview-video source")?.getAttribute("src");
-  }
-
-  function isUncensored(dom = document) {
-    return dom.querySelector(".title.is-4 strong").textContent.includes("無碼");
   }
 
   function getStudio(dom = document) {
@@ -114,7 +111,7 @@
     const code = document.querySelector(".first-block .value").textContent;
     UtilTrailer.javspyl(code).then(setTrailer);
 
-    if (isUncensored()) {
+    if (UtilDB.isUncensored()) {
       const studio = getStudio();
       if (studio) guessStudio(code, studio).then(setTrailer);
     } else {
@@ -265,7 +262,7 @@
   const getDetails = (dom) => {
     return {
       trailer: getTrailer(dom),
-      isUncensored: isUncensored(dom),
+      isUncensored: UtilDB.isUncensored(dom),
       studio: getStudio(dom),
     };
   };
