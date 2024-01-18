@@ -7,6 +7,7 @@ class Util {
 
   static minMagnetSize = "300MB";
   static maxMagnetSize = "15GB";
+  static hdMagnetSize = "2GB";
 
   static upLocal() {
     const date = new Date().getDate();
