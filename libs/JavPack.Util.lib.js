@@ -3,7 +3,7 @@ class Util {
   static crackReg = /破解/i;
   static numReg = /\d+\.\d+|\d+/;
   static varReg = /\$\{([a-z]+)\}/g;
-  static zhReg = /中文|中字|字幕|-c(?![a-z])|.+(?<![a-z])ch/i;
+  static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch/i;
 
   static upLocal() {
     const date = new Date().getDate();
