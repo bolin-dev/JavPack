@@ -26,8 +26,8 @@
   const btdigHost = "https://btdig.com";
   const transToByte = UtilDB.useTransByte();
   const isUncensored = UtilDB.isUncensored();
-  const hdSize = parseFloat(transToByte("2GB"));
-  const minSize = parseFloat(transToByte("300MB"));
+  const hdSize = parseFloat(transToByte(UtilDB.hdMagnetSize));
+  const minSize = parseFloat(transToByte(UtilDB.minMagnetSize));
 
   const code = document.querySelector(".first-block .value").textContent;
   const magnetNode = document.querySelector("#magnets-content");
