@@ -1,8 +1,8 @@
 class Util {
   static sepReg = /-|_/;
-  static crackReg = /破解/i;
   static numReg = /\d+\.\d+|\d+/;
   static varReg = /\$\{([a-z]+)\}/g;
+  static crackReg = /破解|-u(ncensored|c)?(?![a-z])/i;
   static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch/i;
 
   static upLocal() {
