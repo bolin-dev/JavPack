@@ -3,7 +3,7 @@
 // @namespace       115.delDir@blc
 // @version         0.0.1
 // @author          blc
-// @description     播放页删除目录
+// @description     播放页删除
 // @match           https://v.anxia.com/*
 // @icon            https://v.anxia.com/m_r/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
@@ -28,14 +28,35 @@
 
   GM_addStyle("#x-del{background:rgb(175,23,0)}#js_common_mini-dialog{display:none !important}");
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const htmlStr = "<a href='javascript:void(0);' class='btn-opendir' id='x-del'>删除目录</a>";
-    document.querySelector(".vt-headline").insertAdjacentHTML("beforeend", htmlStr);
+  const delNode = document.createElement("a");
+  delNode.id = "x-del";
+  delNode.textContent = "删除";
+  delNode.className = "btn-opendir";
+  delNode.href = "javascript:void(0);";
 
-    document.querySelector("#x-del").addEventListener("click", ({ target }) => {
-      target.style.pointerEvents = "none";
-      target.textContent = "请求中...";
-      Util115.delDirByPc(pc).then(window.close);
-    });
-  });
+  const turnNearby = () => {
+    const curr = document.querySelector("#js-video_list > li.hover");
+    const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
+    location.href = nearby.querySelector("a").href;
+  };
+
+  const smartDel = ({ file_id, parent_id }) => {
+    const videos = document.querySelectorAll("#js-video_list > li");
+    if (videos.length === 1) return Util115.rbDelete([parent_id]).then(window.close);
+    Util115.rbDelete([file_id]).then(turnNearby);
+  };
+
+  const handleClick = ({ target }) => {
+    target.textContent = "请求中...";
+    target.style.pointerEvents = "none";
+    Util115.filesVideo(pc).then(smartDel);
+  };
+
+  delNode.addEventListener("click", handleClick);
+
+  const handleLoaded = ({ target }) => {
+    target.querySelector(".vt-headline").insertAdjacentElement("beforeend", delNode);
+  };
+
+  document.addEventListener("DOMContentLoaded", handleLoaded);
 })();
