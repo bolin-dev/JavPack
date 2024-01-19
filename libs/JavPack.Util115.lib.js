@@ -92,10 +92,6 @@ class Util115 extends Req115 {
     return this.filesBatchLabel(files.map((file) => file.fid ?? file.cid).toString(), file_label.toString());
   }
 
-  static delDirByPc(pc) {
-    return this.filesVideo(pc).then(({ parent_id }) => this.rbDelete([parent_id]));
-  }
-
   static sleep(s = 1) {
     return new Promise((resolve) => {
       setTimeout(resolve, s * 1000);
