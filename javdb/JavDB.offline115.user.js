@@ -82,26 +82,8 @@
   const zhTxt = UtilDB.zhTxt;
   const crackTxt = UtilDB.crackTxt;
   const transToByte = UtilDB.useTransByte();
-  const isUncensored = UtilDB.isUncensored();
   const defaultVerifyOptions = Util115.defaultVerifyOptions;
   const defaultMagnetOptions = UtilDB.defaultMagnetOptions();
-
-  function getMagnets(dom = document) {
-    return [...dom.querySelectorAll("#magnets-content > .item")]
-      .map((item) => {
-        const name = item.querySelector(".name")?.textContent.trim() ?? "";
-        const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
-        return {
-          url: item.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
-          zh: !!item.querySelector(".tag.is-warning") || UtilDB.zhReg.test(name),
-          size: transToByte(meta.split(",")[0]),
-          crack: !isUncensored && UtilDB.crackReg.test(name),
-          meta,
-          name,
-        };
-      })
-      .toSorted(UtilDB.magnetSort);
-  }
 
   const parseVar = (txt, params, rep = "") => {
     return txt.replace(UtilDB.varReg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
@@ -207,7 +189,7 @@
 
   const { infoNode, regex, ...details } = UtilDB.getDetails();
   const { code } = details;
-  const magnets = getMagnets();
+  const magnets = UtilDB.getMagnets();
   const actions = getActions(config, details, magnets);
 
   infoNode.insertAdjacentHTML(
@@ -472,7 +454,7 @@
   };
 
   const callback = () => {
-    const _magnets = getMagnets();
+    const _magnets = UtilDB.getMagnets();
     if (_magnets.length === magnets.length) return;
 
     const _actions = getActions(config, details, _magnets);
