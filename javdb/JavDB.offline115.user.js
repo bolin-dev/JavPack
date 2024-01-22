@@ -82,20 +82,8 @@
   const zhTxt = UtilDB.zhTxt;
   const crackTxt = UtilDB.crackTxt;
   const transToByte = UtilDB.useTransByte();
-  const defaultVerifyOptions = Util115.defaultVerifyOptions;
   const defaultMagnetOptions = UtilDB.defaultMagnetOptions();
-
-  const parseVar = (txt, params, rep = "") => {
-    return txt.replace(UtilDB.varReg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
-  };
-
-  const parseDir = (dir, params) => {
-    const rep = "$0";
-    return (typeof dir === "string" ? dir.split("/") : dir).map((item) => {
-      const txt = parseVar(item, params, rep);
-      return txt.includes(rep) ? null : txt;
-    });
-  };
+  const defaultVerifyOptions = Util115.defaultVerifyOptions;
 
   const parseMagnets = (magnets, { filter, sort }) => {
     if (filter) magnets = magnets.filter(filter);
@@ -116,8 +104,8 @@
         if (type === "plain") {
           return {
             ...item,
-            name: parseVar(name, details),
-            dir: parseDir(dir, details),
+            name: UtilDB.parseVar(name, details),
+            dir: UtilDB.parseDir(dir, details),
             magnets: _magnets,
             magnetMax,
             rename,
@@ -143,8 +131,8 @@
           return {
             ...item,
             rename: rename.replaceAll(typeItemTxt, cls),
-            name: parseVar(name, _details),
-            dir: parseDir(dir, _details),
+            name: UtilDB.parseVar(name, _details),
+            dir: UtilDB.parseDir(dir, _details),
             magnets: _magnets,
             magnetMax,
             index,
@@ -373,7 +361,7 @@
   }
 
   function handleRename({ rename, zh, crack, file_id, files }) {
-    rename = parseVar(rename, { ...details, zh: zh ? zhTxt : "", crack: crack ? crackTxt : "" });
+    rename = UtilDB.parseVar(rename, { ...details, zh: zh ? zhTxt : "", crack: crack ? crackTxt : "" });
     if (!regex.test(rename)) rename = `${code} ${rename}`;
 
     const renameObj = { [file_id]: rename };
