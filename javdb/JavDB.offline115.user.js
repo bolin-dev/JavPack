@@ -166,11 +166,7 @@
       );
   }
 
-  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_info.script.icon });
-  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("success") });
-  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("error") });
-  GM_addElement(document.head, "link", { rel: "prefetch", href: GM_getResourceURL("warn") });
-
+  UtilDB.setTabIcon();
   const { infoNode, regex, ...details } = UtilDB.getDetails();
   const { code } = details;
   const magnets = UtilDB.getMagnets();
