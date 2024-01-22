@@ -306,7 +306,7 @@
       .flat()
       .filter(Boolean);
 
-    Util115.filesBatchLabelName(videos, tags);
+    if (tags.length) Util115.filesBatchLabelName(videos, tags);
   }
 
   function handleMove({ files, file_id }) {
