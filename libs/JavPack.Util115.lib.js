@@ -1,10 +1,4 @@
 class Util115 extends Req115 {
-  static defaultVerifyOptions = {
-    requireVdi: true,
-    clean: true,
-    max: 10,
-  };
-
   static videosSearch(search_value) {
     return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
