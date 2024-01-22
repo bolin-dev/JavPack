@@ -54,4 +54,85 @@ class UtilDB extends Util {
       })
       .toSorted(this.magnetSort);
   }
+
+  static getActions(config, details, magnets) {
+    const defaultMagnetOptions = this.defaultMagnetOptions();
+
+    return config
+      .map(({ magnetOptions = {}, type = "plain", match = [], exclude = [], ...item }, index) => {
+        const { name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
+        if (!name) return null;
+
+        if (defaultMagnetOptions) magnetOptions = { ...defaultMagnetOptions, ...magnetOptions };
+        const _magnets = this.parseMagnets(magnets, magnetOptions);
+        const { max: magnetMax } = magnetOptions;
+
+        if (type === "plain") {
+          return {
+            ...item,
+            name: this.parseVar(name, details),
+            dir: this.parseDir(dir, details),
+            magnets: _magnets,
+            magnetMax,
+            rename,
+            idx: 0,
+            index,
+          };
+        }
+
+        let classes = details[type];
+        if (!classes?.length) return null;
+
+        if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
+        if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
+        if (!classes.length) return null;
+
+        const typeItemKey = type.slice(0, -1);
+        const typeItemTxt = "${" + typeItemKey + "}";
+
+        return classes.map((cls, idx) => {
+          cls = cls.replace(/♀|♂/, "").trim();
+          const _details = { ...details, [typeItemKey]: cls };
+
+          return {
+            ...item,
+            rename: rename.replaceAll(typeItemTxt, cls),
+            name: this.parseVar(name, _details),
+            dir: this.parseDir(dir, _details),
+            magnets: _magnets,
+            magnetMax,
+            index,
+            idx,
+          };
+        });
+      })
+      .flat()
+      .filter((item) => Boolean(item) && item.dir.every(Boolean))
+      .map(
+        ({
+          desc,
+          clean = true,
+          setHash = true,
+          setCover = true,
+          color = "is-info",
+          verifyOptions = {},
+          upload = ["cover"],
+          tags = ["genres", "actors"],
+          ...item
+        }) => {
+          if (this.defaultVerifyOptions) verifyOptions = { ...this.defaultVerifyOptions, ...verifyOptions };
+          return {
+            ...item,
+            desc: desc ?? item.dir.join(" / "),
+            verifyOptions,
+            setCover,
+            setHash,
+            upload,
+            color,
+            clean,
+            tags,
+          };
+        },
+      );
+  }
 }
