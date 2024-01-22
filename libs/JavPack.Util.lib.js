@@ -150,4 +150,11 @@ class Util {
     if (sort) magnets = magnets.toSorted(sort);
     return magnets;
   };
+
+  static setTabIcon(dom = document) {
+    GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_info.script.icon });
+    GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_getResourceURL("success") });
+    GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_getResourceURL("error") });
+    GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_getResourceURL("warn") });
+  }
 }
