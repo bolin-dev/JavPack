@@ -79,8 +79,6 @@
   ];
   if (!config.length) return;
 
-  const zhTxt = UtilDB.zhTxt;
-  const crackTxt = UtilDB.crackTxt;
   const transToByte = UtilDB.useTransByte();
 
   UtilDB.preTabIcon();
@@ -270,7 +268,11 @@
   }
 
   function handleRename({ rename, zh, crack, file_id, files }) {
-    rename = UtilDB.parseVar(rename, { ...details, zh: zh ? zhTxt : "", crack: crack ? crackTxt : "" });
+    rename = UtilDB.parseVar(rename, {
+      ...details,
+      zh: zh ? UtilDB.zhTxt : "",
+      crack: crack ? UtilDB.crackTxt : "",
+    });
     if (!regex.test(rename)) rename = `${code} ${rename}`;
 
     const renameObj = { [file_id]: rename };
