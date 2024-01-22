@@ -132,4 +132,16 @@ class Util {
     if (a.crack !== b.crack) return a.crack ? -1 : 1;
     return parseFloat(b.size) - parseFloat(a.size);
   };
+
+  static parseVar = (txt, params, rep = "") => {
+    return txt.replace(this.varReg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
+  };
+
+  static parseDir = (dir, params) => {
+    const rep = "$0";
+    return (typeof dir === "string" ? dir.split("/") : dir).map((item) => {
+      const txt = this.parseVar(item, params, rep);
+      return txt.includes(rep) ? null : txt;
+    });
+  };
 }
