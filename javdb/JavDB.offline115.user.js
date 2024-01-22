@@ -166,7 +166,7 @@
       );
   }
 
-  UtilDB.setTabIcon();
+  UtilDB.preTabIcon();
   const { infoNode, regex, ...details } = UtilDB.getDetails();
   const { code } = details;
   const magnets = UtilDB.getMagnets();

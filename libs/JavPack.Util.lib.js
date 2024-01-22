@@ -151,7 +151,7 @@ class Util {
     return magnets;
   };
 
-  static setTabIcon(dom = document) {
+  static preTabIcon(dom = document) {
     GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_info.script.icon });
     GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_getResourceURL("success") });
     GM_addElement(dom.head, "link", { rel: "prefetch", href: GM_getResourceURL("error") });
