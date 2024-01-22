@@ -82,95 +82,12 @@
   const zhTxt = UtilDB.zhTxt;
   const crackTxt = UtilDB.crackTxt;
   const transToByte = UtilDB.useTransByte();
-  const defaultMagnetOptions = UtilDB.defaultMagnetOptions();
-  const defaultVerifyOptions = Util115.defaultVerifyOptions;
-
-  function getActions(config, details, magnets) {
-    return config
-      .map(({ magnetOptions = {}, type = "plain", match = [], exclude = [], ...item }, index) => {
-        const { name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
-        if (!name) return null;
-
-        if (defaultMagnetOptions) magnetOptions = { ...defaultMagnetOptions, ...magnetOptions };
-        const _magnets = UtilDB.parseMagnets(magnets, magnetOptions);
-        const { max: magnetMax } = magnetOptions;
-
-        if (type === "plain") {
-          return {
-            ...item,
-            name: UtilDB.parseVar(name, details),
-            dir: UtilDB.parseDir(dir, details),
-            magnets: _magnets,
-            magnetMax,
-            rename,
-            idx: 0,
-            index,
-          };
-        }
-
-        let classes = details[type];
-        if (!classes?.length) return null;
-
-        // eslint-disable-next-line max-nested-callbacks
-        if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
-        // eslint-disable-next-line max-nested-callbacks
-        if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
-        if (!classes.length) return null;
-
-        const typeItemKey = type.slice(0, -1);
-        const typeItemTxt = "${" + typeItemKey + "}";
-
-        return classes.map((cls, idx) => {
-          cls = cls.replace(/♀|♂/, "").trim();
-          const _details = { ...details, [typeItemKey]: cls };
-
-          return {
-            ...item,
-            rename: rename.replaceAll(typeItemTxt, cls),
-            name: UtilDB.parseVar(name, _details),
-            dir: UtilDB.parseDir(dir, _details),
-            magnets: _magnets,
-            magnetMax,
-            index,
-            idx,
-          };
-        });
-      })
-      .flat()
-      .filter((item) => Boolean(item) && item.dir.every(Boolean))
-      .map(
-        ({
-          desc,
-          clean = true,
-          setHash = true,
-          setCover = true,
-          color = "is-info",
-          verifyOptions = {},
-          upload = ["cover"],
-          tags = ["genres", "actors"],
-          ...item
-        }) => {
-          if (defaultVerifyOptions) verifyOptions = { ...defaultVerifyOptions, ...verifyOptions };
-          return {
-            ...item,
-            desc: desc ?? item.dir.join(" / "),
-            verifyOptions,
-            setCover,
-            setHash,
-            upload,
-            color,
-            clean,
-            tags,
-          };
-        },
-      );
-  }
 
   UtilDB.preTabIcon();
   const { infoNode, regex, ...details } = UtilDB.getDetails();
   const { code } = details;
   const magnets = UtilDB.getMagnets();
-  const actions = getActions(config, details, magnets);
+  const actions = UtilDB.getActions(config, details, magnets);
 
   infoNode.insertAdjacentHTML(
     "beforeend",
@@ -437,7 +354,7 @@
     const _magnets = UtilDB.getMagnets();
     if (_magnets.length === magnets.length) return;
 
-    const _actions = getActions(config, details, _magnets);
+    const _actions = UtilDB.getActions(config, details, _magnets);
     if (!_actions.length) return;
 
     _actions.forEach(({ magnets, index, idx }) => {
