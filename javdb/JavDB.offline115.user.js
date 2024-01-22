@@ -85,12 +85,6 @@
   const defaultMagnetOptions = UtilDB.defaultMagnetOptions();
   const defaultVerifyOptions = Util115.defaultVerifyOptions;
 
-  const parseMagnets = (magnets, { filter, sort }) => {
-    if (filter) magnets = magnets.filter(filter);
-    if (sort) magnets = magnets.toSorted(sort);
-    return magnets;
-  };
-
   function getActions(config, details, magnets) {
     return config
       .map(({ magnetOptions = {}, type = "plain", match = [], exclude = [], ...item }, index) => {
@@ -98,7 +92,7 @@
         if (!name) return null;
 
         if (defaultMagnetOptions) magnetOptions = { ...defaultMagnetOptions, ...magnetOptions };
-        const _magnets = parseMagnets(magnets, magnetOptions);
+        const _magnets = UtilDB.parseMagnets(magnets, magnetOptions);
         const { max: magnetMax } = magnetOptions;
 
         if (type === "plain") {
@@ -117,7 +111,9 @@
         let classes = details[type];
         if (!classes?.length) return null;
 
+        // eslint-disable-next-line max-nested-callbacks
         if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
+        // eslint-disable-next-line max-nested-callbacks
         if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
         if (!classes.length) return null;
 
