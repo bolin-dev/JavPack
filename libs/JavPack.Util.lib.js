@@ -11,6 +11,20 @@ class Util {
   static maxMagnetSize = "15GB";
   static hdMagnetSize = "2GB";
 
+  static defaultMagnetOptions = () => {
+    const transToByte = this.useTransByte();
+    const minMagnetSize = parseFloat(transToByte(this.minMagnetSize));
+    const maxMagnetSize = parseFloat(transToByte(this.maxMagnetSize));
+
+    return {
+      filter: ({ size }) => {
+        const magnetSize = parseFloat(size);
+        return magnetSize > minMagnetSize && magnetSize < maxMagnetSize;
+      },
+      max: 10,
+    };
+  };
+
   static upLocal() {
     const date = new Date().getDate();
     if (localStorage.getItem("CD") === date.toString()) return;
