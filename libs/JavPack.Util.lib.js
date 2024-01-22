@@ -11,6 +11,12 @@ class Util {
   static maxMagnetSize = "15GB";
   static hdMagnetSize = "2GB";
 
+  static defaultVerifyOptions = {
+    requireVdi: true,
+    clean: true,
+    max: 10,
+  };
+
   static defaultMagnetOptions = () => {
     const transToByte = this.useTransByte();
     const minMagnetSize = parseFloat(transToByte(this.minMagnetSize));
