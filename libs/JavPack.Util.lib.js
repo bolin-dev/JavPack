@@ -144,4 +144,10 @@ class Util {
       return txt.includes(rep) ? null : txt;
     });
   };
+
+  static parseMagnets = (magnets, { filter, sort }) => {
+    if (filter) magnets = magnets.filter(filter);
+    if (sort) magnets = magnets.toSorted(sort);
+    return magnets;
+  };
 }
