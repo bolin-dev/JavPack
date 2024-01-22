@@ -83,22 +83,8 @@
   const crackTxt = UtilDB.crackTxt;
   const transToByte = UtilDB.useTransByte();
   const isUncensored = UtilDB.isUncensored();
-  const minMagnetSize = parseFloat(transToByte(UtilDB.minMagnetSize));
-  const maxMagnetSize = parseFloat(transToByte(UtilDB.maxMagnetSize));
-
-  const defaultMagnetOptions = {
-    filter: ({ size }) => {
-      const magnetSize = parseFloat(size);
-      return magnetSize > minMagnetSize && magnetSize < maxMagnetSize;
-    },
-    max: 10,
-  };
-
-  const defaultVerifyOptions = {
-    requireVdi: true,
-    clean: true,
-    max: 10,
-  };
+  const defaultVerifyOptions = Util115.defaultVerifyOptions;
+  const defaultMagnetOptions = UtilDB.defaultMagnetOptions();
 
   function getDetails(dom = document) {
     const infoNode = dom.querySelector(".movie-panel-info");
