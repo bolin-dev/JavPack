@@ -5,6 +5,8 @@ class Util {
   static crackReg = /破解|-u(ncensored|c)?(?![a-z])/i;
   static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])/i;
 
+  static zhTxt = "[中字]";
+  static crackTxt = "[破解]";
   static minMagnetSize = "300MB";
   static maxMagnetSize = "15GB";
   static hdMagnetSize = "2GB";
