@@ -79,8 +79,8 @@
   ];
   if (!config.length) return;
 
-  const zhTxt = "[中字]";
-  const crackTxt = "[破解]";
+  const zhTxt = UtilDB.zhTxt;
+  const crackTxt = UtilDB.crackTxt;
   const transToByte = UtilDB.useTransByte();
   const isUncensored = UtilDB.isUncensored();
   const minMagnetSize = parseFloat(transToByte(UtilDB.minMagnetSize));
