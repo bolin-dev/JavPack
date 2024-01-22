@@ -34,4 +34,24 @@ class UtilDB extends Util {
     const { regex, prefix } = this.codeParse(code);
     return { infoNode, regex, prefix, code, title, create: new Date().toISOString().slice(0, 10), ...details };
   }
+
+  static getMagnets(dom = document) {
+    const transToByte = this.useTransByte();
+    const isUncensored = this.isUncensored(dom);
+
+    return [...dom.querySelectorAll("#magnets-content > .item")]
+      .map((item) => {
+        const name = item.querySelector(".name")?.textContent.trim() ?? "";
+        const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
+        return {
+          url: item.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
+          zh: !!item.querySelector(".tag.is-warning") || this.zhReg.test(name),
+          size: transToByte(meta.split(",")[0]),
+          crack: !isUncensored && this.crackReg.test(name),
+          meta,
+          name,
+        };
+      })
+      .toSorted(this.magnetSort);
+  }
 }
