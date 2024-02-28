@@ -111,7 +111,7 @@
   const handleInput = (e) => {
     if (!currElem) return;
     if (e.code === "Space") handleSpace(e);
-    if (e.code === "Enter") handleEnter(e);
+    if (e.code === "Enter" || e.code === "KeyF") handleEnter(e);
     if (e.code === "Escape") handleEscape(e);
   };
 
@@ -130,7 +130,7 @@
   function showModal() {
     modal.classList.add("is-active");
 
-    const href = currElem.querySelector("a").href;
+    const { href } = currElem.querySelector("a");
     if (href === modal.dataset.href && modalBody.innerHTML !== "获取失败") return;
 
     modal.dataset.href = href;
@@ -138,19 +138,19 @@
     modalBody.innerHTML = "Loading...";
 
     const mid = href.split("/").pop();
-    const details = localStorage.getItem(`details_${mid}`);
+    const detailsMid = `details_${mid}`;
+    const details = localStorage.getItem(detailsMid);
     const trailer = localStorage.getItem(`trailer_${mid}`);
     if (details) return createDom(JSON.parse(details), trailer);
 
-    Req.request(href).then((dom) => {
-      const _details = parseElem(dom);
-      if (!_details) {
+    Req.tasks(href, [parseElem]).then((res) => {
+      if (!res) {
         modalBody.innerHTML = "获取失败";
         return;
       }
 
-      localStorage.setItem(`details_${mid}`, JSON.stringify(_details));
-      if (href === modal.dataset.href) createDom(_details, trailer);
+      localStorage.setItem(detailsMid, JSON.stringify(res));
+      if (href === modal.dataset.href) createDom(res, trailer);
     });
   }
 
