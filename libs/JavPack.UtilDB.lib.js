@@ -10,7 +10,7 @@ class UtilDB extends Util {
     const titleNode = dom.querySelector(".title.is-4");
     let title = titleNode.querySelector("strong").textContent;
     title += (titleNode.querySelector(".origin-title") ?? titleNode.querySelector(".current-title")).textContent;
-    title = title.replaceAll(code, "").trim();
+    title = title.replace(code, "").trim();
 
     const details = {};
     infoNode.querySelectorAll(".movie-panel-info > .panel-block").forEach((item) => {
