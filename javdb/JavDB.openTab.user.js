@@ -7,7 +7,6 @@
 // @match           https://javdb.com/*
 // @exclude         https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
 // @grant           GM_openInTab
@@ -17,15 +16,16 @@
 // ==/UserScript==
 
 (function () {
-  const selector = ":is(.actors, .movie-list, .section-container) a";
+  const matchSelector = ":is(.actors, .movie-list, .section-container) a";
+  const excludeSelector = ".button.is-danger";
 
   const handleOpen = (e) => {
-    const target = e.target.closest(selector);
-    if (!target || e.target.matches(".button.is-danger")) return;
+    const target = e.target.closest(matchSelector);
+    if (!target || e.target.matches(excludeSelector)) return;
 
     e.preventDefault();
     e.stopPropagation();
-    Util.openTab(target.href, e.type === "click");
+    GM_openInTab(target.href, { active: e.type === "click", setParent: true });
   };
 
   document.addEventListener("click", handleOpen);
