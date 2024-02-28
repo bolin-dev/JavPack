@@ -2,9 +2,9 @@ class UtilTrailer extends Req {
   static javspyl(ID) {
     return this.request({
       method: "POST",
-      url: "https://v2.javspyl.tk/api/",
+      url: "https://api.javspyl.eu.org/api/",
       data: { ID },
-      headers: { origin: "https://javspyl.tk" },
+      headers: { origin: "https://javspyl.eu.org" },
     }).then((res) => {
       res = res?.info?.url;
       if (res && !/\.m3u8?$/i.test(res)) return res.includes("//") ? res : `https://${res}`;
