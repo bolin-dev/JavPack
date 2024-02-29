@@ -7,7 +7,6 @@
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilTrailer.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -19,7 +18,6 @@
 // @connect         muramura.tv
 // @connect         1pondo.tv
 // @connect         heyzo.com
-// @connect         jav.land
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
@@ -30,9 +28,13 @@
 // ==/UserScript==
 
 (function () {
-  UtilDB.upLocal();
+  Util.upLocal();
 
   const guessStudio = UtilTrailer.useStudio();
+
+  function isUncensored(dom = document) {
+    return dom.querySelector(".title.is-4 strong").textContent.includes("無碼");
+  }
 
   function getTrailer(dom = document) {
     return dom.querySelector("#preview-video source")?.getAttribute("src");
@@ -69,6 +71,7 @@
     video.title = "";
     video.poster = poster;
     video.controls = true;
+    video.preload = "none";
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
     video.addEventListener("keydown", handleKeydown);
@@ -111,11 +114,9 @@
     const code = document.querySelector(".first-block .value").textContent;
     UtilTrailer.javspyl(code).then(setTrailer);
 
-    if (UtilDB.isUncensored()) {
+    if (isUncensored()) {
       const studio = getStudio();
       if (studio) guessStudio(code, studio).then(setTrailer);
-    } else {
-      UtilTrailer.javland(code).then(setTrailer);
     }
 
     return;
@@ -129,7 +130,7 @@
   ${selector} video.fade-in{opacity:1}
   `);
 
-  const interval = 300;
+  const interval = 200;
   const sensitivity = 0;
 
   let currElem = null;
@@ -251,8 +252,6 @@
 
     UtilTrailer.javspyl(code).then(setTrailer);
 
-    UtilTrailer.javland(code).then(setTrailer);
-
     UtilTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
       if (trailer) return setTrailer(trailer);
       if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
@@ -262,7 +261,7 @@
   const getDetails = (dom) => {
     return {
       trailer: getTrailer(dom),
-      isUncensored: UtilDB.isUncensored(dom),
+      isUncensored: isUncensored(dom),
       studio: getStudio(dom),
     };
   };
