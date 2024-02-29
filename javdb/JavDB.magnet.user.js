@@ -7,7 +7,6 @@
 // @match           https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilMagnet.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -21,13 +20,13 @@
 // ==/UserScript==
 
 (function () {
-  UtilDB.upLocal();
+  Util.upLocal();
 
   const btdigHost = "https://btdig.com";
-  const transToByte = UtilDB.useTransByte();
-  const isUncensored = UtilDB.isUncensored();
-  const hdSize = parseFloat(transToByte(UtilDB.hdMagnetSize));
-  const minSize = parseFloat(transToByte(UtilDB.minMagnetSize));
+  const transToByte = Util.useTransByte();
+  const isUncensored = document.querySelector(".title.is-4 strong").textContent.includes("無碼");
+  const hdSize = parseFloat(transToByte(Util.hdMagnetSize));
+  const minSize = parseFloat(transToByte(Util.minMagnetSize));
 
   const code = document.querySelector(".first-block .value").textContent;
   const magnetNode = document.querySelector("#magnets-content");
@@ -100,9 +99,9 @@
 
           size = transToByte(size);
 
-          if (!zh) zh = UtilDB.zhReg.test(name);
+          if (!zh) zh = Util.zhReg.test(name);
 
-          const crack = !isUncensored && UtilDB.crackReg.test(name);
+          const crack = !isUncensored && Util.crackReg.test(name);
 
           if (!hd) hd = parseFloat(size) >= hdSize;
 
@@ -120,7 +119,7 @@
 
           return acc;
         }, [])
-        .toSorted(UtilDB.magnetSort)
+        .toSorted(Util.magnetSort)
         .map(({ url, name, meta, zh, crack, hd, date }, idx) => {
           const odd = !(idx % 2) ? " odd" : "";
           const hash = url.split(":").pop();
@@ -157,6 +156,6 @@
 
     e.preventDefault();
     e.stopPropagation();
-    UtilDB.openTab(`${btdigHost}/${hash}`);
+    Util.openTab(`${btdigHost}/${hash}`);
   });
 })();
