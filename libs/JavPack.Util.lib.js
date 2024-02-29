@@ -2,14 +2,14 @@ class Util {
   static sepReg = /-|_/;
   static numReg = /\d+\.\d+|\d+/;
   static varReg = /\$\{([a-z]+)\}/g;
-  static crackReg = /破解|-u(ncensored|c)?(?![a-z])/i;
+  static crackReg = /破解|-uc?(?![a-z])|uncensored/i;
   static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])/i;
 
-  static zhTxt = "[中字]";
-  static crackTxt = "[破解]";
-  static minMagnetSize = "300MB";
-  static maxMagnetSize = "15GB";
-  static hdMagnetSize = "2GB";
+  // static zhTxt = "[中字]";
+  // static crackTxt = "[破解]";
+  // static minMagnetSize = "300MB";
+  // static maxMagnetSize = "15GB";
+  // static hdMagnetSize = "2GB";
 
   static defaultVerifyOptions = {
     requireVdi: true,
