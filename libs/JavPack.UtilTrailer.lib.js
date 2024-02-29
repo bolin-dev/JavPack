@@ -78,26 +78,4 @@ class UtilTrailer extends Req {
       return trailer;
     };
   }
-
-  static javland(code) {
-    return this.tasks(`https://jav.land/tw/id_search.php?keys=${code}`, [
-      (dom) => {
-        if (!dom.querySelector("#videotag")) return;
-
-        const script = dom.body.querySelector("script").textContent;
-        const vid = script.match(/videoid\s=\s"(.*)";/)?.[1];
-        if (!vid) return;
-
-        return {
-          method: "POST",
-          url: "https://www.jav.land/ajax/ajax_get_play_sample.php",
-          data: { vid, action: "get" },
-        };
-      },
-      ({ videourl }) => {
-        const video = new DOMParser().parseFromString(videourl, "text/html");
-        return video.querySelector("source").getAttribute("src");
-      },
-    ]);
-  }
 }
