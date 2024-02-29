@@ -120,10 +120,10 @@
 
   GM_addStyle(`
   .movie-list .item:has(.video-title .is-success) {
-    border: 3px solid #34a873;
+    border: 4px solid #34a873;
   }
   .movie-list .item:has(.video-title .is-warning) {
-    border: 3px solid #ffd257;
+    border: 4px solid #ffd257;
   }
   [data-theme="dark"] .movie-list .item:has(.video-title .is-success) {
     border-color: #48c78e;
