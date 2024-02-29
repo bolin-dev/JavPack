@@ -23,12 +23,14 @@
   Util.upLocal();
 
   const btdigHost = "https://btdig.com";
+
   const transToByte = Util.useTransByte();
-  const isUncensored = document.querySelector(".title.is-4 strong").textContent.includes("無碼");
-  const hdSize = parseFloat(transToByte(Util.hdMagnetSize));
-  const minSize = parseFloat(transToByte(Util.minMagnetSize));
+  const hdSize = parseFloat(transToByte("2GB"));
+  const minSize = parseFloat(transToByte("300MB"));
 
   const code = document.querySelector(".first-block .value").textContent;
+  const isUncensored = document.querySelector(".title.is-4 strong").textContent.includes("無碼");
+
   const magnetNode = document.querySelector("#magnets-content");
 
   magnetNode.insertAdjacentHTML(
