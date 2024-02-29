@@ -270,8 +270,8 @@
   function handleRename({ rename, zh, crack, file_id, files }) {
     rename = UtilDB.parseVar(rename, {
       ...details,
-      zh: zh ? UtilDB.zhTxt : "",
-      crack: crack ? UtilDB.crackTxt : "",
+      zh: zh ? "[中字]" : "",
+      crack: crack ? "[破解]" : "",
     });
     if (!regex.test(rename)) rename = `${code} ${rename}`;
 
