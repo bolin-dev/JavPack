@@ -257,5 +257,7 @@
   const intersectionObserver = new IntersectionObserver(intersectionCallback, { threshold: 0.2 });
 
   childList.forEach((node) => intersectionObserver.observe(node));
-  window.addEventListener("loadmore", ({ detail }) => detail.forEach((node) => intersectionObserver.observe(node)));
+  window.addEventListener("scroll.loadmore", ({ detail }) =>
+    detail.forEach((node) => intersectionObserver.observe(node)),
+  );
 })();

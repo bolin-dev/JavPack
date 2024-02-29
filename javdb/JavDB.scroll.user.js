@@ -57,7 +57,7 @@
 
       if (list?.length) {
         container.append(...list);
-        window.dispatchEvent(new CustomEvent("loadmore", { detail: list }));
+        window.dispatchEvent(new CustomEvent("scroll.loadmore", { detail: list }));
       }
 
       if (!url) {

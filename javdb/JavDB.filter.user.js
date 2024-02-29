@@ -53,5 +53,5 @@
   };
 
   filter(nodeList);
-  window.addEventListener("loadmore", ({ detail }) => filter(detail));
+  window.addEventListener("scroll.loadmore", ({ detail }) => filter(detail));
 })();
