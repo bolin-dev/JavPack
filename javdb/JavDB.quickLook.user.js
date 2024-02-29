@@ -202,9 +202,10 @@
         "is-clipped",
         "is-unselectable",
         "is-clickable",
+        "btn",
       ].join(" ");
-      innerHTML += `<div class="${classes} btn carousel-prev">🔙</div>`;
-      innerHTML += `<div class="${classes} btn carousel-next">🔜</div>`;
+      innerHTML += `<div class="${classes} carousel-prev">🔙</div>`;
+      innerHTML += `<div class="${classes} carousel-next">🔜</div>`;
     }
     innerHTML += "</div>";
 
@@ -215,25 +216,25 @@
     modalBody.innerHTML = innerHTML;
   }
 
-  const handleCarouselPrev = () => {
+  const handleCarouselNav = (nav) => {
     const curr = modalBody.querySelector(".carousel .is-block");
-    const prev = curr.previousElementSibling ?? curr.parentElement.lastElementChild;
-    curr.classList.replace("is-block", "is-hidden");
-    prev.classList.replace("is-hidden", "is-block");
-  };
 
-  const handleCarouselNext = () => {
-    const curr = modalBody.querySelector(".carousel .is-block");
-    const next = curr.nextElementSibling ?? curr.parentElement.firstElementChild;
+    let target = null;
+    if (nav === "prev") {
+      target = curr.previousElementSibling ?? curr.parentElement.lastElementChild;
+    } else {
+      target = curr.nextElementSibling ?? curr.parentElement.firstElementChild;
+    }
+
     curr.classList.replace("is-block", "is-hidden");
-    next.classList.replace("is-hidden", "is-block");
+    target.classList.replace("is-hidden", "is-block");
   };
 
   modal.addEventListener("click", (e) => {
     const { target } = e;
     if (target.classList.contains("is-success")) handleEnter(e);
-    if (target.classList.contains("carousel-prev")) handleCarouselPrev();
-    if (target.classList.contains("carousel-next")) handleCarouselNext();
+    if (target.classList.contains("carousel-prev")) handleCarouselNav("prev");
+    if (target.classList.contains("carousel-next")) handleCarouselNav("next");
     if (target.nodeName !== "A") return;
 
     e.preventDefault();
