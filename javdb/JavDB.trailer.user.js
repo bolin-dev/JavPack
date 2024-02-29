@@ -32,21 +32,19 @@
 
   const guessStudio = UtilTrailer.useStudio();
 
-  function isUncensored(dom = document) {
+  const isUncensored = (dom = document) => {
     return dom.querySelector(".title.is-4 strong").textContent.includes("無碼");
-  }
+  };
 
-  function getTrailer(dom = document) {
+  const getTrailer = (dom = document) => {
     return dom.querySelector("#preview-video source")?.getAttribute("src");
-  }
+  };
 
-  function getStudio(dom = document) {
+  const getStudio = (dom = document) => {
     return [...dom.querySelectorAll(".movie-panel-info > .panel-block")]
-      .find((item) => {
-        return item.querySelector("strong")?.textContent === "片商:";
-      })
+      .find((item) => item.querySelector("strong")?.textContent === "片商:")
       ?.querySelector(".value").textContent;
-  }
+  };
 
   const handleKeydown = (e) => {
     e.preventDefault();
@@ -112,14 +110,13 @@
     if (trailer) return setTrailer(trailer);
 
     const code = document.querySelector(".first-block .value").textContent;
-    UtilTrailer.javspyl(code).then(setTrailer);
 
     if (isUncensored()) {
       const studio = getStudio();
       if (studio) guessStudio(code, studio).then(setTrailer);
     }
 
-    return;
+    return UtilTrailer.javspyl(code).then(setTrailer);
   }
 
   const selector = ".movie-list .cover";
@@ -130,7 +127,7 @@
   ${selector} video.fade-in{opacity:1}
   `);
 
-  const interval = 200;
+  const interval = 250;
   const sensitivity = 0;
 
   let currElem = null;
@@ -294,17 +291,13 @@
     setTimeout(() => video.remove(), 200);
   };
 
-  document.addEventListener("visibilitychange", () => {
+  const onOver = () => {
     if (!currElem) return;
 
     onLeave(currElem);
     currElem = null;
-  });
+  };
 
-  window.addEventListener("blur", () => {
-    if (!currElem) return;
-
-    onLeave(currElem);
-    currElem = null;
-  });
+  document.addEventListener("visibilitychange", onOver);
+  window.addEventListener("blur", onOver);
 })();
