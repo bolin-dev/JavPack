@@ -5,12 +5,6 @@ class Util {
   static crackReg = /破解|-uc?(?![a-z])|uncensored/i;
   static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])/i;
 
-  // static zhTxt = "[中字]";
-  // static crackTxt = "[破解]";
-  // static minMagnetSize = "300MB";
-  // static maxMagnetSize = "15GB";
-  // static hdMagnetSize = "2GB";
-
   static defaultVerifyOptions = {
     requireVdi: true,
     clean: true,
@@ -19,8 +13,8 @@ class Util {
 
   static defaultMagnetOptions = () => {
     const transToByte = this.useTransByte();
-    const minMagnetSize = parseFloat(transToByte(this.minMagnetSize));
-    const maxMagnetSize = parseFloat(transToByte(this.maxMagnetSize));
+    const minMagnetSize = parseFloat(transToByte("300MB"));
+    const maxMagnetSize = parseFloat(transToByte("15GB"));
 
     return {
       filter: ({ size }) => {
