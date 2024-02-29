@@ -252,8 +252,7 @@
 
     if (!modalActive) {
       if (!videoPaused) video.pause();
-      video.blur();
-      return;
+      return video.blur();
     }
 
     if (videoActive && videoPaused) {
