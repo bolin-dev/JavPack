@@ -13,10 +13,10 @@
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         caribbeancom.com
 // @connect         pacopacomama.com
+// @connect         javspyl.eu.org
 // @connect         tokyo-hot.com
 // @connect         10musume.com
 // @connect         muramura.tv
-// @connect         javspyl.tk
 // @connect         1pondo.tv
 // @connect         heyzo.com
 // @connect         jav.land
