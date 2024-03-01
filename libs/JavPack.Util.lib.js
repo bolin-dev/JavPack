@@ -3,7 +3,7 @@ class Util {
   static numReg = /\d+\.\d+|\d+/;
   static varReg = /\$\{([a-z]+)\}/g;
   static crackReg = /破解|-uc?(?![a-z])|uncensored/i;
-  static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])/i;
+  static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc\./i;
 
   static defaultVerifyOptions = {
     requireVdi: true,
