@@ -1,4 +1,4 @@
-class UtilTrailer extends Req {
+class ReqTrailer extends Req {
   static javspyl(ID) {
     return this.request({
       method: "POST",

@@ -9,9 +9,9 @@
     "Req": true,
     "Req115": true,
     "ReqSprite": true,
+    "ReqTrailer": true,
     "Util": true,
     "Util115": true,
-    "UtilTrailer": true,
     "UtilMagnet": true
   },
   "rules": {

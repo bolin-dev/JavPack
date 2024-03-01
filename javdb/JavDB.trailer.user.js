@@ -8,7 +8,7 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilTrailer.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqTrailer.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         caribbeancom.com
 // @connect         pacopacomama.com
@@ -30,7 +30,7 @@
 (function () {
   Util.upLocal();
 
-  const guessStudio = UtilTrailer.useStudio();
+  const guessStudio = ReqTrailer.useStudio();
 
   const isUncensored = (dom = document) => {
     return dom.querySelector(".title.is-4 strong").textContent.includes("無碼");
@@ -116,7 +116,7 @@
       if (studio) guessStudio(code, studio).then(setTrailer);
     }
 
-    return UtilTrailer.javspyl(code).then(setTrailer);
+    return ReqTrailer.javspyl(code).then(setTrailer);
   }
 
   const selector = ".movie-list .cover";
@@ -247,9 +247,9 @@
       if (elem === currElem) setVideo(elem, trailer, cover);
     };
 
-    UtilTrailer.javspyl(code).then(setTrailer);
+    ReqTrailer.javspyl(code).then(setTrailer);
 
-    UtilTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
+    ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
       if (trailer) return setTrailer(trailer);
       if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
     });
