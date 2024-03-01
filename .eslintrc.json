@@ -7,11 +7,11 @@
   },
   "globals": {
     "Req": true,
+    "Util": true,
     "Req115": true,
     "ReqSprite": true,
-    "ReqTrailer": true,
-    "Util": true,
-    "UtilMagnet": true
+    "ReqMagnet": true,
+    "ReqTrailer": true
   },
   "rules": {
     "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util" }],

@@ -8,7 +8,7 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilMagnet.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqMagnet.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         btdig.com
 // @run-at          document-end
@@ -58,7 +58,7 @@
     const btdigNode = document.querySelector("#x-btdig");
     btdigNode.classList.add("is-loading");
 
-    UtilMagnet.btdig(code)
+    ReqMagnet.btdig(code)
       .then((res) => {
         const icon = btdigNode.querySelector("i");
         if (res) {

@@ -1,4 +1,4 @@
-class UtilMagnet extends Req {
+class ReqMagnet extends Req {
   static btdig(code) {
     const spaceReg = /\s/g;
     const host = "https://btdig.com";
