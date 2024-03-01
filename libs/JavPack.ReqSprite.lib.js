@@ -1,4 +1,4 @@
-class UtilSprite extends Req {
+class ReqSprite extends Req {
   static blogjav(code) {
     return this.tasks(
       {

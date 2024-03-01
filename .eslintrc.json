@@ -8,10 +8,10 @@
   "globals": {
     "Req": true,
     "Req115": true,
+    "ReqSprite": true,
     "Util": true,
     "Util115": true,
     "UtilTrailer": true,
-    "UtilSprite": true,
     "UtilMagnet": true
   },
   "rules": {

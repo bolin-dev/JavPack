@@ -8,7 +8,7 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilSprite.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqSprite.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         javstore.net
 // @connect         blogjav.net
@@ -52,6 +52,6 @@
   if (sprite) return setSprite(sprite);
 
   const code = document.querySelector(".movie-panel-info .first-block .value").textContent;
-  UtilSprite.blogjav(code).then(setSprite);
-  UtilSprite.javstore(code).then(setSprite);
+  ReqSprite.blogjav(code).then(setSprite);
+  ReqSprite.javstore(code).then(setSprite);
 })();
