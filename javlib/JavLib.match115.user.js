@@ -9,7 +9,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         115.com
 // @run-at          document-end
@@ -77,7 +76,7 @@
   const code = infoNode.querySelector("#video_id .text").textContent;
   const { codes, regex } = Util.codeParse(code);
 
-  Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
+  Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
     if (!state) {
       queryNode.textContent = "查询失败";
       return;

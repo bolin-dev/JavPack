@@ -11,7 +11,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
 // @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
 // @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
@@ -41,7 +40,7 @@
 
 (function () {
   const { host, pathname } = location;
-  if (host === "captchaapi.115.com") return Util115.verifyAccount();
+  if (host === "captchaapi.115.com") return Req115.verifyAccount();
 
   const config = [
     {
@@ -119,7 +118,7 @@
       item.disabled = true;
     });
 
-    const { errcode, surplus } = await Util115.lixianGetQuotaPackageInfo();
+    const { errcode, surplus } = await Req115.lixianGetQuotaPackageInfo();
 
     if (errcode === 99) {
       UtilDB.notify({ text: "网盘未登录", icon: "error" });
@@ -143,7 +142,7 @@
 
     // eslint-disable-next-line eqeqeq, no-eq-null
     if (cid == null) {
-      cid = await Util115.generateCid(dir);
+      cid = await Req115.generateCid(dir);
 
       // eslint-disable-next-line eqeqeq, no-eq-null
       if (cid == null) {
@@ -188,7 +187,7 @@
   };
 
   function filterMagnets(magnets) {
-    return Util115.offlineSpace().then(({ size }) => {
+    return Req115.offlineSpace().then(({ size }) => {
       const spaceSize = parseFloat(transToByte(size));
       return magnets.filter((item) => parseFloat(item.size) < spaceSize);
     });
@@ -209,7 +208,7 @@
       taskList.push(index);
 
       const { url, zh, crack } = magnets[index];
-      const { state, errcode, error_msg, info_hash } = await Util115.lixianAddTaskUrl(url, cid);
+      const { state, errcode, error_msg, info_hash } = await Req115.lixianAddTaskUrl(url, cid);
       if (!state) {
         if (errcode === 10008 && index !== length - 1) {
           taskList.pop();
@@ -221,11 +220,11 @@
         break;
       }
 
-      const { file_id, videos } = await Util115.verifyTask(info_hash, verifyFile, verifyOptions.max);
+      const { file_id, videos } = await Req115.verifyTask(info_hash, verifyFile, verifyOptions.max);
       if (!videos.length) {
         if (verifyOptions.clean) {
-          Util115.lixianTaskDel([info_hash]);
-          if (file_id) Util115.rbDelete([file_id], cid);
+          Req115.lixianTaskDel([info_hash]);
+          if (file_id) Req115.rbDelete([file_id], cid);
         }
         res.code = 1;
         res.msg = "离线验证失败";
@@ -235,7 +234,7 @@
         res.msg = "离线成功";
       }
 
-      if (setHash) Util115.filesEditDesc(videos, info_hash);
+      if (setHash) Req115.filesEditDesc(videos, info_hash);
 
       const srt = await handleFindSrt(file_id);
       const files = srt ? [srt, ...videos] : videos;
@@ -263,7 +262,7 @@
   }
 
   async function handleFindSrt(file_id) {
-    const { data } = await Util115.filesByOrder(file_id, { suffix: "srt" });
+    const { data } = await Req115.filesByOrder(file_id, { suffix: "srt" });
     return data.find(({ n }) => regex.test(n));
   }
 
@@ -297,7 +296,7 @@
         });
     }
 
-    Util115.filesBatchRename(renameObj);
+    Req115.filesBatchRename(renameObj);
   }
 
   function handleTags({ tags, videos }) {
@@ -306,22 +305,22 @@
       .flat()
       .filter(Boolean);
 
-    if (tags.length) Util115.filesBatchLabelName(videos, tags);
+    if (tags.length) Req115.filesBatchLabelName(videos, tags);
   }
 
   function handleMove({ files, file_id }) {
     const mv_fids = files.filter((item) => item.cid !== file_id).map((item) => item.fid);
-    if (mv_fids.length) return Util115.filesMove(mv_fids, file_id);
+    if (mv_fids.length) return Req115.filesMove(mv_fids, file_id);
   }
 
   async function handleClean({ files, file_id }) {
-    const { data } = await Util115.filesByOrder(file_id);
+    const { data } = await Req115.filesByOrder(file_id);
 
     const rm_fids = data
       .filter((item) => !files.some(({ fid }) => fid === item.fid))
       .map((item) => item.fid ?? item.cid);
 
-    if (rm_fids.length) return Util115.rbDelete(rm_fids, file_id);
+    if (rm_fids.length) return Req115.rbDelete(rm_fids, file_id);
   }
 
   function handleUpload({ upload, file_id: cid }) {
@@ -330,19 +329,19 @@
     if (upload.includes("cover")) {
       let url = document.querySelector(".video-cover")?.src;
       if (!url) url = document.querySelector(".column-video-cover video")?.poster;
-      reqList.push(() => Util115.handleUpload({ cid, url, filename: `${code}.cover.jpg` }));
+      reqList.push(() => Req115.handleUpload({ cid, url, filename: `${code}.cover.jpg` }));
     }
 
     if (upload.includes("sprite")) {
       const url = localStorage.getItem(`sprite_${pathname.split("/").pop()}`);
-      if (url) reqList.push(() => Util115.handleUpload({ cid, url, filename: `${code}.sprite.jpg` }));
+      if (url) reqList.push(() => Req115.handleUpload({ cid, url, filename: `${code}.sprite.jpg` }));
     }
 
     return Promise.allSettled(reqList.map((fn) => fn()));
   }
 
   function handleCover({ cid: fid, file_id: fid_cover }) {
-    return Util115.filesEdit({ fid, fid_cover });
+    return Req115.filesEdit({ fid, fid_cover });
   }
 
   const offlineEnd = () => {

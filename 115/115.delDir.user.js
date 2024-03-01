@@ -8,7 +8,6 @@
 // @icon            https://v.anxia.com/m_r/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @connect         115.com
@@ -42,14 +41,14 @@
 
   const smartDel = ({ file_id, parent_id }) => {
     const videos = document.querySelectorAll("#js-video_list > li");
-    if (videos.length === 1) return Util115.rbDelete([parent_id]).then(window.close);
-    Util115.rbDelete([file_id]).then(turnNearby);
+    if (videos.length === 1) return Req115.rbDelete([parent_id]).then(window.close);
+    Req115.rbDelete([file_id]).then(turnNearby);
   };
 
   const handleClick = ({ target }) => {
     target.textContent = "请求中...";
     target.style.pointerEvents = "none";
-    Util115.filesVideo(pc).then(smartDel);
+    Req115.filesVideo(pc).then(smartDel);
   };
 
   delNode.addEventListener("click", handleClick);

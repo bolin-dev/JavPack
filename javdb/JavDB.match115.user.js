@@ -9,7 +9,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util115.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         115.com
 // @run-at          document-end
@@ -41,7 +40,7 @@
     };
 
     const handleClose = async (target) => {
-      await Util115.sleep();
+      await Req115.sleep();
       tabClose(target);
     };
 
@@ -87,7 +86,7 @@
     const { codes, regex } = Util.codeParse(code);
 
     const matchCode = () => {
-      return Util115.videosSearch(codes.join(" ")).then(({ state, data }) => {
+      return Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
         if (!state) {
           matchResNode.textContent = "查询失败，请检查登录状态";
           return;
@@ -191,7 +190,7 @@
     }
 
     static handleMatchPrefix = ([prefix, list]) => {
-      return Util115.videosSearch(prefix).then(({ data }) => {
+      return Req115.videosSearch(prefix).then(({ data }) => {
         data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
         GM_setValue(prefix, data);
 
