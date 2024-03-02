@@ -6,7 +6,10 @@
 // @description     磁链扩展
 // @match           https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqMagnet.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -24,12 +27,12 @@
 
   const btdigHost = "https://btdig.com";
 
-  const transToByte = Util.useTransByte();
+  const transToByte = Magnet.useTransByte();
   const hdSize = parseFloat(transToByte("2GB"));
   const minSize = parseFloat(transToByte("300MB"));
 
   const code = document.querySelector(".first-block .value").textContent;
-  const isUncensored = document.querySelector(".title.is-4 strong").textContent.includes("無碼");
+  const isUncensored = JavDB.isUncensored();
 
   const magnetNode = document.querySelector("#magnets-content");
 
@@ -101,9 +104,9 @@
 
           size = transToByte(size);
 
-          if (!zh) zh = Util.zhReg.test(name);
+          if (!zh) zh = Magnet.zhReg.test(name);
 
-          const crack = !isUncensored && Util.crackReg.test(name);
+          const crack = !isUncensored && Magnet.crackReg.test(name);
 
           if (!hd) hd = parseFloat(size) >= hdSize;
 
@@ -158,6 +161,6 @@
 
     e.preventDefault();
     e.stopPropagation();
-    Util.openTab(`${btdigHost}/${hash}`);
+    Grant.openTab(`${btdigHost}/${hash}`);
   });
 })();
