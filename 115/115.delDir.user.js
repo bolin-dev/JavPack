@@ -25,14 +25,6 @@
   const pc = searchParams.get("pickcode");
   if (!pc) return;
 
-  GM_addStyle("#x-del{background:rgb(175,23,0)}#js_common_mini-dialog{display:none !important}");
-
-  const delNode = document.createElement("a");
-  delNode.id = "x-del";
-  delNode.textContent = "删除";
-  delNode.className = "btn-opendir";
-  delNode.href = "javascript:void(0);";
-
   const turnNearby = () => {
     const curr = document.querySelector("#js-video_list > li.hover");
     const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
@@ -51,11 +43,19 @@
     Req115.filesVideo(pc).then(smartDel);
   };
 
-  delNode.addEventListener("click", handleClick);
-
   const handleLoaded = ({ target }) => {
     target.querySelector(".vt-headline").insertAdjacentElement("beforeend", delNode);
   };
 
+  const delNode = document.createElement("a");
+  const delNodeId = "x-del";
+
+  delNode.id = delNodeId;
+  delNode.textContent = "删除";
+  delNode.className = "btn-opendir";
+  delNode.href = "javascript:void(0);";
+  delNode.addEventListener("click", handleClick);
+
+  GM_addStyle(`#${delNodeId}{background:rgb(175,23,0)}#js_common_mini-dialog{display:none !important}`);
   document.addEventListener("DOMContentLoaded", handleLoaded);
 })();
