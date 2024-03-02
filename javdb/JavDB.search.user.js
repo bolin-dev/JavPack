@@ -6,6 +6,7 @@
 // @description     快捷搜索
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
 // @grant           GM_openInTab
@@ -21,7 +22,7 @@
       if (!txt) return;
 
       const url = `${location.origin}/search?q=${txt}`;
-      if (location.pathname !== "search") return GM_openInTab(url, { active: true, setParent: true });
+      if (location.pathname !== "search") return Grant.openTab(url);
 
       location.href = url;
     }

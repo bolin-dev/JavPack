@@ -7,6 +7,7 @@
 // @match           https://javdb.com/*
 // @exclude         https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @run-at          document-start
 // @grant           GM_openInTab
@@ -25,7 +26,7 @@
 
     e.preventDefault();
     e.stopPropagation();
-    GM_openInTab(target.href, { active: e.type === "click", setParent: true });
+    Grant.openTab(target.href);
   };
 
   document.addEventListener("click", handleOpen);

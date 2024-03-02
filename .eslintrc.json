@@ -11,10 +11,11 @@
     "ReqMagnet": true,
     "ReqSprite": true,
     "ReqTrailer": true,
-    "Util": true
+    "Util": true,
+    "Grant": true
   },
   "rules": {
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util" }],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util|Grant" }],
     "no-param-reassign": "off",
     "no-template-curly-in-string": "off"
   },

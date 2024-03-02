@@ -7,6 +7,7 @@
 // @match           https://javdb.com/*
 // @exclude         https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -98,7 +99,7 @@
     e.preventDefault();
     e.stopPropagation();
     hideModal();
-    Util.openTab(modal.dataset.href);
+    Grant.openTab(modal.dataset.href);
   };
 
   const handleEscape = (e) => {
@@ -239,7 +240,7 @@
 
     e.preventDefault();
     e.stopPropagation();
-    Util.openTab(target.href);
+    Grant.openTab(target.href);
   });
 
   function controlVideo() {
