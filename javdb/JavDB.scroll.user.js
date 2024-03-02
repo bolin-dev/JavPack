@@ -52,7 +52,7 @@
       if (!entries[0].isIntersecting || isLoading) return;
 
       isLoading = true;
-      const { list, url } = await Req.tasks(next, [parseDom]);
+      const { list, url } = await Req.request(next).then(parseDom);
       isLoading = false;
 
       if (list?.length) {
