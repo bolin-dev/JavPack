@@ -6,6 +6,7 @@
 // @description     115 网盘匹配
 // @match           https://www.javlibrary.com/*
 // @icon            https://www.javlibrary.com/favicon.ico
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
@@ -35,7 +36,7 @@
       e.stopPropagation();
 
       const { pc } = e.target.dataset;
-      if (pc) Util.openTab(`https://v.anxia.com/?pickcode=${pc}`);
+      if (pc) Grant.openTab(`https://v.anxia.com/?pickcode=${pc}`);
     });
 
     document.addEventListener("contextmenu", (e) => {
@@ -45,7 +46,7 @@
       e.stopPropagation();
 
       const { cid } = e.target.dataset;
-      if (cid) Util.openTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`);
+      if (cid) Grant.openTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`);
     });
   };
 

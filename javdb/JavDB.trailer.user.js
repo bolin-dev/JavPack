@@ -28,21 +28,15 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-(function () {
-  Util.upLocal();
+Util.upLocal();
 
-  const guessStudio = ReqTrailer.useStudio();
+function getStudio(dom = document) {
+  return [...dom.querySelectorAll(".movie-panel-info > .panel-block")]
+    .find((item) => item.querySelector("strong")?.textContent === "片商:")
+    ?.querySelector(".value").textContent;
+}
 
-  const getTrailer = (dom = document) => {
-    return dom.querySelector("#preview-video source")?.getAttribute("src");
-  };
-
-  const getStudio = (dom = document) => {
-    return [...dom.querySelectorAll(".movie-panel-info > .panel-block")]
-      .find((item) => item.querySelector("strong")?.textContent === "片商:")
-      ?.querySelector(".value").textContent;
-  };
-
+function useVideo() {
   const handleKeydown = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -55,11 +49,9 @@
     if (code === "KeyD" || code === "ArrowRight") target.currentTime += 5;
   };
 
-  const handleVolumechange = ({ target }) => {
-    localStorage.setItem("volume", target.volume);
-  };
+  const handleVolumechange = ({ target }) => localStorage.setItem("volume", target.volume);
 
-  function createVideo(src, poster) {
+  return (src, poster) => {
     const video = document.createElement("video");
 
     video.src = src;
@@ -73,213 +65,245 @@
     video.addEventListener("volumechange", handleVolumechange);
 
     return video;
-  }
+  };
+}
 
+const guessStudio = ReqTrailer.useStudio();
+const createVideo = useVideo();
+
+(function () {
   const { pathname } = location;
-  if (pathname.startsWith("/v/")) {
-    const mid = `trailer_${pathname.split("/").pop()}`;
-    const container = document.querySelector(".column-video-cover > a");
+  if (!pathname.startsWith("/v/")) return;
 
-    const setTrailer = (trailer) => {
-      if (!trailer || container.querySelector("video")) return;
+  const mid = `trailer_${pathname.split("/").pop()}`;
+  const container = document.querySelector(".column-video-cover");
 
-      localStorage.setItem(mid, trailer);
-      const cover = container.querySelector("img");
-      const video = createVideo(trailer, cover.src);
-      cover.replaceWith(video);
+  const setTrailer = (trailer) => {
+    if (!trailer) return;
+    if (container.querySelector("video")) return;
 
-      container.addEventListener("click", (e) => {
-        if (e.target.closest(".play-button")) return;
+    localStorage.setItem(mid, trailer);
+    const cover = container.querySelector("img");
+    const video = createVideo(trailer, cover.src);
+    cover.replaceWith(video);
 
-        e.preventDefault();
-        e.stopPropagation();
+    video.addEventListener("click", (e) => {
+      if (e.target.closest(".play-button")) return;
 
-        video.style.zIndex = 11;
-        video.focus();
-        video.paused ? video.play() : video.pause();
-      });
-    };
+      e.preventDefault();
+      e.stopPropagation();
 
-    let trailer = getTrailer();
-    if (trailer) return setTrailer(trailer);
+      video.style.zIndex = 11;
+      video.focus();
+      video.paused ? video.play() : video.pause();
+    });
+  };
 
-    trailer = localStorage.getItem(mid);
-    if (trailer) return setTrailer(trailer);
+  let trailer = JavDB.getTrailer();
+  if (trailer) return setTrailer(trailer);
 
-    const code = document.querySelector(".first-block .value").textContent;
+  trailer = localStorage.getItem(mid);
+  if (trailer) return setTrailer(trailer);
 
-    if (JavDB.isUncensored()) {
-      const studio = getStudio();
-      if (studio) guessStudio(code, studio).then(setTrailer);
-    }
+  const code = JavDB.getCode();
 
-    return ReqTrailer.javspyl(code).then(setTrailer);
-  }
+  ReqTrailer.javspyl(code).then(setTrailer);
+  if (!JavDB.isUncensored()) return;
 
+  const studio = getStudio();
+  if (studio) guessStudio(code, studio).then(setTrailer);
+})();
+
+(function () {
   const selector = ".movie-list .cover";
   if (!document.querySelector(selector)) return;
 
   GM_addStyle(`
-  ${selector} video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;opacity:0;transition:opacity .2s ease-in-out;background:#000}
-  ${selector} video.fade-in{opacity:1}
+  ${selector} video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity .2s ease-in-out;
+    background: #000;
+  }
+  ${selector} video.fade-in {
+    opacity: 1;
+  }
   `);
 
-  const interval = 250;
-  const sensitivity = 0;
-
   let currElem = null;
-  let trackSpeedInterval = null;
 
-  let prevX = null;
-  let prevY = null;
-  let prevTime = null;
+  function handleMouse(onHover, onLeave) {
+    const interval = 250;
+    const sensitivity = 0;
 
-  let lastX = null;
-  let lastY = null;
-  let lastTime = null;
+    let trackSpeedInterval = null;
 
-  const handleMouseover = (e) => {
-    if (currElem) return;
+    let prevX = null;
+    let prevY = null;
+    let prevTime = null;
 
-    const target = e.target.closest(selector);
-    if (!target) return;
+    let lastX = null;
+    let lastY = null;
+    let lastTime = null;
 
-    prevX = e.pageX;
-    prevY = e.pageY;
-    prevTime = Date.now();
+    const handleMouseover = (e) => {
+      if (currElem) return;
 
-    currElem = target;
-    currElem.addEventListener("mousemove", handleMousemove);
-    trackSpeedInterval = setInterval(trackSpeed, interval);
-  };
+      const target = e.target.closest(selector);
+      if (!target) return;
 
-  const handleMousemove = (e) => {
-    lastX = e.pageX;
-    lastY = e.pageY;
-    lastTime = Date.now();
-  };
-
-  const trackSpeed = () => {
-    let speed;
-
-    if (!lastTime || lastTime === prevTime) {
-      speed = 0;
-    } else {
-      speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
-    }
-
-    if (speed <= sensitivity && isElementInViewport(currElem)) {
-      onHover(currElem);
-    } else {
-      prevX = lastX;
-      prevY = lastY;
+      prevX = e.pageX;
+      prevY = e.pageY;
       prevTime = Date.now();
-    }
-  };
 
-  const isElementInViewport = (elem) => {
-    const rect = elem.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  };
+      currElem = target;
+      currElem.addEventListener("mousemove", handleMousemove);
+      trackSpeedInterval = setInterval(trackSpeed, interval);
+    };
 
-  const handleMouseout = ({ relatedTarget }) => {
-    if (!currElem) return;
+    const handleMousemove = (e) => {
+      lastX = e.pageX;
+      lastY = e.pageY;
+      lastTime = Date.now();
+    };
 
-    while (relatedTarget) {
-      if (relatedTarget === currElem) return;
-      relatedTarget = relatedTarget.parentNode;
-    }
+    const trackSpeed = () => {
+      let speed;
 
-    onLeave(currElem);
-    currElem = null;
-  };
-
-  document.addEventListener("mouseover", handleMouseover);
-  document.addEventListener("mouseout", handleMouseout);
-
-  const destroy = (elem) => {
-    elem.removeEventListener("mousemove", handleMousemove);
-    clearInterval(trackSpeedInterval);
-  };
-
-  const onHover = async (elem) => {
-    destroy(elem);
-
-    let { trailer, cover, mid, code } = elem.dataset;
-    if (trailer) return setVideo(elem, trailer, cover);
-
-    if (!cover || !mid || !code) {
-      const parentNode = elem.closest("a");
-
-      cover = parentNode.querySelector("img").src;
-      mid = parentNode.href.split("/").pop();
-      code = parentNode.querySelector(".video-title strong").textContent;
-
-      elem.dataset.cover = cover;
-      elem.dataset.mid = mid;
-      elem.dataset.code = code;
-    }
-
-    const trailerMid = `trailer_${mid}`;
-    trailer = localStorage.getItem(trailerMid);
-
-    if (trailer) {
-      elem.dataset.trailer = trailer;
-      return setVideo(elem, trailer, cover);
-    }
-
-    const setTrailer = (trailer) => {
-      if (!trailer || elem.querySelector("video")) return;
-
-      if (!elem.dataset.trailer) {
-        localStorage.setItem(trailerMid, trailer);
-        elem.dataset.trailer = trailer;
+      if (!lastTime || lastTime === prevTime) {
+        speed = 0;
+      } else {
+        speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
       }
 
-      if (elem === currElem) setVideo(elem, trailer, cover);
+      if (speed <= sensitivity && isElementInViewport(currElem)) {
+        destroy(currElem);
+        onHover(currElem);
+      } else {
+        prevX = lastX;
+        prevY = lastY;
+        prevTime = Date.now();
+      }
     };
 
-    ReqTrailer.javspyl(code).then(setTrailer);
-
-    ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
-      if (trailer) return setTrailer(trailer);
-      if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
-    });
-  };
-
-  const getDetails = (dom) => {
-    return {
-      trailer: getTrailer(dom),
-      isUncensored: JavDB.isUncensored(dom),
-      studio: getStudio(dom),
+    const isElementInViewport = (elem) => {
+      const rect = elem.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
     };
-  };
 
-  const setVideo = (elem, trailer, cover) => {
-    const video = createVideo(trailer, cover);
-    elem.append(video);
+    const handleMouseout = ({ relatedTarget }) => {
+      if (!currElem) return;
 
-    video.muted = true;
-    video.currentTime = 4;
-    video.focus();
-    video.play();
+      while (relatedTarget) {
+        if (relatedTarget === currElem) return;
+        relatedTarget = relatedTarget.parentNode;
+      }
 
-    const ctx = new AudioContext();
-    const canAutoPlay = ctx.state === "running";
-    ctx.close();
+      destroy(currElem);
+      onLeave(currElem);
+      currElem = null;
+    };
 
-    if (canAutoPlay) video.muted = false;
-    setTimeout(() => video.classList.add("fade-in"), 50);
-  };
+    const destroy = (elem) => {
+      elem.removeEventListener("mousemove", handleMousemove);
+      clearInterval(trackSpeedInterval);
+    };
+
+    const onOver = () => {
+      if (!currElem) return;
+
+      destroy(currElem);
+      onLeave(currElem);
+      currElem = null;
+    };
+
+    document.addEventListener("mouseover", handleMouseover);
+    document.addEventListener("mouseout", handleMouseout);
+    document.addEventListener("visibilitychange", onOver);
+    window.addEventListener("blur", onOver);
+  }
+
+  function handleHover() {
+    const setVideo = (elem, trailer, cover) => {
+      const video = createVideo(trailer, cover);
+      elem.append(video);
+
+      video.muted = true;
+      video.currentTime = 4;
+      video.focus();
+      video.play();
+
+      const ctx = new AudioContext();
+      const canAutoPlay = ctx.state === "running";
+      ctx.close();
+
+      if (canAutoPlay) video.muted = false;
+      setTimeout(() => video.classList.add("fade-in"), 50);
+    };
+
+    const getDetails = (dom) => {
+      return {
+        trailer: JavDB.getTrailer(dom),
+        isUncensored: JavDB.isUncensored(dom),
+        studio: getStudio(dom),
+      };
+    };
+
+    return (elem) => {
+      let { trailer, cover, mid, code } = elem.dataset;
+      if (trailer) return setVideo(elem, trailer, cover);
+
+      if (!cover || !mid || !code) {
+        const parentNode = elem.closest("a");
+
+        cover = parentNode.querySelector("img").src;
+        mid = parentNode.href.split("/").pop();
+        code = parentNode.querySelector(".video-title strong").textContent;
+
+        elem.dataset.cover = cover;
+        elem.dataset.mid = mid;
+        elem.dataset.code = code;
+      }
+
+      const trailerMid = `trailer_${mid}`;
+      trailer = localStorage.getItem(trailerMid);
+
+      if (trailer) {
+        elem.dataset.trailer = trailer;
+        return setVideo(elem, trailer, cover);
+      }
+
+      const setTrailer = (trailer) => {
+        if (!trailer || elem.querySelector("video")) return;
+
+        if (!elem.dataset.trailer) {
+          localStorage.setItem(trailerMid, trailer);
+          elem.dataset.trailer = trailer;
+        }
+
+        if (elem === currElem) setVideo(elem, trailer, cover);
+      };
+
+      ReqTrailer.javspyl(code).then(setTrailer);
+
+      ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
+        if (trailer) return setTrailer(trailer);
+        if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
+      });
+    };
+  }
 
   const onLeave = (elem) => {
-    destroy(elem);
-
     const video = elem.querySelector("video") ?? document.querySelector(`${selector} video`);
     if (!video) return;
 
@@ -288,13 +312,6 @@
     setTimeout(() => video.remove(), 200);
   };
 
-  const onOver = () => {
-    if (!currElem) return;
-
-    onLeave(currElem);
-    currElem = null;
-  };
-
-  document.addEventListener("visibilitychange", onOver);
-  window.addEventListener("blur", onOver);
+  const onHover = handleHover();
+  handleMouse(onHover, onLeave);
 })();

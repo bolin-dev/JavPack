@@ -15,24 +15,5 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "cSpell.words": [
-    "accessid",
-    "aliyuncs",
-    "btdig",
-    "Btns",
-    "Bulma",
-    "Digg",
-    "heyzo",
-    "javspyl",
-    "jdbstatic",
-    "muramura",
-    "musume",
-    "ncensored",
-    "pacopacomama",
-    "pondo",
-    "proid",
-    "scid",
-    "vcode",
-    "videoid"
-  ]
+  "cSpell.words": ["btdig", "Digg", "javspyl"]
 }

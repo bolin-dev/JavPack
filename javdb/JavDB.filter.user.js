@@ -23,9 +23,20 @@
   const nodeList = document.querySelectorAll(".movie-list .item");
   if (!nodeList.length) return;
 
-  GM_addStyle(
-    ".is-highlight{position:relative}.is-highlight::after{content:'';position:absolute;inset:0;z-index:-1;margin:-.375rem;border-radius:inherit;background:linear-gradient(45deg, #ff0000, #ff69b4, #ffa500)}",
-  );
+  GM_addStyle(`
+  .is-highlight {
+    position: relative;
+  }
+  .is-highlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin: -.375rem;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #ff0000, #ff69b4, #ffa500);
+  }
+  `);
 
   const parseNode = (node) => {
     const title = node.querySelector(".video-title");

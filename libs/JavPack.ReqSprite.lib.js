@@ -1,31 +1,27 @@
 class ReqSprite extends Req {
+  static checkRemoved(url) {
+    if (!url.includes("removed.png")) return url;
+  }
+
   static blogjav(code) {
-    return this.tasks(
-      {
-        url: "https://blogjav.net/",
-        params: { s: code },
+    return this.tasks({ url: "https://blogjav.net/", params: { s: code } }, [
+      (dom) => {
+        const list = dom.querySelectorAll("#main .entry-title > a");
+        const item = [...list].find((item) => item.textContent.toUpperCase().includes(code));
+        return item?.href;
       },
-      [
-        (dom) => {
-          const list = dom.querySelectorAll("#main .entry-title > a");
-          const item = [...list].find((item) => item.textContent.toUpperCase().includes(code));
-          return item?.href;
-        },
-        (dom) => {
-          let img = dom.querySelector("#main .entry-content p > a img");
-          if (!img) return;
+      (dom) => {
+        let img = dom.querySelector("#main .entry-content p > a img");
+        if (!img) return;
 
-          img = img.dataset.src ?? img.dataset.lazySrc;
-          if (!img) return;
+        img = img.dataset.src ?? img.dataset.lazySrc;
+        if (!img) return;
 
-          img = img.replace("//t", "//img").replace("/thumbs/", "/images/");
-          return { method: "HEAD", url: img };
-        },
-        (finalUrl) => {
-          if (!finalUrl.includes("removed.png")) return finalUrl;
-        },
-      ],
-    );
+        img = img.replace("//t", "//img").replace("/thumbs/", "/images/");
+        return { method: "HEAD", url: img };
+      },
+      this.checkRemoved,
+    ]);
   }
 
   static javstore(code) {
@@ -54,9 +50,7 @@ class ReqSprite extends Req {
           return { method: "HEAD", url: img };
         }
       },
-      (finalUrl) => {
-        if (!finalUrl.includes("removed.png")) return finalUrl;
-      },
+      this.checkRemoved,
     ]);
   }
 }

@@ -22,7 +22,7 @@
       if (!txt) return;
 
       const url = `${location.origin}/search?q=${txt}`;
-      if (location.pathname !== "search") return Grant.openTab(url);
+      if (location.pathname !== "/search") return Grant.openTab(url);
 
       location.href = url;
     }

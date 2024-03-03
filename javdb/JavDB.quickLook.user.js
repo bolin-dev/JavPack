@@ -8,6 +8,7 @@
 // @exclude         https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -27,24 +28,69 @@
   const selector = ".movie-list .item";
   if (!document.querySelector(selector)) return;
 
-  const genModal = () => {
+  function createModal() {
     const modalId = "x-quicklook";
 
     GM_addStyle(`
-    #${modalId} .modal-card-head{gap:.5rem}
-    #${modalId} .modal-card-title{flex:1;white-space:nowrap;text-overflow:ellipsis}
-    #${modalId} .carousel{aspect-ratio:420/283;background:#aa9084}
-    :root[data-theme=dark] #${modalId} .carousel{background:#222}
-    #${modalId} .carousel :is(img,video){position:absolute;inset:0;width:100%;height:100%;object-fit:contain;vertical-align:middle}
-    #${modalId} .carousel-container .btn{position:absolute;z-index:1;width:3rem;height:3rem;opacity:0;top:50%;transform:translateY(-50%);border-radius:50%;transition:all .3s cubic-bezier(0,0,.5,1);box-shadow:2px 4px 12px rgba(0,0,0,.08)}
-    #${modalId} .carousel-container:hover .btn{opacity:.75}
-    #${modalId} .carousel-container .btn:hover{opacity:1}
-    #${modalId} .carousel-container .btn.carousel-prev{left:1rem}
-    #${modalId} .carousel-container .btn.carousel-next{right:1rem}
-    #${modalId} .info-block{padding-top:.5rem}
-    #${modalId} .info-block:not(:last-child){border-bottom:1px solid #ededed;padding-bottom:.5rem}
-    :root[data-theme=dark] #${modalId} .info-block{border-color:#4a4a4a}
+    #${modalId} .modal-card-head {
+      gap: .5rem;
+    }
+    #${modalId} .modal-card-title {
+      flex: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    #${modalId} .carousel {
+      aspect-ratio: 420 / 283;
+      background: #aa9084;
+    }
+    :root[data-theme=dark] #${modalId} .carousel {
+      background: #222;
+    }
+    #${modalId} .carousel :is(img,video) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+    #${modalId} .carousel-container .btn {
+      position: absolute;
+      z-index: 1;
+      width: 3rem;
+      height: 3rem;
+      opacity: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      transition: all .3s cubic-bezier(0, 0, .5, 1);
+      box-shadow: 2px 4px 12px rgba(0,0,0,.08);
+    }
+    #${modalId} .carousel-container:hover .btn {
+      opacity: .75;
+    }
+    #${modalId} .carousel-container .btn:hover{
+      opacity: 1;
+    }
+    #${modalId} .carousel-container .btn.carousel-prev {
+      left: 1rem;
+    }
+    #${modalId} .carousel-container .btn.carousel-next {
+      right: 1rem;
+    }
+    #${modalId} .info-block {
+      padding-top: .5rem;
+    }
+    #${modalId} .info-block:not(:last-child) {
+      border-bottom: 1px solid #ededed;
+      padding-bottom: .5rem;
+    }
+    :root[data-theme=dark] #${modalId} .info-block {
+      border-color: #4a4a4a;
+    }
     `);
+
     document.body.insertAdjacentHTML(
       "beforeend",
       `<div id="${modalId}" class="modal">
@@ -63,8 +109,8 @@
     const modalTitle = modal.querySelector(".modal-card-title");
     const modalBody = modal.querySelector(".modal-card-body");
     return { modal, modalTitle, modalBody };
-  };
-  const { modal, modalTitle, modalBody } = genModal();
+  }
+  const { modal, modalTitle, modalBody } = createModal();
 
   let currElem = null;
   let isActive = false;
@@ -161,7 +207,7 @@
     const cover = dom.querySelector(".column-video-cover img")?.src;
     if (!cover) return;
 
-    const trailer = dom.querySelector("#preview-video source")?.getAttribute("src");
+    const trailer = JavDB.getTrailer(dom);
 
     const info = [];
     for (const item of dom.querySelectorAll(".movie-panel-info > .panel-block")) {
@@ -217,7 +263,7 @@
     modalBody.innerHTML = innerHTML;
   }
 
-  const handleCarouselNav = (nav) => {
+  function handleCarouselNav(nav) {
     const curr = modalBody.querySelector(".carousel .is-block");
 
     let target = null;
@@ -229,7 +275,7 @@
 
     curr.classList.replace("is-block", "is-hidden");
     target.classList.replace("is-hidden", "is-block");
-  };
+  }
 
   modal.addEventListener("click", (e) => {
     const { target } = e;
@@ -264,17 +310,13 @@
     if (!videoActive && !videoPaused) video.pause();
   }
 
-  const obModal = () => {
-    const callback = (mutationsList) => {
-      for (const { target } of mutationsList) {
-        if (target.classList.contains("modal")) isActive = target.classList.contains("is-active");
-        controlVideo();
-      }
-    };
-    const observer = new MutationObserver(callback);
-
-    const options = { subtree: true, childList: true, attributeFilter: ["class"], characterData: false };
-    observer.observe(modal, options);
+  const callback = (mutationsList) => {
+    for (const { target } of mutationsList) {
+      if (target.classList.contains("modal")) isActive = target.classList.contains("is-active");
+      controlVideo();
+    }
   };
-  obModal();
+  const observer = new MutationObserver(callback);
+  const options = { subtree: true, childList: true, attributeFilter: ["class"], characterData: false };
+  observer.observe(modal, options);
 })();

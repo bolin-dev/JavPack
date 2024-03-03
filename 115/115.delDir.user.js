@@ -37,25 +37,30 @@
     Req115.rbDelete([file_id]).then(turnNearby);
   };
 
-  const handleClick = ({ target }) => {
-    target.textContent = "请求中...";
-    target.style.pointerEvents = "none";
-    Req115.filesVideo(pc).then(smartDel);
-  };
-
-  const handleLoaded = ({ target }) => {
-    target.querySelector(".vt-headline").insertAdjacentElement("beforeend", delNode);
-  };
-
-  const delNode = document.createElement("a");
   const delNodeId = "x-del";
 
+  GM_addStyle(`
+  #${delNodeId} {
+    background: rgb(175, 23, 0);
+  }
+  #js_common_mini-dialog {
+    display: none !important;
+  }
+  `);
+
+  const delNode = document.createElement("a");
   delNode.id = delNodeId;
   delNode.textContent = "删除";
   delNode.className = "btn-opendir";
   delNode.href = "javascript:void(0);";
-  delNode.addEventListener("click", handleClick);
 
-  GM_addStyle(`#${delNodeId}{background:rgb(175,23,0)}#js_common_mini-dialog{display:none !important}`);
-  document.addEventListener("DOMContentLoaded", handleLoaded);
+  delNode.addEventListener("click", ({ target }) => {
+    target.textContent = "请求中...";
+    target.style.pointerEvents = "none";
+    Req115.filesVideo(pc).then(smartDel);
+  });
+
+  document.addEventListener("DOMContentLoaded", ({ target }) => {
+    target.querySelector(".vt-headline").insertAdjacentElement("beforeend", delNode);
+  });
 })();

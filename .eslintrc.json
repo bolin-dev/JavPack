@@ -6,20 +6,20 @@
     "greasemonkey": true
   },
   "globals": {
+    "Grant": true,
+    "JavDB": true,
+    "Magnet": true,
     "Req": true,
     "Req115": true,
     "ReqMagnet": true,
     "ReqSprite": true,
     "ReqTrailer": true,
-    "Util": true,
-    "Grant": true,
-    "Magnet": true,
-    "JavDB": true
+    "Util": true
   },
   "rules": {
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^Req|Util|Grant|Magnet|JavDB" }],
-    "no-param-reassign": "off",
-    "no-template-curly-in-string": "off"
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|JavDB|Magnet|Req|Util" }],
+    "no-param-reassign": "off"
+    // "no-template-curly-in-string": "off"
   },
   "ignorePatterns": ["**/*.md"]
 }

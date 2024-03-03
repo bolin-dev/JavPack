@@ -28,10 +28,10 @@
   const btdigHost = "https://btdig.com";
 
   const transToByte = Magnet.useTransByte();
-  const hdSize = parseFloat(transToByte("2GB"));
-  const minSize = parseFloat(transToByte("300MB"));
+  const hdSize = parseFloat(transToByte(Magnet.hdSize));
+  const minSize = parseFloat(transToByte(Magnet.minSize));
 
-  const code = document.querySelector(".first-block .value").textContent;
+  const code = JavDB.getCode();
   const isUncensored = JavDB.isUncensored();
 
   const magnetNode = document.querySelector("#magnets-content");
@@ -46,7 +46,7 @@
         <span class="icon is-small"><i class="icon-check-circle"></i></span><span>自动去重</span>
       </button>
       <button class="button is-success">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>自动排序</span>
+        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>综合排序</span>
       </button>
     </div>`,
   );
@@ -124,7 +124,7 @@
 
           return acc;
         }, [])
-        .toSorted(Util.magnetSort)
+        .toSorted(Magnet.magnetSort)
         .map(({ url, name, meta, zh, crack, hd, date }, idx) => {
           const odd = !(idx % 2) ? " odd" : "";
           const hash = url.split(":").pop();
@@ -147,9 +147,12 @@
                 复制
               </button>
             </div>
-          </div>`;
+          </div>
+          `;
         })
         .join("") || "暂无数据";
+
+    if (insert.length) window.dispatchEvent(new CustomEvent("magnet.refactor"));
   }
 
   magnetNode.addEventListener("contextmenu", (e) => {

@@ -6,9 +6,12 @@
 // @description     115 网盘匹配
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         115.com
 // @run-at          document-end
@@ -26,103 +29,114 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-(function () {
-  Util.upStore();
+Util.upStore();
 
-  const SELECTOR = "x-match-item";
-  const VOID = "javascript:void(0);";
-  const DriveChannel = new BroadcastChannel("DriveChannel");
+const SELECTOR = "x-match-item";
+const VOID = "javascript:void(0);";
+const DriveChannel = new BroadcastChannel("match115.refresh");
 
-  const listenClick = (tabClose) => {
-    const eventCfg = {
-      click: { key: "pc", url: "https://v.anxia.com/?pickcode=%s" },
-      contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
-    };
-
-    const handleClose = async (target) => {
-      await Req115.sleep();
-      tabClose(target);
-    };
-
-    const handleClick = (e) => {
-      const { target } = e;
-      if (!target.classList.contains(SELECTOR)) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      const config = eventCfg[e.type];
-      if (!config) return;
-
-      const val = target.dataset[config.key];
-      if (!val) return;
-
-      const tab = Util.openTab(config.url.replaceAll("%s", val));
-      tab.onclose = () => handleClose(target);
-    };
-
-    document.addEventListener("click", handleClick);
-    document.addEventListener("contextmenu", handleClick);
+function listenClick(tabClose) {
+  const eventCfg = {
+    click: { key: "pc", url: "https://v.anxia.com/?pickcode=%s" },
+    contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
   };
 
+  const handleClose = async (target) => {
+    await Util.sleep(0.5);
+    tabClose(target);
+  };
+
+  const handleClick = (e) => {
+    const { target } = e;
+    if (!target.classList.contains(SELECTOR)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const config = eventCfg[e.type];
+    if (!config) return;
+
+    const val = target.dataset[config.key];
+    if (!val) return;
+
+    const tab = Grant.openTab(config.url.replaceAll("%s", val));
+    tab.onclose = () => handleClose(target);
+  };
+
+  document.addEventListener("click", handleClick);
+  document.addEventListener("contextmenu", handleClick);
+}
+
+(function () {
   const { pathname } = location;
-  if (pathname.startsWith("/v/")) {
-    window.addEventListener("beforeunload", () => DriveChannel.postMessage(pathname.split("/").pop()));
+  if (!pathname.startsWith("/v/")) return;
 
-    GM_addStyle(
-      "#x-match-res a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}",
-    );
+  const matchResId = "x-match-res";
 
-    const infoNode = document.querySelector(".movie-panel-info");
-    infoNode
-      .querySelector(".review-buttons")
-      .insertAdjacentHTML(
-        "afterend",
-        '<div class="panel-block"><strong>115 资源:</strong>&nbsp;<span class="value" id="x-match-res">查询中...</span></div>',
-      );
+  const matchResStr = `
+  <div class="panel-block">
+    <strong>115资源:</strong>&nbsp;<span class="value" id="${matchResId}">查询中...</span>
+  </div>
+  `;
 
-    const matchResNode = infoNode.querySelector("#x-match-res");
-    const code = infoNode.querySelector(".first-block .value").textContent;
-    const { codes, regex } = Util.codeParse(code);
-
-    const matchCode = () => {
-      return Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
-        if (!state) {
-          matchResNode.textContent = "查询失败，请检查登录状态";
-          return;
-        }
-
-        data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
-        GM_setValue(code, data);
-
-        if (!data.length) {
-          matchResNode.textContent = "暂无资源";
-          return;
-        }
-
-        matchResNode.innerHTML = data
-          .map(
-            ({ pc, cid, t, n }) =>
-              `<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
-          )
-          .join("");
-      });
-    };
-
-    Util.setWindow("matchCode", matchCode);
-    listenClick(matchCode);
-    return matchCode();
+  GM_addStyle(`
+  #${matchResId} a {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: unset;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
   }
+  `);
 
+  const infoNode = document.querySelector(".movie-panel-info");
+  infoNode.querySelector(".review-buttons").insertAdjacentHTML("afterend", matchResStr);
+  const matchResNode = infoNode.querySelector("#x-match-res");
+
+  const code = JavDB.getCode();
+  const { codes, regex } = Util.codeParse(code);
+
+  const matchCode = () => {
+    Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
+      if (!state) {
+        matchResNode.innerHTML = "查询失败，检查登录状态";
+        return;
+      }
+
+      data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+      GM_setValue(code, data);
+
+      if (!data.length) {
+        matchResNode.innerHTML = "暂无资源";
+        return;
+      }
+
+      matchResNode.innerHTML = data.reduce(
+        (acc, { pc, cid, t, n }) =>
+          `${acc}<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
+        "",
+      );
+    });
+  };
+
+  matchCode();
+  listenClick(matchCode);
+  unsafeWindow["match115.matchCode"] = matchCode;
+  window.addEventListener("beforeunload", () => DriveChannel.postMessage(pathname.split("/").pop()));
+})();
+
+(function () {
   const childList = document.querySelectorAll(".movie-list .item");
   if (!childList.length) return;
 
   GM_addStyle(`
   .movie-list .item:has(.video-title .is-success) {
-    border: 4px solid #34a873;
+    border: .375rem solid #34a873;
   }
   .movie-list .item:has(.video-title .is-warning) {
-    border: 4px solid #ffd257;
+    border: .375rem solid #ffd257;
   }
   [data-theme="dark"] .movie-list .item:has(.video-title .is-success) {
     border-color: #48c78e;
@@ -145,7 +159,7 @@
       if (this.lock || !this.list.length) return;
 
       this.lock = true;
-      await this.handleMatch();
+      await this.handleQueue();
       this.lock = false;
     }
 
@@ -175,7 +189,7 @@
       );
     };
 
-    static async handleMatch() {
+    static async handleQueue() {
       const prefixMap = this.list
         .splice(0)
         .filter(this.handleFilter)
@@ -185,11 +199,11 @@
           return acc;
         }, {});
 
-      await Promise.allSettled(Object.entries(prefixMap).map(this.handleMatchPrefix));
-      if (this.list.length) return this.handleMatch();
+      await Promise.allSettled(Object.entries(prefixMap).map(this.handleMatch));
+      if (this.list.length) return this.handleQueue();
     }
 
-    static handleMatchPrefix = ([prefix, list]) => {
+    static handleMatch = ([prefix, list]) => {
       return Req115.videosSearch(prefix).then(({ data }) => {
         data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
         GM_setValue(prefix, data);
@@ -211,7 +225,7 @@
       let className = "";
 
       if (res.length) {
-        const zhRes = res.find((item) => Util.zhReg.test(item.n));
+        const zhRes = res.find((item) => Magnet.zhReg.test(item.n));
         const item = zhRes ?? res[0];
 
         textContent = "已匹配";
@@ -229,7 +243,24 @@
     }
   }
 
-  const tabClose = (target) => {
+  const callback = (entries, observer) => {
+    const intersected = [];
+    entries.forEach(({ isIntersecting, target }) => {
+      if (!isIntersecting) return;
+      observer.unobserve(target);
+      intersected.push(target);
+    });
+    QueueMatch.add(intersected);
+  };
+  const observer = new IntersectionObserver(callback, { threshold: 0.2 });
+
+  const insertQueue = (nodeList) => nodeList.forEach((node) => observer.observe(node));
+  insertQueue(childList);
+  window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
+
+  DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
+
+  const refresh = (target) => {
     const item = target.closest(".item");
 
     const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
@@ -240,23 +271,5 @@
     GM_deleteValue(prefix);
     QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`));
   };
-  listenClick(tabClose);
-
-  DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
-
-  const intersectionCallback = (entries, observer) => {
-    const intersected = [];
-    entries.forEach(({ isIntersecting, target }) => {
-      if (!isIntersecting) return;
-      observer.unobserve(target);
-      intersected.push(target);
-    });
-    QueueMatch.add(intersected);
-  };
-  const intersectionObserver = new IntersectionObserver(intersectionCallback, { threshold: 0.2 });
-
-  childList.forEach((node) => intersectionObserver.observe(node));
-  window.addEventListener("scroll.loadmore", ({ detail }) =>
-    detail.forEach((node) => intersectionObserver.observe(node)),
-  );
+  listenClick(refresh);
 })();
