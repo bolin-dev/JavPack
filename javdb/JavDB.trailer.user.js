@@ -260,6 +260,9 @@ const createVideo = useVideo();
     };
 
     return (elem) => {
+      const { classList } = elem;
+      if (classList.contains("x-loading-javspyl") || classList.contains("x-loading-javdb")) return;
+
       let { trailer, cover, mid, code } = elem.dataset;
       if (trailer) return setVideo(elem, trailer, cover);
 
@@ -294,12 +297,19 @@ const createVideo = useVideo();
         if (elem === currElem) setVideo(elem, trailer, cover);
       };
 
-      ReqTrailer.javspyl(code).then(setTrailer);
+      classList.add("x-loading-javspyl");
+      classList.add("x-loading-javdb");
 
-      ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails]).then(({ trailer, isUncensored, studio }) => {
-        if (trailer) return setTrailer(trailer);
-        if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
-      });
+      ReqTrailer.javspyl(code)
+        .then(setTrailer)
+        .finally(() => classList.remove("x-loading-javspyl"));
+
+      ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails])
+        .then(({ trailer, isUncensored, studio }) => {
+          if (trailer) return setTrailer(trailer);
+          if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
+        })
+        .finally(() => classList.remove("x-loading-javdb"));
     };
   }
 
