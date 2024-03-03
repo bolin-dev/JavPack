@@ -87,7 +87,7 @@ const createVideo = useVideo();
     const video = createVideo(trailer, cover.src);
     cover.replaceWith(video);
 
-    video.addEventListener("click", (e) => {
+    container.addEventListener("click", (e) => {
       if (e.target.closest(".play-button")) return;
 
       e.preventDefault();
