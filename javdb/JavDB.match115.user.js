@@ -243,21 +243,24 @@ function listenClick(tabClose) {
     }
   }
 
-  const callback = (entries, observer) => {
-    const intersected = [];
-    entries.forEach(({ isIntersecting, target }) => {
-      if (!isIntersecting) return;
-      observer.unobserve(target);
-      intersected.push(target);
-    });
-    QueueMatch.add(intersected);
-  };
-  const observer = new IntersectionObserver(callback, { threshold: 0.2 });
+  function createObserver() {
+    const callback = (entries, observer) => {
+      const intersected = [];
+      entries.forEach(({ isIntersecting, target }) => {
+        if (!isIntersecting) return;
+        observer.unobserve(target);
+        intersected.push(target);
+      });
+      QueueMatch.add(intersected);
+    };
 
-  const insertQueue = (nodeList) => nodeList.forEach((node) => observer.observe(node));
+    const observer = new IntersectionObserver(callback, { threshold: 0.2 });
+    return (nodeList) => nodeList.forEach((node) => observer.observe(node));
+  }
+  const insertQueue = createObserver();
+
   insertQueue(childList);
   window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
-
   DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
   const refresh = (target) => {
