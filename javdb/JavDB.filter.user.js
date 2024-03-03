@@ -53,13 +53,13 @@
 
   const filter = (nodeList) => {
     for (const node of nodeList) {
-      const res = parseNode(node);
+      const parseStr = parseNode(node);
 
-      if (hiddenList.some((item) => item.test(res))) {
+      if (hiddenList.some((item) => item.test(parseStr))) {
         node.classList.add("is-hidden");
         continue;
       }
-      if (highlightList.some((item) => item.test(res))) node.classList.add("is-highlight");
+      if (highlightList.some((item) => item.test(parseStr))) node.classList.add("is-highlight");
     }
   };
 
