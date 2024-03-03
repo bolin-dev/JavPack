@@ -31,13 +31,25 @@
 
     localStorage.setItem(mid, sprite);
     const box = document.querySelector(".tile-images.preview-images");
-    const innerHTML = `<a class="tile-item" id="x-sprite" href="${sprite}" data-fancybox="gallery" data-caption="雪碧图"><img src="${sprite}" alt="雪碧图" loading="lazy"></a>`;
+    const innerHTML = `
+    <a class="tile-item" id="x-sprite" href="${sprite}" data-fancybox="gallery" data-caption="sprite">
+      <img src="${sprite}" alt="雪碧图" loading="lazy">
+    </a>
+    `;
 
     if (!box) {
       const target = document.querySelector(".video-meta-panel");
       return target.insertAdjacentHTML(
         "afterend",
-        `<div class="columns"><div class="column"><article class="message video-panel"><div class="message-body"><div class="tile-images preview-images">${innerHTML}</div></div></article></div></div>`,
+        `<div class="columns">
+          <div class="column">
+            <article class="message video-panel">
+              <div class="message-body">
+                <div class="tile-images preview-images">${innerHTML}</div>
+              </div>
+            </article>
+          </div>
+        </div>`,
       );
     }
 
