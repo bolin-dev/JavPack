@@ -44,9 +44,9 @@ function useVideo() {
     const { code, target } = e;
     if (code === "KeyM") target.muted = !target.muted;
     if (code === "KeyW" || code === "ArrowUp") target.volume += 0.1;
-    if (code === "KeyA" || code === "ArrowLeft") target.currentTime -= 2.5;
+    if (code === "KeyA" || code === "ArrowLeft") target.currentTime -= 2;
     if (code === "KeyS" || code === "ArrowDown") target.volume -= 0.1;
-    if (code === "KeyD" || code === "ArrowRight") target.currentTime += 5;
+    if (code === "KeyD" || code === "ArrowRight") target.currentTime += 4;
   };
 
   const handleVolumechange = ({ target }) => localStorage.setItem("volume", target.volume);
@@ -137,7 +137,7 @@ const createVideo = useVideo();
 
   let currElem = null;
 
-  function handleMouse(onHover, onLeave) {
+  function handleMouse(onHover) {
     const interval = 250;
     const sensitivity = 0;
 
@@ -217,6 +217,15 @@ const createVideo = useVideo();
     const destroy = (elem) => {
       elem.removeEventListener("mousemove", handleMousemove);
       clearInterval(trackSpeedInterval);
+    };
+
+    const onLeave = (elem) => {
+      const video = elem.querySelector("video") ?? document.querySelector(`${selector} video`);
+      if (!video) return;
+
+      video.pause();
+      video.classList.remove("fade-in");
+      setTimeout(() => video.remove(), 200);
     };
 
     const onOver = () => {
@@ -313,15 +322,5 @@ const createVideo = useVideo();
     };
   }
 
-  const onLeave = (elem) => {
-    const video = elem.querySelector("video") ?? document.querySelector(`${selector} video`);
-    if (!video) return;
-
-    video.pause();
-    video.classList.remove("fade-in");
-    setTimeout(() => video.remove(), 200);
-  };
-
-  const onHover = handleHover();
-  handleMouse(onHover, onLeave);
+  handleMouse(handleHover());
 })();
