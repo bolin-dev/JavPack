@@ -71,30 +71,31 @@ function listenClick(tabClose) {
   const { pathname } = location;
   if (!pathname.startsWith("/v/")) return;
 
-  const matchResId = "x-match-res";
+  function createDom() {
+    const domId = "x-match-res";
+    const domStr = `
+    <div class="panel-block">
+      <strong>115资源:</strong>&nbsp;<span class="value" id="${domId}">查询中...</span>
+    </div>
+    `;
 
-  const matchResStr = `
-  <div class="panel-block">
-    <strong>115资源:</strong>&nbsp;<span class="value" id="${matchResId}">查询中...</span>
-  </div>
-  `;
+    GM_addStyle(`
+    #${domId} a {
+      display: -webkit-box;
+      overflow: hidden;
+      white-space: unset;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      word-break: break-all;
+    }
+    `);
 
-  GM_addStyle(`
-  #${matchResId} a {
-    display: -webkit-box;
-    overflow: hidden;
-    white-space: unset;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    word-break: break-all;
+    document.querySelector(".movie-panel-info .review-buttons").insertAdjacentHTML("afterend", domStr);
+    return document.querySelector(`#${domId}`);
   }
-  `);
 
-  const infoNode = document.querySelector(".movie-panel-info");
-  infoNode.querySelector(".review-buttons").insertAdjacentHTML("afterend", matchResStr);
-  const matchResNode = infoNode.querySelector("#x-match-res");
-
+  const matchResNode = createDom();
   const code = JavDB.getCode();
   const { codes, regex } = Util.codeParse(code);
 
