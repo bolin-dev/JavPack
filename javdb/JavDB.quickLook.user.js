@@ -65,7 +65,7 @@
       transform: translateY(-50%);
       border-radius: 50%;
       transition: all .3s cubic-bezier(0, 0, .5, 1);
-      box-shadow: 2px 4px 12px rgba(0,0,0,.08);
+      box-shadow: 2px 4px 12px rgba(0, 0, 0, .08);
     }
     #${modalId} .carousel-container:hover .btn {
       opacity: .75;
