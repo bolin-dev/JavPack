@@ -41,7 +41,7 @@ function listenClick(tabClose) {
   };
 
   const handleClose = async (target) => {
-    await Util.sleep(0.5);
+    await Req115.sleep(0.5);
     tabClose(target);
   };
 
