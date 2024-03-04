@@ -9,7 +9,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqMagnet.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -31,8 +30,8 @@
   const hdSize = parseFloat(transToByte(Magnet.hdSize));
   const minSize = parseFloat(transToByte(Magnet.minSize));
 
-  const code = JavDB.getCode();
-  const isUncensored = JavDB.isUncensored();
+  const code = document.querySelector(".first-block .value").textContent;
+  const isUncensored = document.querySelector(".title.is-4").textContent.includes("無碼");
 
   const magnetNode = document.querySelector("#magnets-content");
 

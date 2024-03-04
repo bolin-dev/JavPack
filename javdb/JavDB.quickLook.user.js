@@ -8,7 +8,6 @@
 // @exclude         https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -207,7 +206,7 @@
     const cover = dom.querySelector(".column-video-cover img")?.src;
     if (!cover) return;
 
-    const trailer = JavDB.getTrailer(dom);
+    const trailer = dom.querySelector("#preview-video source")?.getAttribute("src");
 
     const info = [];
     for (const item of dom.querySelectorAll(".movie-panel-info > .panel-block")) {

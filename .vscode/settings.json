@@ -15,5 +15,5 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "cSpell.words": ["btdig", "Digg", "heyzo", "javdb", "javspyl", "muramura", "musume", "pacopacomama", "pondo"]
+  "cSpell.words": []
 }

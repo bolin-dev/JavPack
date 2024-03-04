@@ -7,7 +7,6 @@
   },
   "globals": {
     "Grant": true,
-    "JavDB": true,
     "Magnet": true,
     "Req": true,
     "Req115": true,
@@ -17,9 +16,9 @@
     "Util": true
   },
   "rules": {
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|JavDB|Magnet|Req|Util" }],
-    "no-param-reassign": "off"
-    // "no-template-curly-in-string": "off"
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|Magnet|Req|Util" }],
+    "no-param-reassign": "off",
+    "no-template-curly-in-string": "off"
   },
   "ignorePatterns": ["**/*.md"]
 }

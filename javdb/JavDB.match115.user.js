@@ -8,7 +8,6 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
@@ -96,7 +95,7 @@ function listenClick(tabClose) {
   }
 
   const matchResNode = createDom();
-  const code = JavDB.getCode();
+  const code = document.querySelector(".first-block .value").textContent;
   const { codes, regex } = Util.codeParse(code);
 
   const matchCode = () => {

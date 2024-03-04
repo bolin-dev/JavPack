@@ -7,7 +7,6 @@
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.JavDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqTrailer.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
@@ -30,10 +29,18 @@
 
 Util.upLocal();
 
+function isUncensored(dom = document) {
+  return dom.querySelector(".title.is-4").textContent.includes("無碼");
+}
+
 function getStudio(dom = document) {
   return [...dom.querySelectorAll(".movie-panel-info > .panel-block")]
     .find((item) => item.querySelector("strong")?.textContent === "片商:")
     ?.querySelector(".value").textContent;
+}
+
+function getTrailer(dom = document) {
+  return dom.querySelector("#preview-video source")?.getAttribute("src");
 }
 
 function useVideo() {
@@ -99,16 +106,16 @@ const createVideo = useVideo();
     });
   };
 
-  let trailer = JavDB.getTrailer();
+  let trailer = getTrailer();
   if (trailer) return setTrailer(trailer);
 
   trailer = localStorage.getItem(mid);
   if (trailer) return setTrailer(trailer);
 
-  const code = JavDB.getCode();
+  const code = document.querySelector(".first-block .value").textContent;
 
   ReqTrailer.javspyl(code).then(setTrailer);
-  if (!JavDB.isUncensored()) return;
+  if (!isUncensored()) return;
 
   const studio = getStudio();
   if (studio) guessStudio(code, studio).then(setTrailer);
@@ -262,8 +269,8 @@ const createVideo = useVideo();
 
     const getDetails = (dom) => {
       return {
-        trailer: JavDB.getTrailer(dom),
-        isUncensored: JavDB.isUncensored(dom),
+        trailer: getTrailer(dom),
+        isUncensored: isUncensored(dom),
         studio: getStudio(dom),
       };
     };
