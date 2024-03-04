@@ -189,6 +189,9 @@ body {
   & .magnet-name .name {
     flex-shrink: 0;
     width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   & .magnet-name :is(.meta, .tags) {
