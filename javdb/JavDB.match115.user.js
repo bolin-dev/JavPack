@@ -72,6 +72,7 @@ function listenClick(tabClose) {
 
   function createDom() {
     const domId = "x-match-res";
+
     const domStr = `
     <div class="panel-block">
       <strong>115资源:</strong>&nbsp;<span class="value" id="${domId}">查询中...</span>
@@ -128,20 +129,21 @@ function listenClick(tabClose) {
 })();
 
 (function () {
-  const childList = document.querySelectorAll(".movie-list .item");
+  const selector = ".movie-list .item";
+  const childList = document.querySelectorAll(selector);
   if (!childList.length) return;
 
   GM_addStyle(`
-  .movie-list .item:has(.video-title .is-success) {
+  ${selector}:has(.video-title .is-success) {
     border: .375rem solid #34a873;
   }
-  .movie-list .item:has(.video-title .is-warning) {
+  ${selector}:has(.video-title .is-warning) {
     border: .375rem solid #ffd257;
   }
-  [data-theme="dark"] .movie-list .item:has(.video-title .is-success) {
+  [data-theme="dark"] ${selector}:has(.video-title .is-success) {
     border-color: #48c78e;
   }
-  [data-theme="dark"] .movie-list .item:has(.video-title .is-warning) {
+  [data-theme="dark"] ${selector}:has(.video-title .is-warning) {
     border-color: #ffe08a;
   }
   `);
