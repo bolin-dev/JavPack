@@ -22,9 +22,11 @@ class Util {
     };
   }
 
-  static sleep(s = 1) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, s * 1000);
-    });
+  static setTabBar({ text, icon }) {
+    document.title = text;
+    if (!icon) return;
+
+    const href = GM_getResourceURL(icon);
+    document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", href));
   }
 }
