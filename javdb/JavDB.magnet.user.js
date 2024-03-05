@@ -24,11 +24,11 @@
 (function () {
   Util.upLocal();
 
-  const btdigHost = "https://btdig.com";
+  const HOST = "https://btdig.com";
 
   const transToByte = Magnet.useTransByte();
-  const hdSize = parseFloat(transToByte(Magnet.hdSize));
-  const minSize = parseFloat(transToByte(Magnet.minSize));
+  const hdSize = parseFloat(transToByte("2GB"));
+  const minSize = parseFloat(transToByte("300MB"));
 
   const code = document.querySelector(".first-block .value").textContent;
   const isUncensored = document.querySelector(".title.is-4").textContent.includes("無碼");
@@ -38,7 +38,7 @@
   magnetNode.insertAdjacentHTML(
     "beforebegin",
     `<div class="buttons are-small mb-1">
-      <a class="button is-success" id="x-btdig" href="${btdigHost}/search?q=${code}" target="_blank">
+      <a class="button is-success" id="x-magnet" href="${HOST}/search?q=${code}" target="_blank">
         <span class="icon is-small"><i class="icon-check-circle"></i></span><span>BTDigg</span>
       </a>
       <button class="button is-success">
@@ -50,28 +50,28 @@
     </div>`,
   );
 
-  const mid = `btdig_${location.pathname.split("/").pop()}`;
-  const btdigMagnets = localStorage.getItem(mid);
+  const mid = `magnet_${location.pathname.split("/").pop()}`;
+  const magnets = localStorage.getItem(mid);
 
-  if (btdigMagnets) {
-    refactorMagnets(JSON.parse(btdigMagnets));
+  if (magnets) {
+    refactorMagnets(JSON.parse(magnets));
   } else {
     refactorMagnets();
-    const btdigNode = document.querySelector("#x-btdig");
-    btdigNode.classList.add("is-loading");
+    const magnetTarget = document.querySelector("#x-magnet");
+    magnetTarget.classList.add("is-loading");
 
     ReqMagnet.btdig(code)
       .then((res) => {
-        const icon = btdigNode.querySelector("i");
+        const icon = magnetTarget.querySelector("i");
         if (res) {
           localStorage.setItem(mid, JSON.stringify(res));
           res.length ? refactorMagnets(res) : icon.setAttribute("class", "icon-check-circle-o");
         } else {
-          btdigNode.classList.replace("is-success", "is-warning");
+          magnetTarget.classList.replace("is-success", "is-warning");
           icon.setAttribute("class", "icon-close");
         }
       })
-      .finally(() => btdigNode.classList.remove("is-loading"));
+      .finally(() => magnetTarget.classList.remove("is-loading"));
   }
 
   function refactorMagnets(insert = []) {
@@ -150,8 +150,6 @@
           `;
         })
         .join("") || "暂无数据";
-
-    if (insert.length) window.dispatchEvent(new CustomEvent("magnet.refactor"));
   }
 
   magnetNode.addEventListener("contextmenu", (e) => {
@@ -163,6 +161,6 @@
 
     e.preventDefault();
     e.stopPropagation();
-    Grant.openTab(`${btdigHost}/${hash}`);
+    Grant.openTab(`${HOST}/${hash}`);
   });
 })();
