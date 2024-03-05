@@ -1,10 +1,6 @@
 class Magnet {
-  static numReg = /\d+\.\d+|\d+/;
   static crackReg = /破解|-uc?(?![a-z])|uncensored/i;
   static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i;
-
-  static hdSize = "2GB";
-  static minSize = "300MB";
 
   static useTransByte() {
     const rules = [
@@ -27,7 +23,7 @@ class Magnet {
       { unit: /yib/i, trans: (size) => size * 1024 ** 8 },
     ];
     return (str) => {
-      const num = str.match(this.numReg)?.[0] ?? 0;
+      const num = str.match(/\d+\.\d+|\d+/)?.[0] ?? 0;
       if (num <= 0) return 0;
       const rule = rules.find(({ unit }) => unit.test(str));
       return rule ? rule.trans(num).toFixed(2) : 0;
