@@ -1,5 +1,8 @@
 class Offline {
   static defaultOptions = {
+    noTxt: ".${no}",
+    zhTxt: "[中字]",
+    crackTxt: "[破解]",
     tags: ["genres", "actors"],
     clean: true,
     cover: true,
@@ -38,7 +41,6 @@ class Offline {
         rename = rename.replaceAll("${zh}", "$zh");
         rename = rename.replaceAll("${crack}", "$crack");
         if (rename && !rename.includes("${code}")) rename = "${code} " + rename;
-
         if (type === "plain") return { ...item, dir: this.parseDir(dir, params), rename, idx: 0, index };
 
         let classes = params[type];
