@@ -4,13 +4,16 @@
 // @version         0.0.1
 // @author          blc
 // @description     115 网盘离线
-// @match           https://javdb.com/v/*
+// @match           https://javdb.com/*
 // @match           https://captchaapi.115.com/*
 // @icon            https://javdb.com/favicon.ico
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.UtilDB.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Offline.lib.js
+// @resource        pending https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
 // @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
 // @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
@@ -20,6 +23,7 @@
 // @connect         aliyuncs.com
 // @connect         pixhost.to
 // @connect         115.com
+// @connect         self
 // @run-at          document-end
 // @grant           GM_removeValueChangeListener
 // @grant           GM_addValueChangeListener
@@ -32,342 +36,300 @@
 // @grant           window.close
 // @grant           GM_getValue
 // @grant           GM_setValue
+// @grant           GM_addStyle
 // @grant           GM_info
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-(function () {
-  const { host, pathname } = location;
-  if (host === "captchaapi.115.com") return Req115.verifyAccount();
+const noTxt = ".${no}";
+const zhTxt = "[中字]";
+const crackTxt = "[破解]";
 
-  const config = [
-    {
-      name: "云下载",
-      color: "is-primary",
-    },
-    {
-      name: "番号",
-      dir: "番号/${prefix}",
-      color: "is-link",
-    },
-    {
-      name: "片商",
-      dir: "片商/${maker}",
-    },
-    {
-      name: "系列",
-      dir: "系列/${series}",
-      color: "is-success",
-    },
-    {
-      type: "genres",
-      name: "${genre}",
-      dir: "类别/${genre}",
-      match: ["屁股", "連褲襪", "巨乳", "亂倫"],
-      color: "is-warning",
-    },
-    {
-      type: "actors",
-      name: "${actor}",
-      dir: "演员/${actor}",
-      exclude: ["♂"],
-      color: "is-danger",
-    },
-  ];
-  if (!config.length) return;
+const config = [
+  {
+    name: "云下载",
+    color: "is-primary",
+  },
+  {
+    name: "番号",
+    dir: "番号/${prefix}",
+    color: "is-link",
+  },
+  {
+    name: "片商",
+    dir: "片商/${maker}",
+  },
+  {
+    name: "系列",
+    dir: "系列/${series}",
+    color: "is-success",
+  },
+  {
+    type: "genres",
+    name: "${genre}",
+    dir: "类别/${genre}",
+    match: ["屁股", "連褲襪", "巨乳", "亂倫"],
+    color: "is-warning",
+  },
+  {
+    type: "actors",
+    name: "${actor}",
+    dir: "演员/${actor}",
+    color: "is-danger",
+  },
+];
 
-  const transToByte = UtilDB.useTransByte();
+const SELECTOR = "x-offline";
+const { pathname } = location;
+const isDetail = pathname.startsWith("/v/");
 
-  UtilDB.preTabIcon();
-  const { infoNode, regex, ...details } = UtilDB.getDetails();
-  const { code } = details;
-  const magnets = UtilDB.getMagnets();
-  const actions = UtilDB.getActions(config, details, magnets);
+function createActions(actions) {
+  return `
+  <div class="${SELECTOR} buttons are-small">
+  ${actions
+    .map(({ color, index, idx, desc, name }) => {
+      return `
+      <button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}">
+        ${name}
+      </button>
+      `;
+    })
+    .join("")}
+  </div>
+  `;
+}
 
-  infoNode.insertAdjacentHTML(
-    "beforeend",
-    `<div class="panel-block">
-      <div class="columns">
-        <div class="column">
-          <div id="x-offline" class="buttons are-small">
-          ${actions
-            .map(({ magnets, color, index, idx, desc, name }) => {
-              const hidden = magnets.length ? "" : "is-hidden";
-              return `
-              <button class="button ${color} ${hidden}" data-index="${index}" data-idx="${idx}" title="${desc}">
-                ${name}
-              </button>`;
-            })
-            .join("")}
-          </div>
-        </div>
-      </div>
-    </div>`,
-  );
+function checkAction(e, actions) {
+  const { target } = e;
+  if (target.tagName !== "BUTTON") return;
 
-  const offlineNode = infoNode.querySelector("#x-offline");
-  offlineNode.addEventListener("click", (e) => offlineStart(e.target));
+  const container = target.closest(`.${SELECTOR}`);
+  if (!container) return;
 
-  const offlineStart = async (target, currIdx = 0) => {
-    if (!target.classList.contains("button")) return;
+  e.preventDefault();
+  e.stopPropagation();
 
-    target.classList.add("is-loading");
-    offlineNode.querySelectorAll("button").forEach((item) => {
-      item.disabled = true;
-    });
+  const { index, idx } = target.dataset;
+  const action = actions.find((item) => item.index === Number(index) && item.idx === Number(idx));
+  if (!action) return;
 
-    const { errcode, surplus } = await Req115.lixianGetQuotaPackageInfo();
+  return { action, target, container };
+}
 
-    if (errcode === 99) {
-      UtilDB.notify({ text: "网盘未登录", icon: "error" });
-      return offlineEnd();
+function actionStart({ target, container }) {
+  target.classList.add("is-loading");
+  container.querySelectorAll("button").forEach((item) => {
+    item.disabled = true;
+  });
+}
+
+function actionOver({ target, container }) {
+  target.classList.remove("is-loading");
+  container.querySelectorAll("button").forEach((item) => {
+    item.disabled = false;
+  });
+}
+
+function getDetails(dom = document) {
+  const infoNode = dom.querySelector(".movie-panel-info");
+  if (!infoNode) return;
+
+  const codeNode = infoNode.querySelector(".first-block .value");
+  const prefix = codeNode.querySelector("a")?.textContent;
+  const code = codeNode.textContent;
+
+  const titleNode = dom.querySelector(".title.is-4");
+  let title = titleNode.querySelector("strong").textContent;
+  title += (titleNode.querySelector(".origin-title") ?? titleNode.querySelector(".current-title")).textContent;
+  title = title.replace(code, "").trim();
+
+  let cover = dom.querySelector(".video-cover")?.src;
+  if (!cover) cover = dom.querySelector(".column-video-cover video")?.poster;
+
+  const info = {};
+  infoNode.querySelectorAll(".movie-panel-info > .panel-block").forEach((item) => {
+    const label = item.querySelector("strong")?.textContent;
+    const value = item.querySelector(".value")?.textContent;
+    if (!label || !value || value.includes("N/A")) return;
+
+    if (label === "日期:") {
+      info.date = value;
+      return;
     }
-
-    if (surplus < 1) {
-      UtilDB.notify({ text: "离线配额不足", icon: "error" });
-      return offlineEnd();
+    if (label === "導演:") {
+      info.director = value;
+      return;
     }
-
-    const { index, idx } = target.dataset;
-    const _index = actions.findIndex((item) => item.index === Number(index) && item.idx === Number(idx));
-    let { magnets, cid, dir, ...action } = actions[_index];
-
-    magnets = await filterMagnets(magnets.slice(currIdx, surplus));
-    if (!magnets.length) {
-      UtilDB.notify({ text: "网盘空间不足", icon: "error" });
-      return offlineEnd();
+    if (label === "片商:") {
+      info.maker = value;
+      return;
     }
-
-    // eslint-disable-next-line eqeqeq, no-eq-null
-    if (cid == null) {
-      cid = await Req115.generateCid(dir);
-
-      // eslint-disable-next-line eqeqeq, no-eq-null
-      if (cid == null) {
-        UtilDB.notify({ text: "生成下载目录 id 失败", icon: "error" });
-        return offlineEnd();
-      }
-
-      actions[_index].cid = cid;
+    if (label === "發行:") {
+      info.publisher = value;
+      return;
     }
-
-    UtilDB.setTabBar(`${code} 离线任务中...`);
-    const res = await handleSmartOffline({ magnets, cid, action });
-
-    if (res.code === 0) {
-      UtilDB.notify({ text: res.msg, icon: "success" });
-      UtilDB.setTabBar({ text: `${code} 离线成功`, icon: "success" });
-      UtilDB.getWindow("matchCode", "match115")?.();
-      return offlineEnd();
+    if (label === "系列:") {
+      info.series = value;
+      return;
     }
-
-    if (res.code !== 911) {
-      UtilDB.notify({ text: res.msg, icon: "warn" });
-      UtilDB.setTabBar({ text: `${code} 离线失败`, icon: "warn" });
-      return offlineEnd();
+    if (label === "類別:") {
+      info.genres = value.split(",").map((item) => item.trim());
+      return;
     }
+    if (label !== "演員:") return;
+    info.actors = value
+      .split("\n")
+      .map((item) => item.replace(/♀|♂/, "").trim())
+      .filter(Boolean);
+  });
 
-    UtilDB.setTabBar({ text: `${code} 离线验证中...`, icon: "warn" });
+  if (prefix) info.prefix = prefix;
+  if (cover) info.cover = cover;
 
-    if (GM_getValue("VERIFY_STATUS") !== "pending") {
-      GM_setValue("VERIFY_STATUS", "pending");
-      UtilDB.notify({ text: "网盘待验证", icon: "warn" });
-      UtilDB.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
+  const { regex } = Util.codeParse(code);
+  return { code, title, regex, ...info };
+}
+
+function getMagnets(dom = document) {
+  const transToByte = Magnet.useTransByte();
+  const isUncensored = dom.querySelector(".title.is-4").textContent.includes("無碼");
+
+  return [...dom.querySelectorAll("#magnets-content > .item")]
+    .map((item) => {
+      const name = item.querySelector(".name")?.textContent.trim() ?? "";
+      const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
+      return {
+        url: item.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
+        zh: !!item.querySelector(".tag.is-warning") || Magnet.zhReg.test(name),
+        size: transToByte(meta.split(",")[0]),
+        crack: !isUncensored && Magnet.crackReg.test(name),
+        meta,
+        name,
+      };
+    })
+    .toSorted(Magnet.magnetSort);
+}
+
+async function handleClick(e, actions, currIdx = 0) {
+  const checkRes = checkAction(e, actions);
+  if (!checkRes) return;
+
+  actionStart(checkRes);
+
+  let dom = document;
+  if (!isDetail) {
+    dom = await Req.request(checkRes.target.closest("a").href);
+    if (!dom) return actionOver(checkRes);
+  }
+
+  const details = getDetails(dom);
+  if (!details) return actionOver(checkRes);
+
+  const { magnetOptions, ...options } = Offline.parseAction(checkRes.action, details);
+  const magnets = Offline.parseMagnets(getMagnets(dom), magnetOptions, currIdx);
+  if (!magnets.length) return actionOver(checkRes);
+
+  if (isDetail) Util.setTabBar({ icon: "pending" });
+  const {
+    state: icon,
+    msg: text,
+    currIdx: nextIdx,
+  } = await Req115.handleSmartOffline({ noTxt, zhTxt, crackTxt, ...options }, magnets);
+
+  if (icon === "warn") {
+    if (GM_getValue("VERIFY_STATUS") !== "PENDING") {
+      GM_setValue("VERIFY_STATUS", "PENDING");
+
+      Grant.notify({ text, icon });
+      if (isDetail) Util.setTabBar({ icon });
+      Grant.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
     // eslint-disable-next-line max-params
     const listener = GM_addValueChangeListener("VERIFY_STATUS", (name, old_value, new_value, remote) => {
-      if (!remote || !["verified", "failed"].includes(new_value)) return;
+      if (!remote || new_value !== "VERIFIED") return;
       GM_removeValueChangeListener(listener);
-      if (new_value !== "verified") return offlineEnd();
-      offlineStart(target, res.currIdx);
+      handleClick(e, actions, nextIdx);
     });
-  };
 
-  function filterMagnets(magnets) {
-    return Req115.offlineSpace().then(({ size }) => {
-      const spaceSize = parseFloat(transToByte(size));
-      return magnets.filter((item) => parseFloat(item.size) < spaceSize);
-    });
+    return;
   }
 
-  async function handleSmartOffline({ magnets, cid, action }) {
-    const { verifyOptions, magnetMax, setHash, rename, tags, clean, upload, setCover } = action;
-    const res = { code: 0, msg: "" };
+  if (isDetail) {
+    Util.setTabBar({ icon });
+    Grant.notify({ text, icon });
+    window["match115.matchCode"]?.();
+  } else {
+    // 列表刷新
+  }
 
-    let verifyFile = (file) => regex.test(file.n);
-    if (verifyOptions.requireVdi) verifyFile = (file) => regex.test(file.n) && file.hasOwnProperty("vdi");
+  return actionOver(checkRes);
+}
 
-    const taskList = [];
-    const taskLenMax = magnetMax - 1;
+(function () {
+  const selector = ".movie-list .item";
+  const childList = document.querySelectorAll(selector);
+  if (!childList.length) return;
 
-    for (let index = 0, { length } = magnets; index < length; index++) {
-      if (taskList.length > taskLenMax) break;
-      taskList.push(index);
+  function getParams() {
+    if (pathname.startsWith("/tags")) {
+      const tagNodeList = document.querySelectorAll("#tags .tag-category:not(.collapse)");
+      const genreNodeList = [...tagNodeList].filter((item) => item.id.split("-").at(-1) < 8);
+      if (!genreNodeList.length) return { genres: [] };
 
-      const { url, zh, crack } = magnets[index];
-      const { state, errcode, error_msg, info_hash } = await Req115.lixianAddTaskUrl(url, cid);
-      if (!state) {
-        if (errcode === 10008 && index !== length - 1) {
-          taskList.pop();
-          continue;
-        }
-        res.code = errcode;
-        res.msg = error_msg;
-        res.currIdx = index;
-        break;
-      }
-
-      const { file_id, videos } = await Req115.verifyTask(info_hash, verifyFile, verifyOptions.max);
-      if (!videos.length) {
-        if (verifyOptions.clean) {
-          Req115.lixianTaskDel([info_hash]);
-          if (file_id) Req115.rbDelete([file_id], cid);
-        }
-        res.code = 1;
-        res.msg = "离线验证失败";
-        continue;
-      } else {
-        res.code = 0;
-        res.msg = "离线成功";
-      }
-
-      if (setHash) Req115.filesEditDesc(videos, info_hash);
-
-      const srt = await handleFindSrt(file_id);
-      const files = srt ? [srt, ...videos] : videos;
-
-      if (rename) handleRename({ rename, zh, crack, file_id, files });
-
-      if (tags?.length) handleTags({ tags, videos });
-
-      await handleMove({ files, file_id });
-
-      if (clean) await handleClean({ files, file_id });
-
-      if (upload?.length) {
-        res.msg += "，上传图片中...";
-        handleUpload({ upload, file_id }).then(([coverRes]) => {
-          UtilDB.notify({ text: "上传结束", icon: "success", tag: "upload" });
-          if (setCover && upload.includes("cover")) handleCover(coverRes.value?.data);
-        });
-      }
-
-      break;
+      const genres = [...genreNodeList].map((item) => {
+        return [...item.querySelectorAll(".tag_labels .tag.is-info")].map((item) => item.textContent.trim());
+      });
+      return { genres: genres.flat() };
     }
 
-    return res;
+    const getLastName = (txt) => txt.split(", ").at(-1).trim();
+    const actorSectionName = document.querySelector(".actor-section-name")?.textContent ?? "";
+    const sectionName = document.querySelector(".section-name")?.textContent ?? "";
+
+    if (pathname.startsWith("/actors")) return { actors: [getLastName(actorSectionName)] };
+    if (pathname.startsWith("/series")) return { series: getLastName(sectionName) };
+    if (pathname.startsWith("/makers")) return { maker: getLastName(sectionName) };
+    if (pathname.startsWith("/directors")) return { director: getLastName(sectionName) };
+    if (pathname.startsWith("/video_codes")) return { prefix: getLastName(sectionName) };
+    if (pathname.startsWith("/lists")) return { list: getLastName(actorSectionName) };
+    if (pathname.startsWith("/publishers")) return { publisher: getLastName(sectionName) };
+    return {};
   }
 
-  async function handleFindSrt(file_id) {
-    const { data } = await Req115.filesByOrder(file_id, { suffix: "srt" });
-    return data.find(({ n }) => regex.test(n));
-  }
+  function useActions(actions) {
+    GM_addStyle(`
+    #{selector} .cover .${SELECTOR} {
+      position: absolute;
+      right: 0;
+      left: 0;
+      z-index: 2;
+      padding: 0.5rem 0.5rem 0;
 
-  function handleRename({ rename, zh, crack, file_id, files }) {
-    rename = UtilDB.parseVar(rename, {
-      ...details,
-      zh: zh ? "[中字]" : "",
-      crack: crack ? "[破解]" : "",
-    });
-    if (!regex.test(rename)) rename = `${code} ${rename}`;
-
-    const renameObj = { [file_id]: rename };
-
-    const icoMap = files.reduce((acc, { ico, ...item }) => {
-      acc[ico] ??= [];
-      acc[ico].push(item);
-      return acc;
-    }, {});
-
-    for (const [ico, items] of Object.entries(icoMap)) {
-      if (items.length === 1) {
-        renameObj[items[0].fid] = `${rename}.${ico}`;
-        continue;
+      & .button[disabled] {
+        opacity: .8;
       }
-
-      items
-        .toSorted((a, b) => a.n.localeCompare(b.n))
-        .forEach(({ fid }, idx) => {
-          const no = `${idx + 1}`.padStart(2, "0");
-          renameObj[fid] = `${rename}.${no}.${ico}`;
-        });
     }
+    `);
 
-    Req115.filesBatchRename(renameObj);
+    const insertHTML = createActions(actions);
+
+    return (nodeList) => {
+      nodeList.forEach((item) => {
+        if (!item.querySelector(".tags.has-addons")) return;
+        item.querySelector(".cover").insertAdjacentHTML("beforeend", insertHTML);
+      });
+    };
   }
 
-  function handleTags({ tags, videos }) {
-    tags = tags
-      .map((key) => details[key])
-      .flat()
-      .filter(Boolean);
+  const params = getParams();
+  const actions = Offline.getActions(config, params);
+  if (!actions.length) return;
 
-    if (tags.length) Req115.filesBatchLabelName(videos, tags);
-  }
-
-  function handleMove({ files, file_id }) {
-    const mv_fids = files.filter((item) => item.cid !== file_id).map((item) => item.fid);
-    if (mv_fids.length) return Req115.filesMove(mv_fids, file_id);
-  }
-
-  async function handleClean({ files, file_id }) {
-    const { data } = await Req115.filesByOrder(file_id);
-
-    const rm_fids = data
-      .filter((item) => !files.some(({ fid }) => fid === item.fid))
-      .map((item) => item.fid ?? item.cid);
-
-    if (rm_fids.length) return Req115.rbDelete(rm_fids, file_id);
-  }
-
-  function handleUpload({ upload, file_id: cid }) {
-    const reqList = [];
-
-    if (upload.includes("cover")) {
-      let url = document.querySelector(".video-cover")?.src;
-      if (!url) url = document.querySelector(".column-video-cover video")?.poster;
-      reqList.push(() => Req115.handleUpload({ cid, url, filename: `${code}.cover.jpg` }));
-    }
-
-    if (upload.includes("sprite")) {
-      const url = localStorage.getItem(`sprite_${pathname.split("/").pop()}`);
-      if (url) reqList.push(() => Req115.handleUpload({ cid, url, filename: `${code}.sprite.jpg` }));
-    }
-
-    return Promise.allSettled(reqList.map((fn) => fn()));
-  }
-
-  function handleCover({ cid: fid, file_id: fid_cover }) {
-    return Req115.filesEdit({ fid, fid_cover });
-  }
-
-  const offlineEnd = () => {
-    offlineNode.querySelectorAll("button").forEach((item) => {
-      item.classList.remove("is-loading");
-      item.disabled = false;
-    });
-  };
-
-  const callback = () => {
-    const _magnets = UtilDB.getMagnets();
-    if (_magnets.length === magnets.length) return;
-
-    const _actions = UtilDB.getActions(config, details, _magnets);
-    if (!_actions.length) return;
-
-    _actions.forEach(({ magnets, index, idx }) => {
-      if (!magnets.length) return;
-
-      actions[actions.findIndex((ac) => ac.index === index && ac.idx === idx)].magnets = magnets;
-      offlineNode.querySelector(`button[data-index="${index}"][data-idx="${idx}"]`).classList.remove("is-hidden");
-    });
-  };
-  const observer = new MutationObserver(callback);
-
-  const target = document.querySelector("#magnets-content");
-  const options = { childList: true, attributes: false, characterData: false };
-  observer.observe(target, options);
+  const insertActions = useActions(actions);
+  insertActions(childList);
+  window.addEventListener("scroll.loadmore", ({ detail }) => insertActions(detail));
+  document.addEventListener("click", (e) => handleClick(e, actions), true);
 })();
