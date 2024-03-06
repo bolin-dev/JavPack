@@ -19,9 +19,7 @@
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         jdbstatic.com
-// @connect         javstore.net
 // @connect         aliyuncs.com
-// @connect         pixhost.to
 // @connect         115.com
 // @connect         self
 // @run-at          document-end
@@ -30,7 +28,6 @@
 // @grant           GM_getResourceURL
 // @grant           GM_xmlhttpRequest
 // @grant           GM_notification
-// @grant           GM_addElement
 // @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           window.close
@@ -43,9 +40,9 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-const noTxt = ".${no}";
-const zhTxt = "[中字]";
-const crackTxt = "[破解]";
+const ACTIONS_CLASS = "x-offline";
+const { pathname: PATHNAME } = location;
+const IS_DETAIL = PATHNAME.startsWith("/v/");
 
 const config = [
   {
@@ -81,13 +78,11 @@ const config = [
   },
 ];
 
-const SELECTOR = "x-offline";
-const { pathname } = location;
-const isDetail = pathname.startsWith("/v/");
+const transToByte = Magnet.useTransByte();
 
 function createActions(actions) {
   return `
-  <div class="${SELECTOR} buttons are-small">
+  <div class="${ACTIONS_CLASS} buttons are-small">
   ${actions
     .map(({ color, index, idx, desc, name }) => {
       return `
@@ -105,7 +100,7 @@ function checkAction(e, actions) {
   const { target } = e;
   if (target.tagName !== "BUTTON") return;
 
-  const container = target.closest(`.${SELECTOR}`);
+  const container = target.closest(`.${ACTIONS_CLASS}`);
   if (!container) return;
 
   e.preventDefault();
@@ -193,7 +188,6 @@ function getDetails(dom = document) {
 }
 
 function getMagnets(dom = document) {
-  const transToByte = Magnet.useTransByte();
   const isUncensored = dom.querySelector(".title.is-4").textContent.includes("無碼");
 
   return [...dom.querySelectorAll("#magnets-content > .item")]
@@ -217,10 +211,11 @@ async function handleClick(e, actions, currIdx = 0) {
   if (!checkRes) return;
 
   actionStart(checkRes);
+  const { target } = checkRes;
 
   let dom = document;
-  if (!isDetail) {
-    dom = await Req.request(checkRes.target.closest("a").href);
+  if (!IS_DETAIL) {
+    dom = await Req.request(target.closest("a").href);
     if (!dom) return actionOver(checkRes);
   }
 
@@ -231,19 +226,15 @@ async function handleClick(e, actions, currIdx = 0) {
   const magnets = Offline.parseMagnets(getMagnets(dom), magnetOptions, currIdx);
   if (!magnets.length) return actionOver(checkRes);
 
-  if (isDetail) Util.setTabBar({ icon: "pending" });
-  const {
-    state: icon,
-    msg: text,
-    currIdx: nextIdx,
-  } = await Req115.handleSmartOffline({ noTxt, zhTxt, crackTxt, ...options }, magnets);
+  if (IS_DETAIL) Util.setTabBar({ icon: "pending" });
+  const { state: icon, msg: text, currIdx: nextIdx } = await Req115.handleSmartOffline(options, magnets);
 
   if (icon === "warn") {
     if (GM_getValue("VERIFY_STATUS") !== "PENDING") {
       GM_setValue("VERIFY_STATUS", "PENDING");
 
       Grant.notify({ text, icon });
-      if (isDetail) Util.setTabBar({ icon });
+      if (IS_DETAIL) Util.setTabBar({ icon });
       Grant.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
@@ -257,24 +248,24 @@ async function handleClick(e, actions, currIdx = 0) {
     return;
   }
 
-  if (isDetail) {
+  if (IS_DETAIL) {
     Util.setTabBar({ icon });
     Grant.notify({ text, icon });
-    window["match115.matchCode"]?.();
+    unsafeWindow["match115.matchCode"]?.();
   } else {
-    // 列表刷新
+    unsafeWindow["match115.refreshPrefix"]?.(target);
   }
 
-  return actionOver(checkRes);
+  actionOver(checkRes);
 }
 
 (function () {
-  const selector = ".movie-list .item";
-  const childList = document.querySelectorAll(selector);
+  const TARGET_SELECTOR = ".movie-list .item";
+  const childList = document.querySelectorAll(TARGET_SELECTOR);
   if (!childList.length) return;
 
   function getParams() {
-    if (pathname.startsWith("/tags")) {
+    if (PATHNAME.startsWith("/tags")) {
       const tagNodeList = document.querySelectorAll("#tags .tag-category:not(.collapse)");
       const genreNodeList = [...tagNodeList].filter((item) => item.id.split("-").at(-1) < 8);
       if (!genreNodeList.length) return { genres: [] };
@@ -289,19 +280,19 @@ async function handleClick(e, actions, currIdx = 0) {
     const actorSectionName = document.querySelector(".actor-section-name")?.textContent ?? "";
     const sectionName = document.querySelector(".section-name")?.textContent ?? "";
 
-    if (pathname.startsWith("/actors")) return { actors: [getLastName(actorSectionName)] };
-    if (pathname.startsWith("/series")) return { series: getLastName(sectionName) };
-    if (pathname.startsWith("/makers")) return { maker: getLastName(sectionName) };
-    if (pathname.startsWith("/directors")) return { director: getLastName(sectionName) };
-    if (pathname.startsWith("/video_codes")) return { prefix: getLastName(sectionName) };
-    if (pathname.startsWith("/lists")) return { list: getLastName(actorSectionName) };
-    if (pathname.startsWith("/publishers")) return { publisher: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/actors")) return { actors: [getLastName(actorSectionName)] };
+    if (PATHNAME.startsWith("/series")) return { series: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/makers")) return { maker: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/directors")) return { director: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/video_codes")) return { prefix: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/lists")) return { list: getLastName(actorSectionName) };
+    if (PATHNAME.startsWith("/publishers")) return { publisher: getLastName(sectionName) };
     return {};
   }
 
   function useActions(actions) {
     GM_addStyle(`
-    #{selector} .cover .${SELECTOR} {
+    #{TARGET_SELECTOR} .cover .${ACTIONS_CLASS} {
       position: absolute;
       right: 0;
       left: 0;
