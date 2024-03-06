@@ -1,8 +1,8 @@
 class Offline {
   static defaultOptions = {
+    tags: ["genres", "actors"],
     clean: true,
     cover: true,
-    tags: ["genres", "actors"],
   };
 
   static defaultMagnetOptions = {
@@ -37,7 +37,7 @@ class Offline {
 
         rename = rename.replaceAll("${zh}", "$zh");
         rename = rename.replaceAll("${crack}", "$crack");
-        if (!rename.includes("${code}")) rename = "${code} " + rename;
+        if (rename && !rename.includes("${code}")) rename = "${code} " + rename;
 
         if (type === "plain") return { ...item, dir: this.parseDir(dir, params), rename, idx: 0, index };
 
@@ -52,13 +52,11 @@ class Offline {
         const typeItemTxt = "${" + typeItemKey + "}";
 
         return classes.map((cls, idx) => {
-          const _details = { ...params, [typeItemKey]: cls };
-
           return {
             ...item,
+            dir: this.parseDir(dir, { ...params, [typeItemKey]: cls }),
             rename: rename.replaceAll(typeItemTxt, cls),
             name: name.replaceAll(typeItemTxt, cls),
-            dir: this.parseDir(dir, _details),
             index,
             idx,
           };
@@ -81,6 +79,7 @@ class Offline {
       ...options,
       magnetOptions,
       verifyOptions,
+      code: details.code,
       regex: details.regex,
       cover: cover ? details.cover : cover,
       rename: this.parseVar(rename, details),
@@ -91,12 +90,10 @@ class Offline {
     };
   }
 
-  static parseMagnets(magnets, magnetOptions, currIdx) {
-    const { filter, max, sort } = magnetOptions;
+  static parseMagnets(magnets, { filter, sort, max }, currIdx) {
     if (filter) magnets = magnets.filter(filter);
-    if (max) magnets = magnets.slice(0, max);
     if (sort) magnets = magnets.toSorted(sort);
-    magnets = magnets.slice(currIdx);
-    return magnets;
+    if (max) magnets = magnets.slice(0, max);
+    return magnets.slice(currIdx);
   }
 }
