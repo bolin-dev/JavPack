@@ -11,7 +11,6 @@ class Offline {
   };
 
   static defaultVerifyOptions = {
-    requireVdi: true,
     clean: true,
     max: 10,
   };
