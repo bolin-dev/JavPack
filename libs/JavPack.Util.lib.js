@@ -23,7 +23,7 @@ class Util {
   }
 
   static setTabBar({ text, icon }) {
-    document.title = text;
+    if (text) document.title = text;
     if (!icon) return;
 
     const href = GM_getResourceURL(icon);
