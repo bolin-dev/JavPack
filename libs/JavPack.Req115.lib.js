@@ -131,15 +131,6 @@ class Drive115 extends Req {
     });
   }
 
-  // Edit file
-  static filesEdit(data) {
-    return this.request({
-      method: "POST",
-      url: "https://webapi.115.com/files/edit",
-      data,
-    });
-  }
-
   /**
    * Batch move files
    * @param {string[]} fid Array of file IDs
@@ -150,24 +141,6 @@ class Drive115 extends Req {
       method: "POST",
       url: "https://webapi.115.com/files/move",
       data: { fid, pid, move_proid: "" },
-    });
-  }
-
-  // Get offline space information
-  static offlineSpace() {
-    return this.request({
-      url: "https://115.com/",
-      params: { ct: "offline", ac: "space" },
-      responseType: "json",
-    });
-  }
-
-  // Get offline quota
-  static lixianGetQuotaPackageInfo() {
-    return this.request({
-      url: "https://115.com/web/lixian/",
-      params: { ct: "lixian", ac: "get_quota_package_info" },
-      responseType: "json",
     });
   }
 
@@ -259,20 +232,24 @@ class Drive115 extends Req {
 }
 
 class Req115 extends Drive115 {
+  // Search for videos
   static videosSearch(search_value) {
     return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
 
+  // Get file list by order
   static async filesByOrder(cid, params = {}) {
     const res = await this.files(cid, params);
     const { errNo, order: o, is_asc: asc, fc_mix } = res;
     return errNo === 20130827 && o === "file_name" ? this.natsortFiles(cid, { ...params, o, asc, fc_mix }) : res;
   }
 
+  // Get video list
   static videos(cid) {
     return this.filesByOrder(cid, { type: 4 });
   }
 
+  // Get folder list
   static folders(cid) {
     return this.filesByOrder(cid).then((res) => {
       if (res?.data.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
@@ -294,8 +271,13 @@ class Req115 extends Drive115 {
     return cid;
   }
 
-  static async verifyTask(info_hash, verifyFn, max_retry = 10) {
-    const statusCodes = [0, 1, 2];
+  static sleep(s = 1) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, s * 1000);
+    });
+  }
+
+  static async verifyTask(info_hash, regex, max_retry) {
     let file_id = "";
     let videos = [];
 
@@ -304,7 +286,7 @@ class Req115 extends Drive115 {
       const { tasks } = await this.lixianTaskLists();
 
       const task = tasks.find((task) => task.info_hash === info_hash);
-      if (!task || !statusCodes.includes(task.status)) break;
+      if (!task || task.status === -1) break;
 
       file_id = task.file_id;
       if (file_id) break;
@@ -315,30 +297,48 @@ class Req115 extends Drive115 {
       if (index) await this.sleep();
       const { data } = await this.videos(file_id);
 
-      videos = data.filter(verifyFn);
+      videos = data.filter((item) => regex.test(item.n));
       if (videos.length) break;
     }
     return { file_id, videos };
   }
 
-  static async handleUpload({ url, cid, filename }) {
-    const file = await this.request({ url, responseType: "blob" });
-    if (!file) return file;
+  static handleRename(cid, files, { rename, noTxt, zhTxt, crackTxt, zh, crack }) {
+    if (zh) rename = rename.replaceAll("$zh", zhTxt);
+    if (crack) rename = rename.replaceAll("$crack", crackTxt);
+    rename = rename.trim();
 
-    const res = await this.sampleInitUpload({ cid, filename, filesize: file.size });
-    if (!res?.host) return res;
+    const renameObj = { [cid]: rename };
+    if (files.length === 1) {
+      const { fid, ico } = files[0];
+      renameObj[fid] = `${rename}.${ico}`;
+      return this.filesBatchRename(renameObj);
+    }
 
-    return this.upload({ ...res, filename, file });
+    const icoMap = files.reduce((acc, { ico, ...item }) => {
+      acc[ico] ??= [];
+      acc[ico].push(item);
+      return acc;
+    }, {});
+
+    for (const [ico, items] of Object.entries(icoMap)) {
+      if (items.length === 1) {
+        renameObj[items[0].fid] = `${rename}.${ico}`;
+        continue;
+      }
+
+      items
+        .toSorted((a, b) => a.n.localeCompare(b.n))
+        .forEach(({ fid }, idx) => {
+          const no = noTxt.replaceAll("${no}", `${idx + 1}`.padStart(2, "0"));
+          renameObj[fid] = `${rename}${no}.${ico}`;
+        });
+    }
+
+    return this.filesBatchRename(renameObj);
   }
 
-  static filesEditDesc(files, desc) {
-    const formData = new FormData();
-    files.forEach((file) => formData.append("fid[]", file.fid ?? file.cid));
-    formData.append("file_desc", desc);
-    return this.filesEdit(formData);
-  }
-
-  static async filesBatchLabelName(files, labelNames) {
+  static async handleTags(files, labelNames) {
     const labelList = (await this.labelList())?.data.list;
     if (!labelList?.length) return;
 
@@ -352,9 +352,77 @@ class Req115 extends Drive115 {
     return this.filesBatchLabel(files.map((file) => file.fid ?? file.cid).toString(), file_label.toString());
   }
 
-  static sleep(s = 1) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, s * 1000);
-    });
+  static async handleClean(files, cid) {
+    await this.filesMove(
+      files.map((file) => file.fid),
+      cid,
+    );
+
+    const { data } = await this.filesByOrder(cid);
+
+    const rm_fids = data
+      .filter((item) => !files.some(({ fid }) => fid === item.fid))
+      .map((item) => item.fid ?? item.cid);
+
+    if (rm_fids.length) return this.rbDelete(rm_fids, cid);
+  }
+
+  static async handleUpload(url, cid, filename) {
+    const file = await this.request({ url, responseType: "blob" });
+    if (!file) return file;
+
+    const res = await this.sampleInitUpload({ cid, filename, filesize: file.size });
+    if (!res?.host) return res;
+
+    return this.upload({ ...res, filename, file });
+  }
+
+  static async handleSmartOffline(
+    { code, dir, regex, verifyOptions, rename, noTxt, zhTxt, crackTxt, tags, clean, cover },
+    magnets,
+  ) {
+    const cid = await this.generateCid(dir);
+    if (!cid) return { state: "error", msg: `${code} 获取目录失败` };
+
+    const res = { state: "", msg: "" };
+
+    for (let index = 0, { length } = magnets; index < length; index++) {
+      const { url, zh, crack } = magnets[index];
+
+      const { state, errcode, error_msg, info_hash } = await this.lixianAddTaskUrl(url, cid);
+      if (!state) {
+        res.state = "error";
+        res.msg = `${code} ${error_msg}`;
+        if (errcode === 10008) continue;
+        if (errcode === 911) {
+          res.state = "warn";
+          res.currIdx = index;
+        }
+        break;
+      }
+
+      const { file_id, videos } = await this.verifyTask(info_hash, regex, verifyOptions.max);
+      if (!videos.length) {
+        if (verifyOptions.clean) {
+          this.lixianTaskDel([info_hash]);
+          if (file_id) this.rbDelete([file_id], cid);
+        }
+        res.state = "error";
+        res.msg = `${code} 离线失败`;
+        continue;
+      } else {
+        res.state = "success";
+        res.msg = `${code} 离线成功`;
+      }
+
+      if (rename) this.handleRename(file_id, videos, { rename, noTxt, zhTxt, crackTxt, zh, crack });
+      if (tags.length) this.handleTags(videos, tags);
+      if (clean) await this.handleClean(videos, file_id);
+      if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);
+
+      break;
+    }
+
+    return res;
   }
 }
