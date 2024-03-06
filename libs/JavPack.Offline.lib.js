@@ -92,7 +92,7 @@ class Offline {
     };
   }
 
-  static getMagnets(magnets, magnetOptions, currIdx) {
+  static parseMagnets(magnets, magnetOptions, currIdx) {
     const { filter, max, sort } = magnetOptions;
     if (filter) magnets = magnets.filter(filter);
     if (max) magnets = magnets.slice(0, max);
