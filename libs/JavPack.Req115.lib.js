@@ -396,6 +396,7 @@ class Req115 extends Drive115 {
         if (errcode === 10008) continue;
         if (errcode === 911) {
           res.state = "warn";
+          res.msg = error_msg;
           res.currIdx = index;
         }
         break;
