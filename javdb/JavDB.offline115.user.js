@@ -324,3 +324,26 @@ async function handleClick(e, actions, currIdx = 0) {
   window.addEventListener("scroll.loadmore", ({ detail }) => insertActions(detail));
   document.addEventListener("click", (e) => handleClick(e, actions), true);
 })();
+
+(function () {
+  if (!IS_DETAIL) return;
+
+  const infoNode = document.querySelector(".movie-panel-info");
+  if (!infoNode) return;
+
+  const params = getDetails();
+  const actions = Offline.getActions(config, params);
+  if (!actions.length) return;
+
+  infoNode.insertAdjacentHTML(
+    "beforeend",
+    `<div class="panel-block">
+      <div class="columns">
+        <div class="column">
+          ${createActions(actions)}
+        </div>
+      </div>
+    </div>`,
+  );
+  document.addEventListener("click", (e) => handleClick(e, actions));
+})();
