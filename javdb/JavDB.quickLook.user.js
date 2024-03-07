@@ -24,29 +24,29 @@
 (function () {
   Util.upLocal();
 
-  const selector = ".movie-list .item";
-  if (!document.querySelector(selector)) return;
+  const TARGET_SELECTOR = ".movie-list .item";
+  if (!document.querySelector(TARGET_SELECTOR)) return;
 
   function createModal() {
-    const modalId = "x-quicklook";
+    const MODAL_ID = "x-quicklook";
 
     GM_addStyle(`
-    #${modalId} .modal-card-head {
+    #${MODAL_ID} .modal-card-head {
       gap: .5rem;
     }
-    #${modalId} .modal-card-title {
+    #${MODAL_ID} .modal-card-title {
       flex: 1;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
-    #${modalId} .carousel {
+    #${MODAL_ID} .carousel {
       aspect-ratio: 420 / 283;
       background: #aa9084;
     }
-    :root[data-theme=dark] #${modalId} .carousel {
+    :root[data-theme=dark] #${MODAL_ID} .carousel {
       background: #222;
     }
-    #${modalId} .carousel :is(img,video) {
+    #${MODAL_ID} .carousel :is(img,video) {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -54,7 +54,7 @@
       object-fit: contain;
       vertical-align: middle;
     }
-    #${modalId} .carousel-container .btn {
+    #${MODAL_ID} .carousel-container .btn {
       position: absolute;
       z-index: 1;
       width: 3rem;
@@ -66,33 +66,33 @@
       transition: all .3s cubic-bezier(0, 0, .5, 1);
       box-shadow: 2px 4px 12px rgba(0, 0, 0, .08);
     }
-    #${modalId} .carousel-container:hover .btn {
+    #${MODAL_ID} .carousel-container:hover .btn {
       opacity: .75;
     }
-    #${modalId} .carousel-container .btn:hover{
+    #${MODAL_ID} .carousel-container .btn:hover{
       opacity: 1;
     }
-    #${modalId} .carousel-container .btn.carousel-prev {
+    #${MODAL_ID} .carousel-container .btn.carousel-prev {
       left: 1rem;
     }
-    #${modalId} .carousel-container .btn.carousel-next {
+    #${MODAL_ID} .carousel-container .btn.carousel-next {
       right: 1rem;
     }
-    #${modalId} .info-block {
+    #${MODAL_ID} .info-block {
       padding-top: .5rem;
     }
-    #${modalId} .info-block:not(:last-child) {
+    #${MODAL_ID} .info-block:not(:last-child) {
       border-bottom: 1px solid #ededed;
       padding-bottom: .5rem;
     }
-    :root[data-theme=dark] #${modalId} .info-block {
+    :root[data-theme=dark] #${MODAL_ID} .info-block {
       border-color: #4a4a4a;
     }
     `);
 
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<div id="${modalId}" class="modal">
+      `<div id="${MODAL_ID}" class="modal">
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head p-3">
@@ -104,7 +104,7 @@
       </div>`,
     );
 
-    const modal = document.getElementById(modalId);
+    const modal = document.getElementById(MODAL_ID);
     const modalTitle = modal.querySelector(".modal-card-title");
     const modalBody = modal.querySelector(".modal-card-body");
     return { modal, modalTitle, modalBody };
@@ -117,7 +117,7 @@
   const handleMouseover = (e) => {
     if (currElem || isActive) return;
 
-    const target = e.target.closest(selector);
+    const target = e.target.closest(TARGET_SELECTOR);
     if (target) currElem = target;
   };
 
