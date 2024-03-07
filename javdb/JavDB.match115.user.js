@@ -22,7 +22,6 @@
 // @grant           GM_setValue
 // @grant           GM_getValue
 // @grant           GM_addStyle
-// @grant           GM_info
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -30,9 +29,9 @@
 
 Util.upStore();
 
-const SELECTOR = "x-match-item";
+const TARGET_CLASS = "x-match-item";
 const VOID = "javascript:void(0);";
-const DriveChannel = new BroadcastChannel("match115.refresh");
+const MatchChannel = new BroadcastChannel("match115");
 
 function listenClick(tabClose) {
   const eventCfg = {
@@ -47,7 +46,7 @@ function listenClick(tabClose) {
 
   const handleClick = (e) => {
     const { target } = e;
-    if (!target.classList.contains(SELECTOR)) return;
+    if (!target.classList.contains(TARGET_CLASS)) return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -67,20 +66,20 @@ function listenClick(tabClose) {
 }
 
 (function () {
-  const { pathname } = location;
-  if (!pathname.startsWith("/v/")) return;
+  const { pathname: PATHNAME } = location;
+  if (!PATHNAME.startsWith("/v/")) return;
 
   function createDom() {
-    const domId = "x-match-res";
+    const DOM_ID = "x-match-res";
 
     const domStr = `
     <div class="panel-block">
-      <strong>115资源:</strong>&nbsp;<span class="value" id="${domId}">查询中...</span>
+      <strong>115资源:</strong>&nbsp;<span class="value" id="${DOM_ID}">查询中...</span>
     </div>
     `;
 
     GM_addStyle(`
-    #${domId} a {
+    #${DOM_ID} a {
       display: -webkit-box;
       overflow: hidden;
       white-space: unset;
@@ -91,8 +90,8 @@ function listenClick(tabClose) {
     }
     `);
 
-    document.querySelector(".movie-panel-info .review-buttons").insertAdjacentHTML("afterend", domStr);
-    return document.querySelector(`#${domId}`);
+    document.querySelector(".movie-panel-info .review-buttons+.panel-block").insertAdjacentHTML("afterend", domStr);
+    return document.querySelector(`#${DOM_ID}`);
   }
 
   const matchResNode = createDom();
@@ -100,7 +99,7 @@ function listenClick(tabClose) {
   const { codes, regex } = Util.codeParse(code);
 
   const matchCode = () => {
-    Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
+    return Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
       if (!state) {
         matchResNode.innerHTML = "查询失败，检查登录状态";
         return;
@@ -116,7 +115,7 @@ function listenClick(tabClose) {
 
       matchResNode.innerHTML = data.reduce(
         (acc, { pc, cid, t, n }) =>
-          `${acc}<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
+          `${acc}<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
         "",
       );
     });
@@ -124,26 +123,26 @@ function listenClick(tabClose) {
 
   matchCode();
   listenClick(matchCode);
-  unsafeWindow["match115.matchCode"] = matchCode;
-  window.addEventListener("beforeunload", () => DriveChannel.postMessage(pathname.split("/").pop()));
+  unsafeWindow["matchCode"] = matchCode;
+  window.addEventListener("beforeunload", () => MatchChannel.postMessage(PATHNAME.split("/").pop()));
 })();
 
 (function () {
-  const selector = ".movie-list .item";
-  const childList = document.querySelectorAll(selector);
+  const TARGET_SELECTOR = ".movie-list .item";
+  const childList = document.querySelectorAll(TARGET_SELECTOR);
   if (!childList.length) return;
 
   GM_addStyle(`
-  ${selector}:has(.video-title .is-success) {
+  ${TARGET_SELECTOR}:has(.video-title .is-success) {
     border: .375rem solid #34a873;
   }
-  ${selector}:has(.video-title .is-warning) {
+  ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border: .375rem solid #ffd257;
   }
-  [data-theme="dark"] ${selector}:has(.video-title .is-success) {
+  [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-success) {
     border-color: #48c78e;
   }
-  [data-theme="dark"] ${selector}:has(.video-title .is-warning) {
+  [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border-color: #ffe08a;
   }
   `);
@@ -151,7 +150,7 @@ function listenClick(tabClose) {
   class QueueMatch {
     static list = [];
     static lock = false;
-    static insertHTML = `<a class="${SELECTOR} tag is-normal" href="${VOID}">匹配中</a>&nbsp;`;
+    static insertHTML = `<a class="${TARGET_CLASS} tag is-normal" href="${VOID}">匹配中</a>&nbsp;`;
 
     static async add(items) {
       items = this.handleBefore(items);
@@ -169,11 +168,11 @@ function listenClick(tabClose) {
       return [...items]
         .map((item) => {
           const title = item.querySelector(".video-title");
-          let tag = title.querySelector(`.${SELECTOR}`);
+          let tag = title.querySelector(`.${TARGET_CLASS}`);
           if (!tag) {
             item.classList.add(`x-${item.querySelector("a").href.split("/").pop()}`);
             title.insertAdjacentHTML("afterbegin", this.insertHTML);
-            tag = title.querySelector(`.${SELECTOR}`);
+            tag = title.querySelector(`.${TARGET_CLASS}`);
           }
           const code = title.querySelector("strong").textContent;
           return { tag, code, ...Util.codeParse(code) };
@@ -241,7 +240,7 @@ function listenClick(tabClose) {
       tag.title = title;
       tag.dataset.pc = pc;
       tag.dataset.cid = cid;
-      tag.setAttribute("class", `${SELECTOR} tag is-normal ${className}`);
+      tag.setAttribute("class", `${TARGET_CLASS} tag is-normal ${className}`);
     }
   }
 
@@ -263,9 +262,9 @@ function listenClick(tabClose) {
 
   insertQueue(childList);
   window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
-  DriveChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
+  MatchChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
-  const refresh = (target) => {
+  const refreshPrefix = (target) => {
     const item = target.closest(".item");
 
     const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
@@ -276,5 +275,6 @@ function listenClick(tabClose) {
     GM_deleteValue(prefix);
     QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`));
   };
-  listenClick(refresh);
+  listenClick(refreshPrefix);
+  unsafeWindow["refreshPrefix"] = refreshPrefix;
 })();
