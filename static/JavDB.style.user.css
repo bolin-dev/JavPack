@@ -27,24 +27,6 @@ body {
   font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.user-container {
-  margin: -1.75rem !important;
-
-  & .common-list {
-    margin-top: -0.75rem;
-
-    & .columns {
-      margin: 0;
-
-      & .field.has-addons {
-        align-items: center;
-        justify-content: end;
-        height: 100%;
-      }
-    }
-  }
-}
-
 .compensate-for-scrollbar {
   margin-right: 0 !important;
 }
@@ -101,6 +83,24 @@ body {
 
 .columns:not(:last-child) {
   margin-bottom: 0.25rem;
+}
+
+.user-container {
+  margin: -1.75rem !important;
+
+  & .common-list {
+    margin-top: -0.75rem;
+
+    & .columns {
+      margin: 0;
+
+      & .field.has-addons {
+        align-items: center;
+        justify-content: end;
+        height: 100%;
+      }
+    }
+  }
 }
 
 .video-meta-panel {
