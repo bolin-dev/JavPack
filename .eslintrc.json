@@ -8,6 +8,7 @@
   "globals": {
     "Grant": true,
     "Magnet": true,
+    "Offline": true,
     "Req": true,
     "Req115": true,
     "ReqMagnet": true,
@@ -16,7 +17,7 @@
     "Util": true
   },
   "rules": {
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|Magnet|Req|Util" }],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|Magnet|Offline|Req|Util" }],
     "no-param-reassign": "off",
     "no-template-curly-in-string": "off"
   },

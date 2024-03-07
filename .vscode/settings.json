@@ -15,5 +15,21 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "cSpell.words": []
+  "cSpell.words": [
+    "accessid",
+    "aliyuncs",
+    "btdig",
+    "Digg",
+    "heyzo",
+    "javdb",
+    "javspyl",
+    "jdbstatic",
+    "muramura",
+    "musume",
+    "pacopacomama",
+    "pondo",
+    "proid",
+    "scid",
+    "vcode"
+  ]
 }
