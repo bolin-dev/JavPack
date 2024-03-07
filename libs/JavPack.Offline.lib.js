@@ -9,7 +9,7 @@ class Offline {
   };
 
   static defaultMagnetOptions = {
-    filter: ({ size }) => parseFloat(size) > 300000000,
+    filter: ({ size }) => parseFloat(size) > 300000000 || size < 1,
     max: 10,
   };
 
