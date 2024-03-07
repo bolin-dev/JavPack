@@ -27,6 +27,24 @@ body {
   font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.user-container {
+  margin: -1.75rem !important;
+
+  & .common-list {
+    margin-top: -0.75rem;
+
+    & .columns {
+      margin: 0;
+
+      & .field.has-addons {
+        align-items: center;
+        justify-content: end;
+        height: 100%;
+      }
+    }
+  }
+}
+
 .compensate-for-scrollbar {
   margin-right: 0 !important;
 }
@@ -467,6 +485,10 @@ br + .title {
       padding-left: 0.5rem;
     }
 
+    & .tags.has-addons {
+      min-height: 2rem;
+    }
+
     & .meta-buttons {
       padding: 0.5rem 0.5rem 0;
 
@@ -507,10 +529,6 @@ nav.pagination {
   padding-top: 1rem;
   margin: 0 -0.25rem !important;
   border-top: none;
-}
-
-.user-container {
-  margin: -1.75rem !important;
 }
 
 :root[data-theme="dark"] {
