@@ -79,11 +79,12 @@ const guessStudio = ReqTrailer.useStudio();
 const createVideo = useVideo();
 
 (function () {
-  const { pathname } = location;
-  if (!pathname.startsWith("/v/")) return;
+  const { pathname: PATHNAME } = location;
+  if (!PATHNAME.startsWith("/v/")) return;
 
-  const mid = `trailer_${pathname.split("/").pop()}`;
+  const mid = `trailer_${PATHNAME.split("/").pop()}`;
   const container = document.querySelector(".column-video-cover");
+  if (!container) return;
 
   const setTrailer = (trailer) => {
     if (!trailer) return;
@@ -122,11 +123,11 @@ const createVideo = useVideo();
 })();
 
 (function () {
-  const selector = ".movie-list .cover";
-  if (!document.querySelector(selector)) return;
+  const TARGET_SELECTOR = ".movie-list .cover";
+  if (!document.querySelector(TARGET_SELECTOR)) return;
 
   GM_addStyle(`
-  ${selector} video {
+  ${TARGET_SELECTOR} video {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -137,7 +138,7 @@ const createVideo = useVideo();
     transition: opacity .2s ease-in-out;
     background: #000;
   }
-  ${selector} video.fade-in {
+  ${TARGET_SELECTOR} video.fade-in {
     opacity: 1;
   }
   `);
@@ -161,7 +162,7 @@ const createVideo = useVideo();
     const handleMouseover = (e) => {
       if (currElem) return;
 
-      const target = e.target.closest(selector);
+      const target = e.target.closest(TARGET_SELECTOR);
       if (!target) return;
 
       prevX = e.pageX;
@@ -227,10 +228,9 @@ const createVideo = useVideo();
     };
 
     const onLeave = (elem) => {
-      const video = elem.querySelector("video") ?? document.querySelector(`${selector} video`);
+      const video = elem.querySelector("video") ?? document.querySelector(`${TARGET_SELECTOR} video`);
       if (!video) return;
 
-      video.pause();
       video.classList.remove("fade-in");
       setTimeout(() => video.remove(), 200);
     };
