@@ -251,13 +251,17 @@ async function handleClick(e, actions, currIdx = 0) {
   if (IS_DETAIL) {
     Util.setTabBar({ icon });
     Grant.notify({ text, icon });
-    unsafeWindow["match115.matchCode"]?.();
+    unsafeWindow["matchCode"]?.();
   } else {
-    unsafeWindow["match115.refreshPrefix"]?.(target);
+    unsafeWindow["refreshPrefix"]?.(target);
   }
 
   actionOver(checkRes);
 }
+
+(function () {
+  if (location.host === "captchaapi.115.com") return Offline.verifyAccount();
+})();
 
 (function () {
   const TARGET_SELECTOR = ".movie-list .item";
