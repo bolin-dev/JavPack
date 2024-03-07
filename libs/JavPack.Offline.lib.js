@@ -98,4 +98,14 @@ class Offline {
     if (max) magnets = magnets.slice(0, max);
     return magnets.slice(currIdx);
   }
+
+  static verifyAccount(dom = document) {
+    dom.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
+      setTimeout(() => {
+        if (dom.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;
+        GM_setValue("VERIFY_STATUS", "verified");
+        window.close();
+      }, 300);
+    });
+  }
 }
