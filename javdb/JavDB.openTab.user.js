@@ -17,16 +17,16 @@
 // ==/UserScript==
 
 (function () {
-  const matchSelector = ":is(.actors, .movie-list, .section-container) a";
-  const excludeSelector = ".button.is-danger";
+  const MATCH_SELECTOR = ":is(.actors, .movie-list, .section-container) a";
+  const EXCLUDE_SELECTOR = ".button.is-danger";
 
   const handleOpen = (e) => {
-    const target = e.target.closest(matchSelector);
-    if (!target || e.target.matches(excludeSelector)) return;
+    const target = e.target.closest(MATCH_SELECTOR);
+    if (!target || e.target.matches(EXCLUDE_SELECTOR)) return;
 
     e.preventDefault();
     e.stopPropagation();
-    Grant.openTab(target.href);
+    Grant.openTab(target.href, e.type === "click");
   };
 
   document.addEventListener("click", handleOpen);
