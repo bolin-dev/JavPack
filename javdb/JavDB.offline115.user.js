@@ -313,7 +313,7 @@ async function handleClick(e, actions, currIdx = 0) {
 
     return (nodeList) => {
       nodeList.forEach((item) => {
-        if (!item.querySelector(".tags.has-addons")) return;
+        if (!item.querySelector(".tags.has-addons .tag")) return;
         item.querySelector(".cover").insertAdjacentHTML("beforeend", insertHTML);
       });
     };
