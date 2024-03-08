@@ -271,7 +271,7 @@ body {
 }
 
 .section-container {
-  grid-gap: var(--x-grid-gap);
+  gap: var(--x-grid-gap);
 
   & .box {
     padding: 0.75rem;
@@ -426,7 +426,7 @@ br + .title {
 }
 
 .actors {
-  grid-gap: var(--x-grid-gap);
+  gap: var(--x-grid-gap);
 
   & .box {
     margin-bottom: 0;
@@ -483,7 +483,7 @@ br + .title {
 }
 
 .movie-list {
-  grid-gap: var(--x-grid-gap);
+  gap: var(--x-grid-gap);
   align-items: start;
   padding-bottom: 0;
 
