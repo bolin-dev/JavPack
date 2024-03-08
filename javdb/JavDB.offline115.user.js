@@ -206,17 +206,20 @@ function getMagnets(dom = document) {
     .toSorted(Magnet.magnetSort);
 }
 
-async function handleClick(e, actions, currIdx = 0) {
+// eslint-disable-next-line max-params
+async function handleClick(e, actions, dom, currIdx = 0) {
   const checkRes = checkAction(e, actions);
   if (!checkRes) return;
 
   actionStart(checkRes);
   const { target } = checkRes;
 
-  let dom = document;
-  if (!IS_DETAIL) {
-    dom = await Req.request(target.closest("a").href);
-    if (!dom) return actionOver(checkRes);
+  if (!dom) {
+    dom = document;
+    if (!IS_DETAIL) {
+      dom = await Req.request(target.closest("a").href);
+      if (!dom) return actionOver(checkRes);
+    }
   }
 
   const details = getDetails(dom);
@@ -228,13 +231,13 @@ async function handleClick(e, actions, currIdx = 0) {
 
   if (IS_DETAIL) Util.setTabBar({ icon: "pending" });
   const { state: icon, msg: text, currIdx: nextIdx } = await Req115.handleSmartOffline(options, magnets);
+  if (IS_DETAIL) Util.setTabBar({ icon });
 
   if (icon === "warn") {
     if (GM_getValue("VERIFY_STATUS") !== "PENDING") {
       GM_setValue("VERIFY_STATUS", "PENDING");
 
       Grant.notify({ text, icon });
-      if (IS_DETAIL) Util.setTabBar({ icon });
       Grant.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
@@ -242,20 +245,14 @@ async function handleClick(e, actions, currIdx = 0) {
     const listener = GM_addValueChangeListener("VERIFY_STATUS", (name, old_value, new_value, remote) => {
       if (!remote || new_value !== "VERIFIED") return;
       GM_removeValueChangeListener(listener);
-      handleClick(e, actions, nextIdx);
+      handleClick(e, actions, dom, nextIdx);
     });
 
     return;
   }
 
-  if (IS_DETAIL) {
-    Util.setTabBar({ icon });
-    Grant.notify({ text, icon });
-    unsafeWindow["matchCode"]?.();
-  } else {
-    unsafeWindow["refreshPrefix"]?.(target);
-  }
-
+  if (IS_DETAIL) Grant.notify({ text, icon });
+  unsafeWindow["reMatch"]?.(target);
   actionOver(checkRes);
 }
 
@@ -296,7 +293,7 @@ async function handleClick(e, actions, currIdx = 0) {
 
   function useActions(actions) {
     GM_addStyle(`
-    #{TARGET_SELECTOR} .cover .${ACTIONS_CLASS} {
+    ${TARGET_SELECTOR} .cover .${ACTIONS_CLASS} {
       position: absolute;
       right: 0;
       left: 0;
@@ -304,7 +301,7 @@ async function handleClick(e, actions, currIdx = 0) {
       padding: 0.5rem 0.5rem 0;
 
       & .button[disabled] {
-        opacity: .8;
+        opacity: 0.8;
       }
     }
     `);
@@ -312,9 +309,10 @@ async function handleClick(e, actions, currIdx = 0) {
     const insertHTML = createActions(actions);
 
     return (nodeList) => {
-      nodeList.forEach((item) => {
-        if (!item.querySelector(".tags.has-addons .tag")) return;
-        item.querySelector(".cover").insertAdjacentHTML("beforeend", insertHTML);
+      nodeList.forEach((node) => {
+        if (node.classList.contains("is-hidden")) return;
+        if (!node.querySelector(".tags.has-addons .tag")) return;
+        node.querySelector(".cover").insertAdjacentHTML("beforeend", insertHTML);
       });
     };
   }
