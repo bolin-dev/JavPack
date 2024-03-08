@@ -31,6 +31,10 @@
   const hdSize = parseFloat(transToByte("2GB"));
   const minSize = parseFloat(transToByte("300MB"));
 
+  const ZH_STR = '<span class="tag is-warning is-small is-light">字幕</span>';
+  const CRACK_STR = '<span class="tag is-info is-small is-light">破解</span>';
+  const HD_STR = '<span class="tag is-primary is-small is-light">高清</span>';
+
   const code = document.querySelector(".first-block .value").textContent;
   const isUncensored = document.querySelector(".title.is-4").textContent.includes("無碼");
   const magnetNode = document.querySelector("#magnets-content");
@@ -73,10 +77,6 @@
       })
       .finally(() => magnetTarget.classList.remove("is-loading"));
   }
-
-  const ZH_STR = '<span class="tag is-warning is-small is-light">字幕</span>';
-  const CRACK_STR = '<span class="tag is-info is-small is-light">破解</span>';
-  const HD_STR = '<span class="tag is-primary is-small is-light">高清</span>';
 
   function refactor(insert = []) {
     magnetNode.innerHTML =
