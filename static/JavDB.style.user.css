@@ -95,10 +95,14 @@ body {
   margin: -1.75rem !important;
 
   & .common-list {
-    margin-top: -0.75rem;
+    margin-top: -1rem;
 
     & .columns {
       margin: 0;
+
+      & > div {
+        padding-inline: 0;
+      }
 
       & .field.has-addons {
         align-items: center;
