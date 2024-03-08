@@ -28,7 +28,7 @@ class ReqMagnet extends Req {
                 date: item.querySelector(".torrent_age").textContent,
               };
             })
-            .filter(({ name }) => name.toUpperCase().includes(code.toUpperCase()));
+            .filter(({ name }) => name.toUpperCase().includes(code));
         },
       ],
     );
