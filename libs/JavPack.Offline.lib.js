@@ -9,7 +9,10 @@ class Offline {
   };
 
   static defaultMagnetOptions = {
-    filter: ({ size }) => parseFloat(size) > 300000000 || size < 1,
+    filter: ({ size }) => {
+      const magnetSize = parseFloat(size);
+      return magnetSize > 300000000 || magnetSize < 1;
+    },
     max: 10,
   };
 
@@ -87,8 +90,8 @@ class Offline {
       rename: this.parseVar(rename, details),
       tags: tags
         .map((key) => details[key])
-        .filter(Boolean)
-        .flat(),
+        .flat()
+        .filter(Boolean),
     };
   }
 
