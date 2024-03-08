@@ -162,6 +162,8 @@ function listenClick(onTabClose) {
     static insertHTML = `<a class="${TARGET_CLASS} tag is-normal" href="${VOID}">匹配中</a>&nbsp;`;
 
     static async add(items) {
+      if (!items.length) return;
+
       items = this.handleBefore(items);
       if (!items.length) return;
 
@@ -176,14 +178,16 @@ function listenClick(onTabClose) {
     static handleBefore(items) {
       return [...items]
         .map((item) => {
-          const title = item.querySelector(".video-title");
-          let tag = title.querySelector(`.${TARGET_CLASS}`);
+          const titleNode = item.querySelector(".video-title");
+          const code = titleNode.querySelector("strong").textContent;
+          let tag = titleNode.querySelector(`.${TARGET_CLASS}`);
+
           if (!tag) {
             item.classList.add(`x-${item.querySelector("a").href.split("/").pop()}`);
-            title.insertAdjacentHTML("afterbegin", this.insertHTML);
-            tag = title.querySelector(`.${TARGET_CLASS}`);
+            titleNode.insertAdjacentHTML("afterbegin", this.insertHTML);
+            tag = titleNode.querySelector(`.${TARGET_CLASS}`);
           }
-          const code = title.querySelector("strong").textContent;
+
           return { tag, code, ...Util.codeParse(code) };
         })
         .filter(this.handleFilter);
@@ -228,28 +232,28 @@ function listenClick(onTabClose) {
     };
 
     static setTag(tag, res) {
-      let textContent = "未匹配";
-      let title = "";
       let pc = "";
       let cid = "";
+      let title = "";
       let className = "";
+      let textContent = "未匹配";
 
       if (res.length) {
         const zhRes = res.find((item) => Magnet.zhReg.test(item.n));
-        const item = zhRes ?? res[0];
+        const currItem = zhRes ?? res[0];
 
+        pc = currItem.pc;
+        cid = currItem.cid;
         textContent = "已匹配";
-        title = `[${item.t}] ${item.n}`;
-        pc = item.pc;
-        cid = item.cid;
+        title = `[${currItem.t}] ${currItem.n}`;
         className = zhRes ? "is-warning" : "is-success";
       }
 
-      tag.textContent = textContent;
       tag.title = title;
       tag.dataset.pc = pc;
       tag.dataset.cid = cid;
-      tag.setAttribute("class", `${TARGET_CLASS} tag is-normal ${className}`);
+      tag.classList.add(className);
+      tag.textContent = textContent;
     }
   }
 
