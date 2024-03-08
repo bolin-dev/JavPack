@@ -103,7 +103,7 @@ class Offline {
     dom.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
       setTimeout(() => {
         if (dom.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;
-        GM_setValue("VERIFY_STATUS", "verified");
+        GM_setValue("VERIFY_STATUS", "VERIFIED");
         window.close();
       }, 300);
     });
