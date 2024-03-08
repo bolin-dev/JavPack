@@ -29,16 +29,22 @@
 
 Util.upStore();
 
-const TARGET_CLASS = "x-match-item";
 const VOID = "javascript:void(0);";
-const MatchChannel = new BroadcastChannel("match115");
+const TARGET_CLASS = "x-match-item";
+const MatchChannel = new BroadcastChannel("Match115");
+
+const ACTION_MAP = {
+  click: {
+    key: "pc",
+    url: "https://v.anxia.com/?pickcode=%s",
+  },
+  contextmenu: {
+    key: "cid",
+    url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
+  },
+};
 
 function listenClick(tabClose) {
-  const eventCfg = {
-    click: { key: "pc", url: "https://v.anxia.com/?pickcode=%s" },
-    contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
-  };
-
   const handleClose = async (target) => {
     await Req115.sleep(0.5);
     tabClose(target);
@@ -51,13 +57,13 @@ function listenClick(tabClose) {
     e.preventDefault();
     e.stopPropagation();
 
-    const config = eventCfg[e.type];
-    if (!config) return;
+    const action = ACTION_MAP[e.type];
+    if (!action) return;
 
-    const val = target.dataset[config.key];
+    const val = target.dataset[action.key];
     if (!val) return;
 
-    const tab = Grant.openTab(config.url.replaceAll("%s", val));
+    const tab = Grant.openTab(action.url.replaceAll("%s", val));
     tab.onclose = () => handleClose(target);
   };
 
@@ -68,6 +74,9 @@ function listenClick(tabClose) {
 (function () {
   const { pathname: PATHNAME } = location;
   if (!PATHNAME.startsWith("/v/")) return;
+
+  const code = document.querySelector(".first-block .value").textContent;
+  if (!code) return;
 
   function createDom() {
     const DOM_ID = "x-match-res";
@@ -82,11 +91,11 @@ function listenClick(tabClose) {
     #${DOM_ID} a {
       display: -webkit-box;
       overflow: hidden;
-      white-space: unset;
       text-overflow: ellipsis;
+      word-break: break-all;
+      white-space: unset;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
-      word-break: break-all;
     }
     `);
 
@@ -95,7 +104,6 @@ function listenClick(tabClose) {
   }
 
   const matchResNode = createDom();
-  const code = document.querySelector(".first-block .value").textContent;
   const { codes, regex } = Util.codeParse(code);
 
   const matchCode = () => {
@@ -115,7 +123,8 @@ function listenClick(tabClose) {
 
       matchResNode.innerHTML = data.reduce(
         (acc, { pc, cid, t, n }) =>
-          `${acc}<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
+          `${acc}
+          <a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
         "",
       );
     });
@@ -123,7 +132,7 @@ function listenClick(tabClose) {
 
   matchCode();
   listenClick(matchCode);
-  unsafeWindow["matchCode"] = matchCode;
+  unsafeWindow["reMatch"] = matchCode;
   window.addEventListener("beforeunload", () => MatchChannel.postMessage(PATHNAME.split("/").pop()));
 })();
 
