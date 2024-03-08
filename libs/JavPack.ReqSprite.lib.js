@@ -6,8 +6,9 @@ class ReqSprite extends Req {
   static blogjav(code) {
     return this.tasks({ url: "https://blogjav.net/", params: { s: code } }, [
       (dom) => {
+        const word = code.replace("HEYZO-", "HEYZO ");
         const list = dom.querySelectorAll("#main .entry-title > a");
-        const item = [...list].find((item) => item.textContent.toUpperCase().includes(code));
+        const item = [...list].find((item) => item.textContent.toUpperCase().includes(word));
         return item?.href;
       },
       (dom) => {
