@@ -235,8 +235,8 @@ function listenClick(onTabClose) {
       let pc = "";
       let cid = "";
       let title = "";
-      let className = "";
       let textContent = "未匹配";
+      let className = "is-normal";
 
       if (res.length) {
         const zhRes = res.find((item) => Magnet.zhReg.test(item.n));
