@@ -35,7 +35,6 @@
 
   const loading = document.createElement("div");
   loading.setAttribute("class", "has-text-grey pt-4 has-text-centered");
-  loading.textContent = "加载中...";
   container.insertAdjacentElement("afterend", loading);
 
   const useCallback = () => {
@@ -52,10 +51,18 @@
       if (!entries[0].isIntersecting || isLoading) return;
 
       isLoading = true;
-      const { list, url } = await Req.request(next).then(parseDom);
+      loading.textContent = "加载中...";
+      const res = await Req.tasks(next, [parseDom]);
       isLoading = false;
 
-      if (list?.length) {
+      if (!res) {
+        loading.textContent = "加载失败，滚动以重试";
+        return;
+      }
+
+      const { list, url } = res;
+
+      if (list.length) {
         container.append(...list);
         window.dispatchEvent(new CustomEvent("scroll.loadmore", { detail: list }));
       }
@@ -70,6 +77,6 @@
   };
 
   const callback = useCallback();
-  const observer = new IntersectionObserver(callback, { rootMargin: "400px" });
+  const observer = new IntersectionObserver(callback, { rootMargin: "500px" });
   observer.observe(loading);
 })();
