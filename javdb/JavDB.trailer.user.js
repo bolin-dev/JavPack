@@ -128,13 +128,13 @@ const createVideo = useVideo();
   ${TARGET_SELECTOR} video {
     position: absolute;
     inset: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity .2s ease-in-out;
     background: #000;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    object-fit: contain;
   }
   ${TARGET_SELECTOR} video.fade-in {
     opacity: 1;
@@ -273,9 +273,12 @@ const createVideo = useVideo();
       };
     };
 
+    const LOAD_SPYL = "x-loading-javspyl";
+    const LOAD_DB = "x-loading-javdb";
+
     return (elem) => {
       const { classList } = elem;
-      if (classList.contains("x-loading-javspyl") || classList.contains("x-loading-javdb")) return;
+      if (classList.contains(LOAD_SPYL) || classList.contains(LOAD_DB)) return;
 
       let { trailer, cover, mid, code } = elem.dataset;
       if (trailer) return setVideo(elem, trailer, cover);
@@ -311,19 +314,19 @@ const createVideo = useVideo();
         if (elem === currElem) setVideo(elem, trailer, cover);
       };
 
-      classList.add("x-loading-javspyl");
-      classList.add("x-loading-javdb");
+      classList.add(LOAD_SPYL);
+      classList.add(LOAD_DB);
 
       ReqTrailer.javspyl(code)
         .then(setTrailer)
-        .finally(() => classList.remove("x-loading-javspyl"));
+        .finally(() => classList.remove(LOAD_SPYL));
 
       ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails])
         .then(({ trailer, isUncensored, studio }) => {
           if (trailer) return setTrailer(trailer);
           if (isUncensored && studio) guessStudio(code, studio).then(setTrailer);
         })
-        .finally(() => classList.remove("x-loading-javdb"));
+        .finally(() => classList.remove(LOAD_DB));
     };
   }
 
