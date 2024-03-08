@@ -24,6 +24,7 @@
 (function () {
   Util.upLocal();
 
+  const TARGET_ID = "x-magnet";
   const HOST = "https://btdig.com";
 
   const transToByte = Magnet.useTransByte();
@@ -32,13 +33,12 @@
 
   const code = document.querySelector(".first-block .value").textContent;
   const isUncensored = document.querySelector(".title.is-4").textContent.includes("無碼");
-
   const magnetNode = document.querySelector("#magnets-content");
 
   magnetNode.insertAdjacentHTML(
     "beforebegin",
     `<div class="buttons are-small mb-1">
-      <a class="button is-success" id="x-magnet" href="${HOST}/search?q=${code}" target="_blank">
+      <a class="button is-success" id="${TARGET_ID}" href="${HOST}/search?q=${code}" target="_blank">
         <span class="icon is-small"><i class="icon-check-circle"></i></span><span>BTDigg</span>
       </a>
       <button class="button is-success">
@@ -57,7 +57,7 @@
     refactorMagnets(JSON.parse(magnets));
   } else {
     refactorMagnets();
-    const magnetTarget = document.querySelector("#x-magnet");
+    const magnetTarget = document.querySelector(`#${TARGET_ID}`);
     magnetTarget.classList.add("is-loading");
 
     ReqMagnet.btdig(code)
@@ -73,6 +73,10 @@
       })
       .finally(() => magnetTarget.classList.remove("is-loading"));
   }
+
+  const ZH_STR = '<span class="tag is-warning is-small is-light">字幕</span>';
+  const CRACK_STR = '<span class="tag is-info is-small is-light">破解</span>';
+  const HD_STR = '<span class="tag is-primary is-small is-light">高清</span>';
 
   function refactorMagnets(insert = []) {
     magnetNode.innerHTML =
@@ -127,9 +131,10 @@
         .map(({ url, name, meta, zh, crack, hd, date }, idx) => {
           const odd = !(idx % 2) ? " odd" : "";
           const hash = url.split(":").pop();
-          zh = zh ? '<span class="tag is-warning is-small is-light">字幕</span>' : "";
-          crack = crack ? '<span class="tag is-info is-small is-light">破解</span>' : "";
-          hd = hd ? '<span class="tag is-primary is-small is-light">高清</span>' : "";
+
+          zh = zh ? ZH_STR : "";
+          crack = crack ? CRACK_STR : "";
+          hd = hd ? HD_STR : "";
 
           return `
           <div class="item columns is-desktop${odd}">
