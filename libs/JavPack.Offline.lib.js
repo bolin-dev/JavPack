@@ -102,11 +102,11 @@ class Offline {
     return magnets.slice(currIdx);
   }
 
-  static verifyAccount(dom = document) {
-    dom.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
+  static verifyAccount(key, val) {
+    document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
       setTimeout(() => {
-        if (dom.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;
-        GM_setValue("VERIFY_STATUS", "VERIFIED");
+        if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;
+        GM_setValue(key, val);
         window.close();
       }, 300);
     });
