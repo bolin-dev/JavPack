@@ -163,10 +163,6 @@ body {
   border-bottom: none !important;
 }
 
-.video-panel :is(.message-header, .message-body) {
-  padding: 0.75rem;
-}
-
 .video-panel .tile-images {
   gap: 0.5rem;
   font-size: 0;
@@ -314,12 +310,14 @@ body {
   padding-top: 0;
 }
 
+.message-container,
 :is(.title, .tabs, .box, .message):not(:last-child) {
   margin-bottom: 1rem;
 }
 
+.message-header,
 .message-body {
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 br + .title {
