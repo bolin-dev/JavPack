@@ -8,11 +8,16 @@
   --x-grid-gap: 0.5rem;
 }
 
+.search-bar-container {
+  margin-bottom: 0.25rem !important;
+}
+
 .sub-header,
 .actors + br,
 .actor-filter hr,
 .app-desktop-banner,
 .video-panel .message-body .top-meta,
+.container:has(.video-detail) .search-bar-container,
 #navbar-menu-hero .navbar-start > .navbar-item:not(.has-dropdown) {
   display: none !important;
 }
@@ -51,10 +56,6 @@ body {
   }
 }
 
-.search-bar-container {
-  margin-bottom: 0.25rem !important;
-}
-
 .search-bar-wrap {
   padding: 0.75rem;
 
@@ -74,6 +75,12 @@ body {
   &:is(:focus, :hover) {
     z-index: auto;
   }
+}
+
+#button-advanced-search,
+#button-search-image,
+#search-submit {
+  border: none;
 }
 
 .section:has(.video-detail) {
