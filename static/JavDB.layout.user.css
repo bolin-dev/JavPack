@@ -44,7 +44,7 @@
 .movie-list.v,
 .section-container {
   grid-template-columns: repeat(var(--xs-grid-cols), minmax(0, 1fr)) !important;
-  grid-gap: 1rem !important;
+  gap: 1rem !important;
 }
 
 div:has(> :is(.actors, .movie-list, .section-container)) {
