@@ -26,12 +26,16 @@
   const mid = `sprite_${location.pathname.split("/").pop()}`;
 
   const setSprite = (sprite) => {
-    if (!sprite || document.querySelector("#x-sprite")) return;
+    if (!sprite) return;
+
+    const TARGET_ID = "x-sprite";
+    if (document.querySelector(`#${TARGET_ID}`)) return;
 
     localStorage.setItem(mid, sprite);
     const box = document.querySelector(".tile-images.preview-images");
-    const innerHTML = `
-    <a class="tile-item" id="x-sprite" href="${sprite}" data-fancybox="gallery" data-caption="sprite">
+
+    const insertHTML = `
+    <a class="tile-item" id="${TARGET_ID}" href="${sprite}" data-fancybox="gallery" data-caption="sprite">
       <img src="${sprite}" alt="雪碧图" loading="lazy">
     </a>
     `;
@@ -44,7 +48,7 @@
           <div class="column">
             <article class="message video-panel">
               <div class="message-body">
-                <div class="tile-images preview-images">${innerHTML}</div>
+                <div class="tile-images preview-images">${insertHTML}</div>
               </div>
             </article>
           </div>
@@ -54,9 +58,9 @@
 
     const item = box.querySelector(".tile-item");
     if (item) {
-      item.insertAdjacentHTML("beforebegin", innerHTML);
+      item.insertAdjacentHTML("beforebegin", insertHTML);
     } else {
-      box.insertAdjacentHTML("beforeend", innerHTML);
+      box.insertAdjacentHTML("beforeend", insertHTML);
     }
   };
 
