@@ -54,9 +54,9 @@
   const magnets = localStorage.getItem(mid);
 
   if (magnets) {
-    refactorMagnets(JSON.parse(magnets));
+    refactor(JSON.parse(magnets));
   } else {
-    refactorMagnets();
+    refactor();
     const magnetTarget = document.querySelector(`#${TARGET_ID}`);
     magnetTarget.classList.add("is-loading");
 
@@ -65,7 +65,7 @@
         const icon = magnetTarget.querySelector("i");
         if (res) {
           localStorage.setItem(mid, JSON.stringify(res));
-          res.length ? refactorMagnets(res) : icon.setAttribute("class", "icon-check-circle-o");
+          res.length ? refactor(res) : icon.setAttribute("class", "icon-check-circle-o");
         } else {
           magnetTarget.classList.replace("is-success", "is-warning");
           icon.setAttribute("class", "icon-close");
@@ -78,7 +78,7 @@
   const CRACK_STR = '<span class="tag is-info is-small is-light">破解</span>';
   const HD_STR = '<span class="tag is-primary is-small is-light">高清</span>';
 
-  function refactorMagnets(insert = []) {
+  function refactor(insert = []) {
     magnetNode.innerHTML =
       [...magnetNode.querySelectorAll(".item.columns")]
         .map((item) => {
