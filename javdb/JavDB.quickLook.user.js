@@ -101,10 +101,10 @@
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head p-3">
-            <p class="modal-card-title is-clipped">Quick Look</p>
-            <button class="button is-success is-small">访问页面</button>
+            <p class="modal-card-title is-clipped">快速查看</p>
+            <button class="button is-success is-small">详情</button>
           </header>
-          <section class="modal-card-body p-3">Loading...</section>
+          <section class="modal-card-body p-3">获取中...</section>
         </div>
       </div>`,
     );
@@ -186,7 +186,7 @@
 
     modal.dataset.href = href;
     modalTitle.textContent = title;
-    modalBody.innerHTML = "Loading...";
+    modalBody.innerHTML = "获取中...";
 
     const mid = href.split("/").pop();
     const detailsMid = `details_${mid}`;
