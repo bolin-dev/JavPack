@@ -330,5 +330,6 @@ const createVideo = useVideo();
     };
   }
 
-  handleMouse(handleHover());
+  const ovHover = handleHover();
+  handleMouse(ovHover);
 })();
