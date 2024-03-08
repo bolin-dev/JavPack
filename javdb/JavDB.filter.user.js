@@ -28,27 +28,27 @@
     position: relative;
   }
   .is-highlight::after {
-    content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
-    margin: -.375rem;
+    margin: -0.375rem;
+    content: "";
+    background: linear-gradient(45deg, #f00, #ff69b4, #ffa500);
     border-radius: inherit;
-    background: linear-gradient(45deg, #ff0000, #ff69b4, #ffa500);
   }
   `);
 
   const parseNode = (node) => {
-    const title = node.querySelector(".video-title");
-    const code = title.querySelector("strong").textContent;
-    const name = title.textContent.replace(code, "").trim();
+    const titleNode = node.querySelector(".video-title");
+    const code = titleNode.querySelector("strong").textContent;
+    const title = titleNode.textContent.replace(code, "").trim();
     const score = node
       .querySelector(".score .value")
       .textContent.replace(/\u00A0/g, "")
       .trim();
     const date = node.querySelector(".meta").textContent.trim();
     const tags = [...node.querySelectorAll(".tags .tag")].map((tag) => tag.textContent);
-    return `[${code}][${name}][${score}][${date}][${tags}]`;
+    return `[${code}][${title}][${score}][${date}][${tags}]`;
   };
 
   const filter = (nodeList) => {
