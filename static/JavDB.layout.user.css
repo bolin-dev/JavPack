@@ -47,7 +47,52 @@
   gap: 1rem !important;
 }
 
-div:has(> :is(.actors, .movie-list, .section-container)) {
+@media screen and (width >= 576px) {
+  .actors,
+  .movie-list,
+  .movie-list.v,
+  .section-container {
+    grid-template-columns: repeat(var(--sm-grid-cols), minmax(0, 1fr)) !important;
+  }
+}
+
+@media screen and (width >= 768px) {
+  .actors,
+  .movie-list,
+  .movie-list.v,
+  .section-container {
+    grid-template-columns: repeat(var(--md-grid-cols), minmax(0, 1fr)) !important;
+  }
+}
+
+@media screen and (width >= 992px) {
+  .actors,
+  .movie-list,
+  .movie-list.v,
+  .section-container {
+    grid-template-columns: repeat(var(--lg-grid-cols), minmax(0, 1fr)) !important;
+  }
+}
+
+@media screen and (width >= 1200px) {
+  .actors,
+  .movie-list,
+  .movie-list.v,
+  .section-container {
+    grid-template-columns: repeat(var(--xl-grid-cols), minmax(0, 1fr)) !important;
+  }
+}
+
+@media screen and (width >= 1400px) {
+  .actors,
+  .movie-list,
+  .movie-list.v,
+  .section-container {
+    grid-template-columns: repeat(var(--xxl-grid-cols), minmax(0, 1fr)) !important;
+  }
+}
+
+.user-container div:has(> :is(.actors, .movie-list, .section-container)) {
   container: grid / inline-size;
 }
 
