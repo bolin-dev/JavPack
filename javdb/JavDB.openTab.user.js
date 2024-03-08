@@ -17,8 +17,8 @@
 // ==/UserScript==
 
 (function () {
-  const MATCH_SELECTOR = ":is(.actors, .movie-list, .section-container) a";
-  const EXCLUDE_SELECTOR = ".button.is-danger";
+  const MATCH_SELECTOR = ":is(.actors, .common-list, .movie-list, .section-container) a";
+  const EXCLUDE_SELECTOR = ".button";
 
   const handleOpen = (e) => {
     const target = e.target.closest(MATCH_SELECTOR);
