@@ -564,3 +564,7 @@ nav.pagination {
     filter: brightness(0.92) contrast(0.92);
   }
 }
+
+.payment-form {
+  padding-block: 0;
+}
