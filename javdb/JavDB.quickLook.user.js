@@ -114,8 +114,8 @@
     const modalBody = modal.querySelector(".modal-card-body");
     return { modal, modalTitle, modalBody };
   }
-  const { modal, modalTitle, modalBody } = createModal();
 
+  const { modal, modalTitle, modalBody } = createModal();
   let currElem = null;
   let isActive = false;
 
@@ -181,11 +181,11 @@
   function showModal() {
     modal.classList.add("is-active");
 
-    const { href } = currElem.querySelector("a");
+    const { href, title } = currElem.querySelector("a");
     if (href === modal.dataset.href && modalBody.innerHTML !== "获取失败") return;
 
     modal.dataset.href = href;
-    modalTitle.textContent = currElem.querySelector(".video-title").textContent;
+    modalTitle.textContent = title;
     modalBody.innerHTML = "Loading...";
 
     const mid = href.split("/").pop();
@@ -270,12 +270,8 @@
   function handleCarouselNav(nav) {
     const curr = modalBody.querySelector(".carousel .is-block");
 
-    let target = null;
-    if (nav === "prev") {
-      target = curr.previousElementSibling ?? curr.parentElement.lastElementChild;
-    } else {
-      target = curr.nextElementSibling ?? curr.parentElement.firstElementChild;
-    }
+    let target = curr.nextElementSibling ?? curr.parentElement.firstElementChild;
+    if (nav === "prev") target = curr.previousElementSibling ?? curr.parentElement.lastElementChild;
 
     curr.classList.replace("is-block", "is-hidden");
     target.classList.replace("is-hidden", "is-block");
