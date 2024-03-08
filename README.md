@@ -116,7 +116,7 @@ const config = [
     desc: "可自定义描述",
     type: "genres",
     match: [],
-    exclude: ["褲襪"], // "褲襪" 会同时匹配 "xx褲襪xx"，如 "連褲襪"
+    exclude: ["褲襪"], // "褲襪" 会同时命中 "xx褲襪xx"，如 "連褲襪"
     magnetOptions: {
       filter: ({ size }) => {
         const magnetSize = parseFloat(size);
