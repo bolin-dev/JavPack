@@ -252,8 +252,10 @@ async function handleClick(e, actions, dom, currIdx = 0) {
   }
 
   if (IS_DETAIL) Grant.notify({ text, icon });
-  unsafeWindow["reMatch"]?.(target);
   actionOver(checkRes);
+
+  await Req115.sleep(0.5);
+  unsafeWindow["reMatch"]?.(target);
 }
 
 (function () {
