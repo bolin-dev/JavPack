@@ -7,10 +7,10 @@
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         115.com
 // @run-at          document-end
@@ -19,9 +19,9 @@
 // @grant           GM_listValues
 // @grant           unsafeWindow
 // @grant           GM_openInTab
-// @grant           GM_setValue
-// @grant           GM_getValue
 // @grant           GM_addStyle
+// @grant           GM_getValue
+// @grant           GM_setValue
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions

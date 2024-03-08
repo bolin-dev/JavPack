@@ -9,13 +9,13 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Offline.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Offline.lib.js
+// @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
 // @resource        pending https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
 // @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
-// @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         jdbstatic.com
