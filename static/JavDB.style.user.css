@@ -460,17 +460,20 @@ br + .title {
 }
 
 .movie-list .item .video-title {
-  display: -webkit-box;
-  height: calc(3em + 0.75rem);
-  padding-top: 0.5rem;
-  padding-right: 0.5rem;
-  padding-bottom: 0.25rem;
-  overflow: hidden;
   font-size: var(--x-title-size);
-  text-overflow: ellipsis;
-  white-space: normal;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+
+  &:has(strong) {
+    display: -webkit-box;
+    height: calc(3em + 0.75rem);
+    padding-top: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 
   &:has(.is-success, .is-warning) {
     font-weight: bold;
