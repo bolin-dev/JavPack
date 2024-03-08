@@ -25,47 +25,58 @@
   const { searchParams } = new URL(location);
   if (!searchParams.get("v")) return;
 
-  const SELECTOR = "x-match-item";
+  const infoNode = document.querySelector("#video_info");
+  if (!infoNode) return;
+
+  const TARGET_ID = "video_res";
+  const TARGET_CLASS = "x-match-item";
   const VOID = "javascript:void(0);";
 
-  const handleClick = () => {
-    document.addEventListener("click", (e) => {
-      if (!e.target.classList.contains(SELECTOR)) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      const { pc } = e.target.dataset;
-      if (pc) Grant.openTab(`https://v.anxia.com/?pickcode=${pc}`);
-    });
-
-    document.addEventListener("contextmenu", (e) => {
-      if (!e.target.classList.contains(SELECTOR)) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      const { cid } = e.target.dataset;
-      if (cid) Grant.openTab(`https://115.com/?cid=${cid}&offset=0&tab=&mode=wangpan`);
-    });
+  const ACTION_MAP = {
+    click: {
+      key: "pc",
+      url: "https://v.anxia.com/?pickcode=%s",
+    },
+    contextmenu: {
+      key: "cid",
+      url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
+    },
   };
 
-  handleClick();
+  const handleClick = (e) => {
+    const { target } = e;
+    if (!target.classList.contains(TARGET_CLASS)) return;
 
-  GM_addStyle(
-    "#x-query a{display:-webkit-box;overflow:hidden;white-space:unset;text-overflow:ellipsis;-webkit-line-clamp:1;-webkit-box-orient:vertical;word-break:break-all}",
-  );
+    e.preventDefault();
+    e.stopPropagation();
 
-  const infoNode = document.querySelector("#video_info");
+    const action = ACTION_MAP[e.type];
+    if (!action) return;
+
+    const val = target.dataset[action.key];
+    if (val) Grant.openTab(action.url.replaceAll("%s", val));
+  };
+
+  GM_addStyle(`
+  #${TARGET_ID} a {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: unset;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  `);
 
   infoNode.insertAdjacentHTML(
     "beforeend",
-    `<div id="video_res" class="item">
+    `<div id="${TARGET_ID}" class="item">
       <table>
         <tbody>
           <tr>
             <td class="header">资源:</td>
-            <td id="x-query" class="text">查询中...</td>
+            <td class="text">查询中...</td>
             <td class="icon"></td>
           </tr>
         </tbody>
@@ -73,27 +84,30 @@
     </div>`,
   );
 
-  const queryNode = infoNode.querySelector("#x-query");
+  const queryNode = infoNode.querySelector(`#${TARGET_ID} .text`);
   const code = infoNode.querySelector("#video_id .text").textContent;
   const { codes, regex } = Util.codeParse(code);
 
+  document.addEventListener("click", handleClick);
+  document.addEventListener("contextmenu", handleClick);
+
   Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
     if (!state) {
-      queryNode.textContent = "查询失败";
+      queryNode.innerHTML = "查询失败，检查登录状态";
       return;
     }
 
     data = data.filter((item) => regex.test(item.n));
 
     if (!data.length) {
-      queryNode.textContent = "暂无资源";
+      queryNode.innerHTML = "暂无资源";
       return;
     }
 
     queryNode.innerHTML = data
       .map(
         ({ pc, cid, t, n }) =>
-          `<a href="${VOID}" class="${SELECTOR}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
+          `<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
       )
       .join("");
   });
