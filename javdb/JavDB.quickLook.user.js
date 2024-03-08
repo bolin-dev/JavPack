@@ -206,8 +206,6 @@
   }
 
   function parseElem(dom) {
-    if (!dom) return;
-
     const cover = dom.querySelector(".column-video-cover img")?.src;
     if (!cover) return;
 
@@ -233,6 +231,7 @@
 
     const carousel = [];
     const video = trailer || _trailer;
+
     if (video) {
       carousel.push(`<video src="${video}" controls muted poster="${cover}" class="is-block"></video>`);
     } else {
@@ -240,7 +239,6 @@
     }
 
     for (const item of screenshoots) carousel.push(`<img src="${item}" alt="screenshoot" class="is-hidden">`);
-
     innerHTML += carousel.join("");
     innerHTML += "</div>";
 
@@ -316,7 +314,8 @@
       controlVideo();
     }
   };
-  const observer = new MutationObserver(callback);
+
   const options = { subtree: true, childList: true, attributeFilter: ["class"], characterData: false };
+  const observer = new MutationObserver(callback);
   observer.observe(modal, options);
 })();
