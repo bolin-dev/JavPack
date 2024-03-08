@@ -272,8 +272,8 @@ class Req115 extends Drive115 {
   }
 
   static sleep(s = 1) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, s * 1000);
+    return new Promise((r) => {
+      setTimeout(r, s * 1000);
     });
   }
 
@@ -338,18 +338,18 @@ class Req115 extends Drive115 {
     return this.filesBatchRename(renameObj);
   }
 
-  static async handleTags(files, labelNames) {
-    const labelList = (await this.labelList())?.data.list;
-    if (!labelList?.length) return;
+  static async handleTags(files, tags) {
+    const list = (await this.labelList())?.data.list;
+    if (!list?.length) return;
 
-    const file_label = [];
-    labelNames.forEach((labelName) => {
-      const label = labelList.find(({ name }) => name === labelName);
-      if (label) file_label.push(label.id);
+    const labels = [];
+    tags.forEach((tag) => {
+      const item = list.find(({ name }) => name === tag);
+      if (item) labels.push(item.id);
     });
-    if (!file_label.length) return;
+    if (!labels.length) return;
 
-    return this.filesBatchLabel(files.map((file) => file.fid ?? file.cid).toString(), file_label.toString());
+    return this.filesBatchLabel(files.map(({ fid }) => fid).toString(), labels.toString());
   }
 
   static async handleClean(files, cid) {
@@ -411,10 +411,10 @@ class Req115 extends Drive115 {
         res.state = "error";
         res.msg = `${code} 离线失败`;
         continue;
-      } else {
-        res.state = "success";
-        res.msg = `${code} 离线成功`;
       }
+
+      res.state = "success";
+      res.msg = `${code} 离线成功`;
 
       if (rename) this.handleRename(file_id, videos, { rename, noTxt, zhTxt, crackTxt, zh, crack });
       if (tags.length) this.handleTags(videos, tags);
