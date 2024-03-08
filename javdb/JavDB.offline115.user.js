@@ -40,6 +40,10 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
+const VERIFY_KEY = "VERIFY_STATUS";
+const VERIFY_PENDING = "PENDING";
+const VERIFY_VERIFIED = "VERIFIED";
+
 const ACTIONS_CLASS = "x-offline";
 const { pathname: PATHNAME } = location;
 const IS_DETAIL = PATHNAME.startsWith("/v/");
@@ -234,16 +238,16 @@ async function handleClick(e, actions, dom, currIdx = 0) {
   if (IS_DETAIL) Util.setTabBar({ icon });
 
   if (icon === "warn") {
-    if (GM_getValue("VERIFY_STATUS") !== "PENDING") {
-      GM_setValue("VERIFY_STATUS", "PENDING");
+    if (GM_getValue(VERIFY_KEY) !== VERIFY_PENDING) {
+      GM_setValue(VERIFY_KEY, VERIFY_PENDING);
 
       Grant.notify({ text, icon });
       Grant.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
     // eslint-disable-next-line max-params
-    const listener = GM_addValueChangeListener("VERIFY_STATUS", (name, old_value, new_value, remote) => {
-      if (!remote || new_value !== "VERIFIED") return;
+    const listener = GM_addValueChangeListener(VERIFY_KEY, (name, old_value, new_value, remote) => {
+      if (!remote || new_value !== VERIFY_VERIFIED) return;
       GM_removeValueChangeListener(listener);
       handleClick(e, actions, dom, nextIdx);
     });
@@ -259,7 +263,7 @@ async function handleClick(e, actions, dom, currIdx = 0) {
 }
 
 (function () {
-  if (location.host === "captchaapi.115.com") return Offline.verifyAccount();
+  if (location.host === "captchaapi.115.com") return Offline.verifyAccount(VERIFY_KEY, VERIFY_VERIFIED);
 })();
 
 (function () {
