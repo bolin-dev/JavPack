@@ -277,10 +277,10 @@ const createVideo = useVideo();
     const LOAD_DB = "x-loading-javdb";
 
     return (elem) => {
-      const { classList } = elem;
+      const { classList, dataset } = elem;
       if (classList.contains(LOAD_SPYL) || classList.contains(LOAD_DB)) return;
 
-      let { trailer, cover, mid, code } = elem.dataset;
+      let { trailer, cover, mid, code } = dataset;
       if (trailer) return setVideo(elem, trailer, cover);
 
       if (!cover || !mid || !code) {
@@ -290,25 +290,25 @@ const createVideo = useVideo();
         mid = parentNode.href.split("/").pop();
         code = parentNode.querySelector(".video-title strong").textContent;
 
-        elem.dataset.cover = cover;
-        elem.dataset.mid = mid;
-        elem.dataset.code = code;
+        dataset.cover = cover;
+        dataset.mid = mid;
+        dataset.code = code;
       }
 
       const trailerMid = `trailer_${mid}`;
       trailer = localStorage.getItem(trailerMid);
 
       if (trailer) {
-        elem.dataset.trailer = trailer;
+        dataset.trailer = trailer;
         return setVideo(elem, trailer, cover);
       }
 
       const setTrailer = (trailer) => {
         if (!trailer || elem.querySelector("video")) return;
 
-        if (!elem.dataset.trailer) {
+        if (!dataset.trailer) {
           localStorage.setItem(trailerMid, trailer);
-          elem.dataset.trailer = trailer;
+          dataset.trailer = trailer;
         }
 
         if (elem === currElem) setVideo(elem, trailer, cover);
