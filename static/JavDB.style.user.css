@@ -164,7 +164,7 @@ body {
 }
 
 .video-panel .tile-images {
-  gap: 0.5rem;
+  gap: var(--x-grid-gap);
   font-size: 0;
 
   & .tile-item :is(.video-number, .video-title) {
