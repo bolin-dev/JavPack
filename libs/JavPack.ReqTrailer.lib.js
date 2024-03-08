@@ -6,8 +6,8 @@ class ReqTrailer extends Req {
       data: { ID },
       headers: { origin: "https://javspyl.eu.org" },
     }).then((res) => {
-      res = res?.info?.url;
-      if (res && !/\.m3u8?$/i.test(res)) return res.includes("//") ? res : `https://${res}`;
+      const url = res?.info.url;
+      if (url && !/\.m3u8?$/i.test(url)) return res.msg;
     });
   }
 
@@ -17,6 +17,10 @@ class ReqTrailer extends Req {
     const studioList = [
       {
         studio: "東京熱",
+        samples: [`https://my.cdn.tokyo-hot.com/media/samples/%s.mp4`],
+      },
+      {
+        studio: "Tokyo-Hot",
         samples: [`https://my.cdn.tokyo-hot.com/media/samples/%s.mp4`],
       },
       {
