@@ -91,6 +91,15 @@ body {
   margin-bottom: 0.25rem;
 }
 
+.video-meta-panel {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+
+  & > .columns {
+    align-items: start;
+  }
+}
+
 .user-container {
   margin: -1.75rem !important;
 
@@ -111,11 +120,6 @@ body {
       }
     }
   }
-}
-
-.video-meta-panel {
-  padding: 0.75rem;
-  margin-bottom: 1rem;
 }
 
 .column-video-cover a {
