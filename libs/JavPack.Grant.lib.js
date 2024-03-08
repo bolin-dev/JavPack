@@ -7,12 +7,12 @@ class Grant {
 
     GM_notification({
       tag,
+      image,
       title,
       silent: true,
       timeout: 3000,
       highlight: false,
       ...details,
-      image,
     });
   };
 }
