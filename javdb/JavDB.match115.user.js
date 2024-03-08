@@ -44,10 +44,10 @@ const ACTION_MAP = {
   },
 };
 
-function listenClick(tabClose) {
+function listenClick(onTabClose) {
   const handleClose = async (target) => {
     await Req115.sleep(0.5);
-    tabClose(target);
+    onTabClose(target);
   };
 
   const handleClick = (e) => {
@@ -143,10 +143,10 @@ function listenClick(tabClose) {
 
   GM_addStyle(`
   ${TARGET_SELECTOR}:has(.video-title .is-success) {
-    border: .375rem solid #34a873;
+    border: 0.375rem solid #34a873;
   }
   ${TARGET_SELECTOR}:has(.video-title .is-warning) {
-    border: .375rem solid #ffd257;
+    border: 0.375rem solid #ffd257;
   }
   [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-success) {
     border-color: #48c78e;
@@ -273,17 +273,17 @@ function listenClick(tabClose) {
   window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
   MatchChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
-  const refreshPrefix = (target) => {
+  const matchPrefix = (target) => {
     const item = target.closest(".item");
-
-    const cls = item.className.split(" ").find((cls) => cls.startsWith("x-"));
+    const mid = item.querySelector("a").href.split("/").pop();
     const code = item.querySelector(".video-title strong").textContent;
     const { prefix } = Util.codeParse(code);
 
     GM_deleteValue(code);
     GM_deleteValue(prefix);
-    QueueMatch.add(document.querySelectorAll(`.movie-list .${cls}`));
+    QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
   };
-  listenClick(refreshPrefix);
-  unsafeWindow["refreshPrefix"] = refreshPrefix;
+
+  listenClick(matchPrefix);
+  unsafeWindow["reMatch"] = matchPrefix;
 })();
