@@ -10,10 +10,10 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqTrailer.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
+// @connect         my.cdn.tokyo-hot.com
 // @connect         caribbeancom.com
 // @connect         pacopacomama.com
 // @connect         javspyl.eu.org
-// @connect         tokyo-hot.com
 // @connect         10musume.com
 // @connect         muramura.tv
 // @connect         1pondo.tv
@@ -70,7 +70,6 @@ function useVideo() {
 
     video.addEventListener("keydown", handleKeydown);
     video.addEventListener("volumechange", handleVolumechange);
-
     return video;
   };
 }
@@ -82,8 +81,8 @@ const createVideo = useVideo();
   const { pathname: PATHNAME } = location;
   if (!PATHNAME.startsWith("/v/")) return;
 
-  const mid = `trailer_${PATHNAME.split("/").pop()}`;
   const container = document.querySelector(".column-video-cover");
+  const mid = `trailer_${PATHNAME.split("/").pop()}`;
   if (!container) return;
 
   const setTrailer = (trailer) => {
@@ -114,7 +113,6 @@ const createVideo = useVideo();
   if (trailer) return setTrailer(trailer);
 
   const code = document.querySelector(".first-block .value").textContent;
-
   ReqTrailer.javspyl(code).then(setTrailer);
   if (!isUncensored()) return;
 
