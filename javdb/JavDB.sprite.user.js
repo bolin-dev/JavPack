@@ -15,6 +15,7 @@
 // @connect         pixhost.to
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
+// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
@@ -30,6 +31,12 @@
 
     const TARGET_ID = "x-sprite";
     if (document.querySelector(`#${TARGET_ID}`)) return;
+
+    GM_addStyle(`
+    html:has(.fancybox-slide--current #${TARGET_ID}) {
+      overflow: hidden;
+    }
+    `);
 
     const IMG_ALT = "雪碧图";
     localStorage.setItem(mid, sprite);
