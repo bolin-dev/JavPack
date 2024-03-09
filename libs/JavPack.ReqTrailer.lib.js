@@ -6,7 +6,7 @@ class ReqTrailer extends Req {
       data: { ID },
       headers: { origin: "https://javspyl.eu.org" },
     }).then((res) => {
-      const url = res?.info.url;
+      const url = res?.info?.url;
       if (url && !/\.m3u8?$/i.test(url)) return res.msg;
     });
   }
