@@ -112,7 +112,7 @@ const config = [
   },
   {
     name: "${genre}", // 仅 type = "genres" / "actors" 时支持 genre / actors 参数
-    color: "is-warning is-light",
+    color: "is-warning is-medium",
     desc: "可自定义描述",
     type: "genres",
     match: [],
