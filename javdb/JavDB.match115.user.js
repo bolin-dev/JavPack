@@ -154,9 +154,6 @@ function listenClick(onTabClose) {
   [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border-color: #ffe08a;
   }
-  .${TARGET_CLASS}.is-normal:hover {
-    text-decoration: none;
-  }
   `);
 
   class QueueMatch {
@@ -242,21 +239,22 @@ function listenClick(onTabClose) {
       let className = "is-normal";
 
       if (res.length) {
-        const zhRes = res.find((item) => Magnet.zhReg.test(item.n));
-        const currItem = zhRes ?? res[0];
+        const zhItem = res.find((item) => Magnet.zhReg.test(item.n));
+        const crackItem = res.find((item) => Magnet.crackReg.test(item.n));
+        const currItem = zhItem ?? crackItem ?? res[0];
 
         pc = currItem.pc;
         cid = currItem.cid;
         textContent = "已匹配";
         title = `[${currItem.t}] ${currItem.n}`;
-        className = zhRes ? "is-warning" : "is-success";
+        className = zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
       }
 
       tag.title = title;
       tag.dataset.pc = pc;
       tag.dataset.cid = cid;
-      tag.classList.add(className);
       tag.textContent = textContent;
+      tag.className = `${TARGET_CLASS} tag ${className}`;
     }
   }
 
