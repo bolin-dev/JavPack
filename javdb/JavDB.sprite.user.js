@@ -31,18 +31,27 @@
     const TARGET_ID = "x-sprite";
     if (document.querySelector(`#${TARGET_ID}`)) return;
 
+    const IMG_ALT = "雪碧图";
     localStorage.setItem(mid, sprite);
-    const box = document.querySelector(".tile-images.preview-images");
+    const targetHTML = `<div style="display: none;" id="${TARGET_ID}"><img src="${sprite}" alt="${IMG_ALT}"></div>`;
+    document.body.insertAdjacentHTML("beforeend", targetHTML);
 
     const insertHTML = `
-    <a class="tile-item" id="${TARGET_ID}" href="${sprite}" data-fancybox="gallery" data-caption="雪碧图">
-      <img src="${sprite}" alt="雪碧图" loading="lazy">
+    <a
+      class="tile-item"
+      href="javascript:void(0);"
+      data-fancybox="gallery"
+      data-caption="${IMG_ALT}"
+      data-src="#${TARGET_ID}"
+    >
+      <img src="${sprite}" alt="${IMG_ALT}" loading="lazy">
     </a>
     `;
 
-    if (!box) {
-      const target = document.querySelector(".video-meta-panel");
-      return target.insertAdjacentHTML(
+    const container = document.querySelector(".tile-images.preview-images");
+    if (!container) {
+      const previous = document.querySelector(".video-meta-panel");
+      return previous.insertAdjacentHTML(
         "afterend",
         `<div class="columns">
           <div class="column">
@@ -56,11 +65,11 @@
       );
     }
 
-    const item = box.querySelector(".tile-item");
-    if (item) {
-      item.insertAdjacentHTML("beforebegin", insertHTML);
+    const tileItem = container.querySelector(".tile-item");
+    if (tileItem) {
+      tileItem.insertAdjacentHTML("beforebegin", insertHTML);
     } else {
-      box.insertAdjacentHTML("beforeend", insertHTML);
+      container.insertAdjacentHTML("beforeend", insertHTML);
     }
   };
 
