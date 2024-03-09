@@ -135,9 +135,14 @@ const createVideo = useVideo();
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
     object-fit: contain;
-  }
-  ${TARGET_SELECTOR} video.fade-in {
-    opacity: 1;
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &.fade-in {
+      opacity: 1;
+    }
   }
   `);
 
