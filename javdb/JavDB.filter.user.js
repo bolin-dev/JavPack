@@ -26,15 +26,16 @@
   GM_addStyle(`
   .is-highlight {
     position: relative;
-  }
-  .is-highlight::after {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    margin: -0.375rem;
-    content: "";
-    background: linear-gradient(45deg, #f00, #ff69b4, #ffa500);
-    border-radius: inherit;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      margin: -0.375rem;
+      content: "";
+      background: linear-gradient(45deg, #f00, #ff69b4, #ffa500);
+      border-radius: inherit;
+    }
   }
   `);
 
