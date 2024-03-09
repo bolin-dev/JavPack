@@ -306,7 +306,12 @@ async function handleClick(e, actions, dom, currIdx = 0) {
       z-index: 2;
       padding: 0.5rem 0.5rem 0;
 
+      & .button {
+        box-shadow: 0 3px 6px 0 rgb(0 0 0 / 12%);
+      }
+
       & .button[disabled] {
+        box-shadow: none;
         opacity: 0.8;
       }
     }
