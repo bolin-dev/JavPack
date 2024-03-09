@@ -154,12 +154,15 @@ function listenClick(onTabClose) {
   [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border-color: #ffe08a;
   }
+  .${TARGET_CLASS}.is-normal:hover {
+    text-decoration: none;
+  }
   `);
 
   class QueueMatch {
     static list = [];
     static lock = false;
-    static insertHTML = `<a class="${TARGET_CLASS} tag is-normal" href="${VOID}">匹配中</a>&nbsp;`;
+    static insertHTML = `<a class="${TARGET_CLASS} tag" href="${VOID}">匹配中</a>&nbsp;`;
 
     static async add(items) {
       if (!items.length) return;
