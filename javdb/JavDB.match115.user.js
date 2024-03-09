@@ -142,17 +142,26 @@ function listenClick(onTabClose) {
   if (!childList.length) return;
 
   GM_addStyle(`
-  ${TARGET_SELECTOR}:has(.video-title .is-success) {
-    border: 0.375rem solid #34a873;
+  ${TARGET_SELECTOR} .video-title:has(.is-warning, .is-info, .is-success) {
+    font-weight: bold;
   }
   ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border: 0.375rem solid #ffd257;
   }
-  [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-success) {
-    border-color: #48c78e;
+  ${TARGET_SELECTOR}:has(.video-title .is-info) {
+    border: 0.375rem solid #2b74b1;
+  }
+  ${TARGET_SELECTOR}:has(.video-title .is-success) {
+    border: 0.375rem solid #34a873;
   }
   [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border-color: #ffe08a;
+  }
+  [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-info) {
+    border-color: #3e8ed0;
+  }
+  [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-success) {
+    border-color: #48c78e;
   }
   `);
 
