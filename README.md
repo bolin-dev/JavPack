@@ -136,8 +136,8 @@ const config = [
     },
     rename: "${zh}${crack} ${code} ${title}",
     noTxt: "-${no}",
-    zhTxt: "[中字]", // 需匹配正则 /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i
-    crackTxt: "[破解]",
+    zhTxt: "[中字]", // 应匹配正则 /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i
+    crackTxt: "[破解]", // 应匹配正则 /破解|-uc?(?![a-z])|uncensored/i
     tags: ["actors"],
     clean: true,
     cover: false,
