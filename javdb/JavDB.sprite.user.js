@@ -35,7 +35,7 @@
     const box = document.querySelector(".tile-images.preview-images");
 
     const insertHTML = `
-    <a class="tile-item" id="${TARGET_ID}" href="${sprite}" data-fancybox="gallery" data-caption="sprite">
+    <a class="tile-item" id="${TARGET_ID}" href="${sprite}" data-fancybox="gallery" data-caption="雪碧图">
       <img src="${sprite}" alt="雪碧图" loading="lazy">
     </a>
     `;
