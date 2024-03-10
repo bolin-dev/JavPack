@@ -84,7 +84,7 @@
 | `clean`                | `boolean`                         | 清理垃圾                                                                                                                                    | `true`                                       |
 | `cover`                | `boolean`                         | 上传封面                                                                                                                                    | `true`                                       |
 
-<details><summary>动态参数</summary>
+<details><summary>动态参数及示例</summary>
 
 ```JavaScript
 // code        番号
