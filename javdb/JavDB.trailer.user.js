@@ -136,10 +136,6 @@ const createVideo = useVideo();
     transition: opacity 0.2s ease-in-out;
     object-fit: contain;
 
-    &:focus-visible {
-      outline: none;
-    }
-
     &.fade-in {
       opacity: 1;
     }

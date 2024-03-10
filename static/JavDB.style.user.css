@@ -31,6 +31,10 @@ body {
   padding-top: 3.25rem;
 }
 
+video:focus-visible {
+  outline: none;
+}
+
 .compensate-for-scrollbar {
   margin-right: 0 !important;
 }
