@@ -49,7 +49,6 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-        vertical-align: middle;
       }
     }
     #${MODAL_ID} .carousel-container .btn {
