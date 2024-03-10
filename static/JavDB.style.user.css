@@ -24,7 +24,7 @@
 
 html {
   padding-block: 0 !important;
-  overflow-y: auto;
+  overflow-y: overlay;
 }
 
 body {
