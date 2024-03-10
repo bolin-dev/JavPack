@@ -52,9 +52,9 @@
 
 ### JavDB.trailer
 
-- 方向键及 `keyW` `keyA` `keyS` `keyD` 控制播放进度和音量
+- 方向键及 `W` `A` `S` `D` 控制播放进度和音量
 
-- `KeyM` 控制静音
+- 按键 `M` 控制静音
 
 ### JavDB.offline115
 
@@ -75,7 +75,7 @@
 | `magnetOptions.max`    | `number`                          | 最大磁链数                                                                                                                                  | `10`                                         |
 | `dir`                  | `string \| string[]`              | 离线路径，支持 `动态参数`                                                                                                                   | `"云下载"`                                   |
 | `verifyOptions.clean`  | `boolean`                         | 验证失败清理任务及文件夹                                                                                                                    | `true`                                       |
-| `verifyOptions.max`    | `number`                          | 最大验证次数（1s/次）                                                                                                                       | `10`                                         |
+| `verifyOptions.max`    | `number`                          | 最大验证次数（1s / 次）                                                                                                                     | `10`                                         |
 | `rename`               | `string`                          | 重命名，支持 `动态参数`                                                                                                                     | `"${zh}${crack} ${code} ${title}"`           |
 | `noTxt`                | `string`                          | 多文件重命名分号格式                                                                                                                        | `".${no}"`                                   |
 | `zhTxt`                | `string`                          | 重命名中字匹配格式                                                                                                                          | `"[中字]"`                                   |
