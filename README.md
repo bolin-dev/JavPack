@@ -6,57 +6,57 @@
 
 ## 脚本
 
-| 名称       | 描述           | 安装                                                                         |
+| 115        | 描述           | 安装                                                                         |
 | :--------- | :------------- | :--------------------------------------------------------------------------- |
 | 115.delDir | 播放页删除目录 | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.delDir.user.js) |
 
-| 名称                                 | 描述         | 安装                                                                                 |
-| :----------------------------------- | :----------- | :----------------------------------------------------------------------------------- |
-| JavDB.style                          | 样式调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)      |
-| JavDB.layout                         | 布局调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.layout.user.js)     |
-| [JavDB.search](#javdbsearch)         | 快捷搜索     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.search.user.js)     |
-| [JavDB.nav](#javdbnav)               | 快捷翻页     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.nav.user.js)        |
-| [JavDB.openTab](#javdbopentab)       | 新标签页打开 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.openTab.user.js)    |
-| [JavDB.quickLook](#javdbquicklook)   | 快速查看     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.quickLook.user.js)  |
-| JavDB.scroll                         | 滚动加载     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.scroll.user.js)     |
-| JavDB.filter                         | 影片筛选     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.filter.user.js)     |
-| [JavDB.trailer](#javdbtrailer)       | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
-| JavDB.sprite                         | 雪碧图       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.sprite.user.js)     |
-| JavDB.magnet                         | 磁链扩展     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.magnet.user.js)     |
-| JavDB.match115                       | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.match115.user.js)   |
-| [JavDB.offline115](#javdboffline115) | 115 网盘离线 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.offline115.user.js) |
+| JavDB                           | 描述         | 安装                                                                                 |
+| :------------------------------ | :----------- | :----------------------------------------------------------------------------------- |
+| JavDB.style                     | 样式调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)      |
+| JavDB.layout                    | 布局调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.layout.user.js)     |
+| [JavDB.search](#search)         | 快捷搜索     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.search.user.js)     |
+| [JavDB.nav](#nav)               | 快捷翻页     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.nav.user.js)        |
+| [JavDB.openTab](#opentab)       | 新标签页打开 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.openTab.user.js)    |
+| [JavDB.quickLook](#quicklook)   | 快速查看     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.quickLook.user.js)  |
+| JavDB.scroll                    | 滚动加载     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.scroll.user.js)     |
+| JavDB.filter                    | 影片筛选     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.filter.user.js)     |
+| [JavDB.trailer](#trailer)       | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
+| JavDB.sprite                    | 雪碧图       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.sprite.user.js)     |
+| JavDB.magnet                    | 磁链扩展     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.magnet.user.js)     |
+| JavDB.match115                  | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.match115.user.js)   |
+| [JavDB.offline115](#offline115) | 115 网盘离线 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.offline115.user.js) |
 
-| 名称            | 描述         | 安装                                                                                 |
+| JavLib          | 描述         | 安装                                                                                 |
 | :-------------- | :----------- | :----------------------------------------------------------------------------------- |
 | JavLib.match115 | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javlib/JavLib.match115.user.js) |
 
 ## 使用
 
-### JavDB.search
+### search
 
 - 按键 `/` 选取搜索框
 
 - 按键 `Ctrl` + `/` 搜索粘贴板首项
 
-### JavDB.nav
+### nav
 
 - 按键 `←` `→` 翻页
 
-### JavDB.openTab
+### openTab
 
 - 鼠标左键新标签页前台打开，右键后台打开
 
-### JavDB.quickLook
+### quickLook
 
-- 鼠标悬停卡片后，键入 `Space` 弹窗预览影片详情，再次键入 `Space` / `Esc` 关闭弹窗；`Enter` / `F` 打开详情页
+- 鼠标悬停卡片后，按键 `Space` 弹窗预览影片详情，再次键入 `Space` / `Esc` 关闭弹窗；`Enter` / `F` 打开详情页
 
-### JavDB.trailer
+### trailer
 
-- 方向键及 `W` `A` `S` `D` 控制播放进度和音量
+- 方向键或 `W` `A` `S` `D` 控制播放进度及音量
 
-- 按键 `M` 控制静音
+- 按键 `M` 切换静音
 
-### JavDB.offline115
+### offline115
 
 > [!TIP]
 >
@@ -74,10 +74,10 @@
 | `magnetOptions.sort`   | `function`                        | 磁链排序，参考 [sortCompareFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted#comparefn)   | `magnet.zh` → `magnet.crack` → `magnet.size` |
 | `magnetOptions.max`    | `number`                          | 最大磁链数                                                                                                                                  | `10`                                         |
 | `dir`                  | `string \| string[]`              | 离线路径，支持 `动态参数`                                                                                                                   | `"云下载"`                                   |
-| `verifyOptions.clean`  | `boolean`                         | 验证失败清理任务及文件夹                                                                                                                    | `true`                                       |
-| `verifyOptions.max`    | `number`                          | 最大验证次数（1s / 次）                                                                                                                     | `10`                                         |
+| `verifyOptions.clean`  | `boolean`                         | 验证失败清理                                                                                                                                | `true`                                       |
+| `verifyOptions.max`    | `number`                          | 验证次数（1s / 次）                                                                                                                         | `10`                                         |
 | `rename`               | `string`                          | 重命名，支持 `动态参数`                                                                                                                     | `"${zh}${crack} ${code} ${title}"`           |
-| `noTxt`                | `string`                          | 多文件重命名分号格式                                                                                                                        | `".${no}"`                                   |
+| `noTxt`                | `string`                          | 重命名多文件分号格式                                                                                                                        | `".${no}"`                                   |
 | `zhTxt`                | `string`                          | 重命名中字匹配格式                                                                                                                          | `"[中字]"`                                   |
 | `crackTxt`             | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
 | `tags`                 | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
