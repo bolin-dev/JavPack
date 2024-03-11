@@ -244,11 +244,19 @@ class Req115 extends Drive115 {
     return this.filesSearchAll(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
 
+  static async natsortFilesAll(cid, params = {}) {
+    const res = await this.natsortFiles(cid, params);
+    const { count, data } = res;
+    return count > data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
+  }
+
   // Get file list by order
   static async filesByOrder(cid, params = {}) {
     const res = await this.files(cid, params);
-    const { errNo, order: o, is_asc: asc, fc_mix } = res;
-    return errNo === 20130827 && o === "file_name" ? this.natsortFiles(cid, { ...params, o, asc, fc_mix }) : res;
+    const { order: o, is_asc: asc, fc_mix, count, data } = res;
+
+    if (res.errNo === 20130827 && o === "file_name") return this.natsortFilesAll(cid, { ...params, o, asc, fc_mix });
+    return count > data.length ? this.files(cid, { ...params, limit: count }) : res;
   }
 
   // Get video list
