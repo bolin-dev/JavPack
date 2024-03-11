@@ -142,6 +142,9 @@ function listenClick(onTabClose) {
   if (!childList.length) return;
 
   GM_addStyle(`
+  ${TARGET_SELECTOR} .video-title .${TARGET_CLASS}.is-normal:hover {
+    text-decoration: none;
+  }
   ${TARGET_SELECTOR} .video-title:has(.is-warning, .is-info, .is-success) {
     font-weight: bold;
   }
