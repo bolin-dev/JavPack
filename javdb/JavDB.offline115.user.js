@@ -239,9 +239,8 @@ async function handleClick(e, actions, dom, currIdx = 0) {
 
   if (icon === "warn") {
     if (GM_getValue(VERIFY_KEY) !== VERIFY_PENDING) {
-      GM_setValue(VERIFY_KEY, VERIFY_PENDING);
-
       Grant.notify({ text, icon });
+      GM_setValue(VERIFY_KEY, VERIFY_PENDING);
       Grant.openTab(`https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`);
     }
 
