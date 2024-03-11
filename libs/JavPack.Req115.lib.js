@@ -232,9 +232,16 @@ class Drive115 extends Req {
 }
 
 class Req115 extends Drive115 {
+  // Search all files
+  static async filesSearchAll(search_value, params = {}) {
+    const res = await this.filesSearch(search_value, params);
+    const { count, data } = res;
+    return count > data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
+  }
+
   // Search for videos
   static videosSearch(search_value) {
-    return this.filesSearch(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
+    return this.filesSearchAll(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
   }
 
   // Get file list by order
