@@ -60,7 +60,7 @@
 
 > [!TIP]
 >
-> 避免单目录下直接子项或标签数量超过 `11500`
+> 避免标签数量超过 `11500`
 
 | `config[]` 选项        | 类型                              | 说明                                                                                                                                        | 默认                                         |
 | :--------------------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------- |
@@ -70,10 +70,10 @@
 | `type`                 | `"plain" \| "genres" \| "actors"` | 按钮类型                                                                                                                                    | `"plain"`                                    |
 | `match`                | `string[]`                        | 类型匹配，非 `"plain"` 类型时可用                                                                                                           | `[]`                                         |
 | `exclude`              | `string[]`                        | 类型排除，非 `"plain"` 类型时可用                                                                                                           | `[]`                                         |
+| `dir`                  | `string \| string[]`              | 离线路径，支持 `动态参数`                                                                                                                   | `"云下载"`                                   |
 | `magnetOptions.filter` | `function`                        | 磁链筛选，参考 [filterCallbackFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#callbackfn) | `magnet.size` > `300MB`                      |
 | `magnetOptions.sort`   | `function`                        | 磁链排序，参考 [sortCompareFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted#comparefn)   | `magnet.zh` → `magnet.crack` → `magnet.size` |
 | `magnetOptions.max`    | `number`                          | 最大磁链数                                                                                                                                  | `10`                                         |
-| `dir`                  | `string \| string[]`              | 离线路径，支持 `动态参数`                                                                                                                   | `"云下载"`                                   |
 | `verifyOptions.clean`  | `boolean`                         | 验证失败清理                                                                                                                                | `true`                                       |
 | `verifyOptions.max`    | `number`                          | 验证次数（1s / 次）                                                                                                                         | `10`                                         |
 | `rename`               | `string`                          | 重命名，支持 `动态参数`                                                                                                                     | `"${zh}${crack} ${code} ${title}"`           |
