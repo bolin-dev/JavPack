@@ -292,11 +292,11 @@ class Req115 extends Drive115 {
     });
   }
 
-  static async verifyTask(info_hash, regex, max_retry) {
+  static async verifyTask(info_hash, regex, { max, filter }) {
     let file_id = "";
     let videos = [];
 
-    for (let index = 0; index < max_retry; index++) {
+    for (let index = 0; index < max; index++) {
       if (index) await this.sleep();
       const { tasks } = await this.lixianTaskLists();
 
@@ -308,11 +308,11 @@ class Req115 extends Drive115 {
     }
     if (!file_id) return { file_id, videos };
 
-    for (let index = 0; index < max_retry; index++) {
+    for (let index = 0; index < max; index++) {
       if (index) await this.sleep();
       const { data } = await this.videos(file_id);
 
-      videos = data.filter((item) => regex.test(item.n));
+      videos = data.filter((item) => regex.test(item.n) && filter(item));
       if (videos.length) break;
     }
     return { file_id, videos };
@@ -417,7 +417,7 @@ class Req115 extends Drive115 {
         break;
       }
 
-      const { file_id, videos } = await this.verifyTask(info_hash, regex, verifyOptions.max);
+      const { file_id, videos } = await this.verifyTask(info_hash, regex, verifyOptions);
       if (!videos.length) {
         if (verifyOptions.clean) {
           this.lixianTaskDel([info_hash]);
