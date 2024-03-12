@@ -74,12 +74,13 @@
 | `magnetOptions.filter` | `function`                        | 磁链筛选，参考 [filterCallbackFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#callbackfn) | `magnet.size` > `300MB`                      |
 | `magnetOptions.sort`   | `function`                        | 磁链排序，参考 [sortCompareFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted#comparefn)   | `magnet.zh` → `magnet.crack` → `magnet.size` |
 | `magnetOptions.max`    | `number`                          | 最大磁链数                                                                                                                                  | `10`                                         |
+| `verifyOptions.filter` | `function`                        | 视频筛选，参考 [filterCallbackFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#callbackfn) | `video.s` > `300MB`                          |
 | `verifyOptions.clean`  | `boolean`                         | 验证失败清理                                                                                                                                | `true`                                       |
 | `verifyOptions.max`    | `number`                          | 验证次数（1s / 次）                                                                                                                         | `10`                                         |
 | `rename`               | `string`                          | 重命名，支持 `动态参数`                                                                                                                     | `"${zh}${crack} ${code} ${title}"`           |
-| `noTxt`                | `string`                          | 重命名多文件分号格式                                                                                                                        | `".${no}"`                                   |
-| `zhTxt`                | `string`                          | 重命名中字匹配格式                                                                                                                          | `"[中字]"`                                   |
-| `crackTxt`             | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
+| `renameTxt.no`         | `string`                          | 重命名多文件分号格式                                                                                                                        | `".${no}"`                                   |
+| `renameTxt.zh`         | `string`                          | 重命名中字匹配格式                                                                                                                          | `"[中字]"`                                   |
+| `renameTxt.crack`      | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
 | `tags`                 | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
 | `clean`                | `boolean`                         | 清理垃圾                                                                                                                                    | `true`                                       |
 | `cover`                | `boolean`                         | 上传封面                                                                                                                                    | `true`                                       |
@@ -131,13 +132,16 @@ const config = [
     },
     dir: ["类别", "${genre}", "${maker}${prefix}"], // 等价 "类别/${genre}/${maker}${prefix}"
     verifyOptions: {
+      filter: ({ s }) => s > 314572800,
       clean: true,
       max: 10,
     },
     rename: "${zh}${crack} ${code} ${title}",
-    noTxt: "-${no}",
-    zhTxt: "[中字]", // 应匹配正则 /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i
-    crackTxt: "[破解]", // 应匹配正则 /破解|-uc?(?![a-z])|uncensored/i
+    renameTxt: {
+      no: "-${no}",
+      zh: "[中字]", // 应匹配正则 /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i
+      crack: "[破解]", // 应匹配正则 /破解|-uc?(?![a-z])|uncensored/i
+    },
     tags: ["actors"],
     clean: true,
     cover: false,
