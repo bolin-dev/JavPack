@@ -177,10 +177,10 @@ class Drive115 extends Req {
   }
 
   // Get tag list
-  static labelList() {
+  static labelList(params = {}) {
     return this.request({
       url: "https://webapi.115.com/label/list",
-      params: { keyword: "", limit: this.limit },
+      params: { keyword: "", limit: this.limit, ...params },
       responseType: "json",
     });
   }
