@@ -318,9 +318,9 @@ class Req115 extends Drive115 {
     return { file_id, videos };
   }
 
-  static handleRename(files, cid, { rename, noTxt, zhTxt, crackTxt, zh, crack }) {
-    rename = rename.replaceAll("$zh", zh ? zhTxt : "");
-    rename = rename.replaceAll("$crack", crack ? crackTxt : "");
+  static handleRename(files, cid, { rename, renameTxt, zh, crack }) {
+    rename = rename.replaceAll("$zh", zh ? renameTxt.zh : "");
+    rename = rename.replaceAll("$crack", crack ? renameTxt.crack : "");
     rename = rename.trim();
 
     const renameObj = { [cid]: rename };
@@ -336,6 +336,7 @@ class Req115 extends Drive115 {
       return acc;
     }, {});
 
+    const noTxt = renameTxt.no;
     for (const [ico, items] of Object.entries(icoMap)) {
       if (items.length === 1) {
         renameObj[items[0].fid] = `${rename}.${ico}`;
@@ -392,10 +393,7 @@ class Req115 extends Drive115 {
     return this.upload({ ...res, filename, file });
   }
 
-  static async handleSmartOffline(
-    { code, dir, regex, verifyOptions, rename, noTxt, zhTxt, crackTxt, tags, clean, cover },
-    magnets,
-  ) {
+  static async handleSmartOffline({ code, dir, regex, verifyOptions, rename, renameTxt, tags, clean, cover }, magnets) {
     const cid = await this.generateCid(dir);
     if (!cid) return { state: "error", msg: `${code} 获取目录失败` };
 
@@ -431,7 +429,7 @@ class Req115 extends Drive115 {
       res.state = "success";
       res.msg = `${code} 离线成功`;
 
-      if (rename) this.handleRename(videos, file_id, { rename, noTxt, zhTxt, crackTxt, zh, crack });
+      if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack });
       if (tags.length) this.handleTags(videos, tags);
       if (clean) await this.handleClean(videos, file_id);
       if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);

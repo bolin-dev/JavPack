@@ -1,8 +1,5 @@
 class Offline {
   static defaultOptions = {
-    noTxt: ".${no}",
-    zhTxt: "[中字]",
-    crackTxt: "[破解]",
     tags: ["genres", "actors"],
     clean: true,
     cover: true,
@@ -20,6 +17,12 @@ class Offline {
     filter: ({ s }) => s > 314572800,
     clean: true,
     max: 10,
+  };
+
+  static defaultRenameTxt = {
+    no: ".${no}",
+    zh: "[中字]",
+    crack: "[破解]",
   };
 
   static parseVar(txt, params, rep = "") {
@@ -75,16 +78,18 @@ class Offline {
       });
   }
 
-  static parseAction({ magnetOptions = {}, verifyOptions = {}, ...options }, details) {
+  static parseAction({ magnetOptions = {}, verifyOptions = {}, renameTxt = {}, ...options }, details) {
     options = { ...this.defaultOptions, ...options };
     magnetOptions = { ...this.defaultMagnetOptions, ...magnetOptions };
     verifyOptions = { ...this.defaultVerifyOptions, ...verifyOptions };
+    renameTxt = { ...this.defaultRenameTxt, ...renameTxt };
     const { cover, rename, tags } = options;
 
     return {
       ...options,
       magnetOptions,
       verifyOptions,
+      renameTxt,
       code: details.code,
       regex: details.regex,
       cover: cover ? details.cover : cover,
