@@ -25,16 +25,19 @@
   const pc = searchParams.get("pickcode");
   if (!pc) return;
 
-  const turnNearby = () => {
-    const curr = document.querySelector("#js-video_list > li.hover");
-    const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
-    location.href = nearby.querySelector("a").href;
-  };
+  const smartDel = async ({ file_id, parent_id }) => {
+    const { data } = await Req115.videos(parent_id);
 
-  const smartDel = ({ file_id, parent_id }) => {
+    const fid = data.length === 1 ? parent_id : file_id;
+    await Req115.rbDelete([fid]);
+
     const videos = document.querySelectorAll("#js-video_list > li");
-    if (videos.length === 1) return Req115.rbDelete([parent_id]).then(window.close);
-    Req115.rbDelete([file_id]).then(turnNearby);
+    if (videos.length === 1) return window.close();
+
+    const curr = [...videos].filter((item) => item.classList.contains("hover"));
+    const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
+    curr.remove();
+    nearby.querySelector("a").click();
   };
 
   const delNodeId = "x-del";
@@ -42,9 +45,6 @@
   GM_addStyle(`
   #${delNodeId} {
     background: rgb(175, 23, 0);
-  }
-  #js_common_mini-dialog {
-    display: none !important;
   }
   `);
 
