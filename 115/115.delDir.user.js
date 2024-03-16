@@ -11,56 +11,45 @@
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         self
 // @connect         115.com
-// @run-at          document-start
+// @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           window.close
-// @grant           GM_addStyle
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
 (function () {
-  const { searchParams } = new URL(location);
-  const pc = searchParams.get("pickcode");
-  if (!pc) return;
+  const smartDel = async ({ target }) => {
+    const { searchParams } = new URL(location);
+    const pc = searchParams.get("pickcode");
+    if (!pc) return;
 
-  const smartDel = async ({ file_id, parent_id }) => {
+    target.textContent = "请求中...";
+    target.style.pointerEvents = "none";
+
+    const { file_id, parent_id } = await Req115.filesVideo(pc);
     const { data } = await Req115.videos(parent_id);
 
     const fid = data.length === 1 ? parent_id : file_id;
     await Req115.rbDelete([fid]);
 
+    target.textContent = "删除";
+    target.style.pointerEvents = "auto";
+
     const videos = document.querySelectorAll("#js-video_list > li");
     if (videos.length === 1) return window.close();
 
-    const curr = [...videos].filter((item) => item.classList.contains("hover"));
+    const curr = [...videos].find((item) => item.classList.contains("hover"));
     const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
     curr.remove();
     nearby.querySelector("a").click();
   };
 
-  const delNodeId = "x-del";
-
-  GM_addStyle(`
-  #${delNodeId} {
-    background: rgb(175, 23, 0);
-  }
-  `);
-
   const delNode = document.createElement("a");
-  delNode.id = delNodeId;
   delNode.textContent = "删除";
   delNode.className = "btn-opendir";
   delNode.href = "javascript:void(0);";
-
-  delNode.addEventListener("click", ({ target }) => {
-    target.textContent = "请求中...";
-    target.style.pointerEvents = "none";
-    Req115.filesVideo(pc).then(smartDel);
-  });
-
-  document.addEventListener("DOMContentLoaded", ({ target }) => {
-    target.querySelector(".vt-headline").insertAdjacentElement("beforeend", delNode);
-  });
+  delNode.addEventListener("click", smartDel);
+  document.querySelector(".vt-headline")?.insertAdjacentElement("beforeend", delNode);
 })();
