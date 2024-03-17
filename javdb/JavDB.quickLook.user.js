@@ -307,8 +307,8 @@
     if (!videoActive && !videoPaused) video.pause();
   }
 
-  const callback = (mutationsList) => {
-    for (const { target } of mutationsList) {
+  const callback = (mutationList) => {
+    for (const { target } of mutationList) {
       if (target.classList.contains("modal")) isActive = target.classList.contains("is-active");
       controlVideo();
     }
