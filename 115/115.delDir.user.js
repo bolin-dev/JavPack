@@ -28,7 +28,7 @@
     target.textContent = "请求中...";
     target.style.pointerEvents = "none";
 
-    const { file_id, parent_id } = await Req115.filesVideo(pc);
+    const { parent_id, file_id } = await Req115.filesVideo(pc);
     const { data } = await Req115.videos(parent_id);
 
     const fid = data.length === 1 ? parent_id : file_id;
@@ -40,7 +40,7 @@
     const videos = document.querySelectorAll("#js-video_list > li");
     if (videos.length === 1) return window.close();
 
-    const curr = [...videos].find((item) => item.classList.contains("hover"));
+    const curr = [...videos].find((video) => video.classList.contains("hover"));
     const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
     curr.remove();
     nearby.querySelector("a").click();
