@@ -50,6 +50,16 @@
   const videoList = document.querySelector("#js-video_list");
   if (!videoList) return;
 
+  const fullscreen = document.querySelector(".player-h5 .bar-side .btn-opt[rel='fullscreen']");
+
+  document.addEventListener("keyup", ({ code }) => {
+    if (code === "KeyF") return fullscreen?.click();
+
+    const curr = videoList.querySelector("li.hover");
+    if (code === "BracketRight") return curr.nextElementSibling?.querySelector("a").click();
+    if (code === "BracketLeft") return curr.previousElementSibling?.querySelector("a").click();
+  });
+
   const { searchParams } = new URL(location);
   const pickcode = searchParams.get("pickcode");
   const cid = searchParams.get("cid");
