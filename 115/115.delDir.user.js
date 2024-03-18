@@ -51,5 +51,9 @@
   delNode.className = "btn-opendir";
   delNode.href = "javascript:void(0);";
   delNode.addEventListener("click", smartDel);
+
   document.querySelector(".vt-headline")?.insertAdjacentElement("beforeend", delNode);
+  document.addEventListener("keyup", ({ code }) => {
+    if (code === "Delete") delNode.click();
+  });
 })();
