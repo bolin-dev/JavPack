@@ -15,10 +15,16 @@ class Util {
 
   static codeParse(code) {
     const codes = code.split(/-|_/);
+    const sep = "\\s?(0|-|_){0,2}\\s?";
+
+    let pattern = codes.join(sep);
+    if (/^fc2/i.test(code)) pattern = `${codes[0]}${sep}(ppv)?${sep}${codes.at(-1)}`;
+    if (/^heyzo/i.test(code)) pattern = `${codes[0]}${sep}(\\w){0,2}${sep}${codes.at(-1)}`;
+
     return {
       codes,
       prefix: codes[0],
-      regex: new RegExp(`(?<![a-z])${codes.join("\\s?(0|-|_){0,2}\\s?")}(?!\\d)`, "i"),
+      regex: new RegExp(`(?<![a-z])${pattern}(?!\\d)`, "i"),
     };
   }
 
