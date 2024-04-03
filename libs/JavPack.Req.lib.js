@@ -43,6 +43,7 @@ class Req {
 
     return new Promise((resolve) => {
       GM_xmlhttpRequest({
+        onerror: () => resolve(false),
         ontimeout: () => resolve(false),
         onload: ({ status, finalUrl, response }) => {
           if (status >= 400) resolve(false);
