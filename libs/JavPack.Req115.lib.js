@@ -264,6 +264,11 @@ class Req115 extends Drive115 {
     return this.filesByOrder(cid, { type: 4 });
   }
 
+  // Get subrip list
+  static subrips(cid) {
+    return this.filesByOrder(cid, { suffix: "srt" });
+  }
+
   // Get folder list
   static folders(cid) {
     return this.filesByOrder(cid).then((res) => {
