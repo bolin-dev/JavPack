@@ -323,12 +323,14 @@ class Req115 extends Drive115 {
     return { file_id, videos };
   }
 
-  static handleRename(files, cid, { rename, renameTxt, zh, crack }) {
-    rename = rename.replaceAll("$zh", zh ? renameTxt.zh : "");
+  static handleRename(files, cid, { rename, renameTxt, zh, crack, subs }) {
+    rename = rename.replaceAll("$zh", zh || subs.length ? renameTxt.zh : "");
     rename = rename.replaceAll("$crack", crack ? renameTxt.crack : "");
     rename = rename.trim();
 
+    files = [...files, ...subs];
     const renameObj = { [cid]: rename };
+
     if (files.length === 1) {
       const { fid, ico } = files[0];
       renameObj[fid] = `${rename}.${ico}`;
@@ -434,7 +436,8 @@ class Req115 extends Drive115 {
       res.state = "success";
       res.msg = `${code} 离线成功`;
 
-      if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack });
+      const subs = await this.subrips(file_id);
+      if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
       if (tags.length) this.handleTags(videos, tags);
       if (clean) await this.handleClean(videos, file_id);
       if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);
