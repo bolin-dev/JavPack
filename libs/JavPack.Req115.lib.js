@@ -439,7 +439,7 @@ class Req115 extends Drive115 {
       const subs = await this.subrips(file_id);
       if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
       if (tags.length) this.handleTags(videos, tags);
-      if (clean) await this.handleClean(videos, file_id);
+      if (clean) await this.handleClean([...videos, ...subs], file_id);
       if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);
 
       break;
