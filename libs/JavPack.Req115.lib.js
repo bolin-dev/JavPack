@@ -436,7 +436,7 @@ class Req115 extends Drive115 {
       res.state = "success";
       res.msg = `${code} 离线成功`;
 
-      const subs = await this.subrips(file_id);
+      const { data: subs } = await this.subrips(file_id);
       if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
       if (tags.length) this.handleTags(videos, tags);
       if (clean) await this.handleClean([...videos, ...subs], file_id);
