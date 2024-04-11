@@ -83,7 +83,7 @@ function listenClick(onTabClose) {
 
     const domStr = `
     <div class="panel-block">
-      <strong>115资源:</strong>&nbsp;<span class="value" id="${DOM_ID}">查询中...</span>
+      <strong><a href="${VOID}">115资源</a>:</strong>&nbsp;<span class="value" id="${DOM_ID}">查询中...</span>
     </div>
     `;
 
@@ -105,34 +105,43 @@ function listenClick(onTabClose) {
 
   const matchResNode = createDom();
   const { codes, regex } = Util.codeParse(code);
+  const matchResTarget = matchResNode.parentNode.querySelector("a");
 
   const matchCode = () => {
-    return Req115.videosSearch(codes.join(" ")).then(({ state, data }) => {
-      if (!state) {
-        matchResNode.innerHTML = "查询失败，检查登录状态";
-        return;
-      }
+    if (matchResTarget.textContent === "资源匹配") return;
+    matchResTarget.textContent = "资源匹配";
 
-      data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
-      GM_setValue(code, data);
+    return Req115.videosSearch(codes.join(" "))
+      .then(({ state, data }) => {
+        if (!state) {
+          matchResNode.innerHTML = "查询失败，检查登录状态";
+          return;
+        }
 
-      if (!data.length) {
-        matchResNode.innerHTML = "暂无资源";
-        return;
-      }
+        data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+        GM_setValue(code, data);
 
-      matchResNode.innerHTML = data.reduce(
-        (acc, { pc, cid, t, n }) =>
-          `${acc}
+        if (!data.length) {
+          matchResNode.innerHTML = "暂无资源";
+          return;
+        }
+
+        matchResNode.innerHTML = data.reduce(
+          (acc, { pc, cid, t, n }) =>
+            `${acc}
           <a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
-        "",
-      );
-    });
+          "",
+        );
+      })
+      .finally(() => {
+        matchResTarget.textContent = "115资源";
+      });
   };
 
   matchCode();
   listenClick(matchCode);
   unsafeWindow["reMatch"] = matchCode;
+  matchResTarget.addEventListener("click", matchCode);
   window.addEventListener("beforeunload", () => MatchChannel.postMessage(PATHNAME.split("/").pop()));
 })();
 
