@@ -299,7 +299,7 @@ function listenClick(onTabClose) {
   window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
   MatchChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
-  const matchPrefix = (target) => {
+  const matchPrefix = async (target) => {
     const item = target.closest(".item");
     const mid = item.querySelector("a").href.split("/").pop();
     const code = item.querySelector(".video-title strong").textContent;
@@ -307,7 +307,9 @@ function listenClick(onTabClose) {
 
     GM_deleteValue(code);
     GM_deleteValue(prefix);
-    QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`)).then(() => MatchChannel.postMessage(mid));
+    await QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
+    await Req115.sleep(0.5);
+    MatchChannel.postMessage(mid);
   };
 
   listenClick(matchPrefix);
