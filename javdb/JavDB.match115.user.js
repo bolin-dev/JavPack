@@ -307,7 +307,7 @@ function listenClick(onTabClose) {
 
     GM_deleteValue(code);
     GM_deleteValue(prefix);
-    QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
+    QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`)).then(() => MatchChannel.postMessage(mid));
   };
 
   listenClick(matchPrefix);
