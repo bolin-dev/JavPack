@@ -256,7 +256,7 @@ async function handleClick(e, actions, dom, currIdx = 0) {
       handleVerify();
     }
 
-    const listener = GM_addValueChangeListener(VERIFY_KEY, (name, old_value, new_value) => {
+    const listener = GM_addValueChangeListener(VERIFY_KEY, (_name, _old_value, new_value) => {
       if (new_value !== VERIFY_FAILED && new_value !== VERIFY_VERIFIED) return;
       GM_removeValueChangeListener(listener);
       if (new_value === VERIFY_FAILED) return actionOver(checkRes);
