@@ -154,8 +154,11 @@ function listenClick(onTabClose) {
   ${TARGET_SELECTOR} .video-title .${TARGET_CLASS}.is-normal:hover {
     text-decoration: none;
   }
-  ${TARGET_SELECTOR} .video-title:has(.is-warning, .is-info, .is-success) {
+  ${TARGET_SELECTOR} .video-title:has(.is-danger, .is-warning, .is-info, .is-success) {
     font-weight: bold;
+  }
+  ${TARGET_SELECTOR}:has(.video-title .is-danger) {
+    border: 0.375rem solid #ee1742;
   }
   ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border: 0.375rem solid #ffd257;
@@ -165,6 +168,9 @@ function listenClick(onTabClose) {
   }
   ${TARGET_SELECTOR}:has(.video-title .is-success) {
     border: 0.375rem solid #34a873;
+  }
+  [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-danger) {
+    border-color: #f14668;
   }
   [data-theme="dark"] ${TARGET_SELECTOR}:has(.video-title .is-warning) {
     border-color: #ffe08a;
@@ -262,13 +268,14 @@ function listenClick(onTabClose) {
       if (res.length) {
         const zhItem = res.find((item) => Magnet.zhReg.test(item.n));
         const crackItem = res.find((item) => Magnet.crackReg.test(item.n));
+        const isBoth = zhItem && crackItem && zhItem.fid === crackItem.fid;
         const currItem = zhItem ?? crackItem ?? res[0];
 
         pc = currItem.pc;
         cid = currItem.cid;
         textContent = "已匹配";
         title = `[${currItem.t}] ${currItem.n}`;
-        className = zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
+        className = isBoth ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
       }
 
       tag.title = title;
