@@ -10,12 +10,12 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqTrailer.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @connect         my.cdn.tokyo-hot.com
 // @connect         caribbeancom.com
 // @connect         pacopacomama.com
-// @connect         javspyl.eu.org
+// @connect         tokyo-hot.com
 // @connect         10musume.com
 // @connect         muramura.tv
+// @connect         vercel.app
 // @connect         1pondo.tv
 // @connect         heyzo.com
 // @connect         self
@@ -64,8 +64,8 @@ function useVideo() {
     video.src = src;
     video.title = "";
     video.poster = poster;
-    video.controls = true;
     video.preload = "none";
+    video.controls = true;
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
     video.addEventListener("keydown", handleKeydown);
@@ -74,20 +74,20 @@ function useVideo() {
   };
 }
 
-const guessStudio = ReqTrailer.useStudio();
 const createVideo = useVideo();
+const guessStudio = ReqTrailer.useStudio();
 
 (function () {
   const { pathname: PATHNAME } = location;
   if (!PATHNAME.startsWith("/v/")) return;
 
   const container = document.querySelector(".column-video-cover");
-  const mid = `trailer_${PATHNAME.split("/").pop()}`;
   if (!container) return;
 
+  const mid = `trailer_${PATHNAME.split("/").pop()}`;
+
   const setTrailer = (trailer) => {
-    if (!trailer) return;
-    if (container.querySelector("video")) return;
+    if (!trailer || container.querySelector("video")) return;
 
     localStorage.setItem(mid, trailer);
     const cover = container.querySelector("img");
@@ -113,9 +113,9 @@ const createVideo = useVideo();
   if (trailer) return setTrailer(trailer);
 
   const code = document.querySelector(".first-block .value").textContent;
-  ReqTrailer.javspyl(code).then(setTrailer);
-  if (!isUncensored()) return;
+  ReqTrailer.dmm(code).then(setTrailer);
 
+  if (!isUncensored()) return;
   const studio = getStudio();
   if (studio) guessStudio(code, studio).then(setTrailer);
 })();
@@ -274,12 +274,12 @@ const createVideo = useVideo();
       };
     };
 
-    const LOAD_SPYL = "x-loading-javspyl";
+    const LOAD_DMM = "x-loading-dmm";
     const LOAD_DB = "x-loading-javdb";
 
     return (elem) => {
       const { classList, dataset } = elem;
-      if (classList.contains(LOAD_SPYL) || classList.contains(LOAD_DB)) return;
+      if (classList.contains(LOAD_DMM) || classList.contains(LOAD_DB)) return;
 
       let { trailer, cover, mid, code } = dataset;
       if (trailer) return setVideo(elem, trailer, cover);
@@ -315,12 +315,12 @@ const createVideo = useVideo();
         if (elem === currElem) setVideo(elem, trailer, cover);
       };
 
-      classList.add(LOAD_SPYL);
+      classList.add(LOAD_DMM);
       classList.add(LOAD_DB);
 
-      ReqTrailer.javspyl(code)
+      ReqTrailer.dmm(code)
         .then(setTrailer)
-        .finally(() => classList.remove(LOAD_SPYL));
+        .finally(() => classList.remove(LOAD_DMM));
 
       ReqTrailer.tasks(`${location.origin}/v/${mid}`, [getDetails])
         .then(({ trailer, isUncensored, studio }) => {
