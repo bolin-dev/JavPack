@@ -1,13 +1,11 @@
 class ReqTrailer extends Req {
-  static javspyl(ID) {
+  static dmm(code) {
     return this.request({
-      method: "POST",
-      url: "https://api.javspyl.eu.org/api/",
-      data: { ID },
-      headers: { origin: "https://javspyl.eu.org" },
+      url: `https://jav-pack-apis.vercel.app/api/trailer?code=${code}`,
+      responseType: "json",
     }).then((res) => {
-      const url = res?.info?.url;
-      if (url && !/\.m3u8?$/i.test(url)) return res.msg;
+      const url = res?.src;
+      if (url && !/\.m3u8?$/i.test(url)) return url;
     });
   }
 
