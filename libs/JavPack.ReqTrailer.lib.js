@@ -4,8 +4,8 @@ class ReqTrailer extends Req {
       url: `https://jav-pack-apis.vercel.app/api/trailer?code=${code}`,
       responseType: "json",
     }).then((res) => {
-      const url = res?.src;
-      if (url && !/\.m3u8?$/i.test(url)) return url;
+      const trailer = res?.src;
+      if (trailer && !/\.m3u8?$/i.test(trailer)) return trailer;
     });
   }
 
