@@ -1,10 +1,4 @@
 class ReqDB extends Req {
-  static get sKey() {
-    return atob(
-      "NzFjZjI3YmIzYzBiY2RmMjA3YjY0YWJlY2RkYzk3MDA5OGM3NDIxZWU3MjAzYjljZGFlNTQ0Nzg0NzhhMTk5ZTdkNWE2ZTFhNTc2OTExMjNjMWE5MzFjMDU3ODQyZmI3M2JhM2IzYzgzYmNkNjljMTdjY2YxNzQwODFlM2Q4YWE=",
-    );
-  }
-
   static signature() {
     const TS_KEY = "TS";
     const SIGN_KEY = "SIGN";
@@ -16,7 +10,9 @@ class ReqDB extends Req {
     GM_setValue(TS_KEY, CURR);
     ts = CURR.toString();
 
-    const secret = md5(`${ts}${this.sKey}`);
+    const secret = md5(
+      `${ts}71cf27bb3c0bcdf207b64abecddc970098c7421ee7203b9cdae54478478a199e7d5a6e1a57691123c1a931c057842fb73ba3b3c83bcd69c17ccf174081e3d8aa`,
+    );
     const sign = `${ts}.lpw6vgqzsp.${secret}`;
 
     GM_setValue(SIGN_KEY, sign);
