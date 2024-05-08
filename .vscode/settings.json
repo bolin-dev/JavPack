@@ -15,7 +15,8 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "cSpell.words": [
+  "cSpell.ignoreWords": [
+    "lpw6vgqzsp",
     "accessid",
     "aliyuncs",
     "btdig",
