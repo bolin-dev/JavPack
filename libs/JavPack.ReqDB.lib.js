@@ -1,4 +1,6 @@
 class ReqDB extends Req {
+  static limit = 24;
+
   static signature() {
     const TS_KEY = "TS";
     const SIGN_KEY = "SIGN";
@@ -19,34 +21,81 @@ class ReqDB extends Req {
     return sign;
   }
 
-  static req(path) {
+  static req(details) {
+    if (typeof details === "string") details = { url: details };
+    details.url = `https://api.hechuangxinxi.xyz/api/${details.url}`;
+
     return this.request({
-      url: `https://api.hechuangxinxi.xyz/api/${path}`,
-      headers: { jdsignature: this.signature() },
+      ...details,
       responseType: "json",
+      headers: { jdSignature: this.signature() },
     });
   }
 
+  // 佳片推荐
+  static recommend() {
+    return this.req("v1/movies/recommend?period=-1");
+  }
+
+  // 影片详情
   static movies(id) {
     return this.req(`v4/movies/${id}`);
   }
 
+  // 磁链下载
   static magnets(id) {
     return this.req(`v1/movies/${id}/magnets`);
   }
 
-  static reviews(id) {
-    return this.req(`v1/movies/${id}/reviews?sort_by=hotly&page=1&limit=24`);
+  // 短评
+  static reviews(id, page = 1, sort_by = "hotly") {
+    return this.req({
+      url: `v1/movies/${id}/reviews`,
+      params: {
+        page,
+        sort_by,
+        limit: this.limit,
+      },
+    });
   }
 
-  static related(id) {
-    return this.req(`v1/lists/related?movie_id=${id}&page=1&limit=24`);
+  // 相关清单
+  static related(movie_id, page = 1) {
+    return this.req({
+      url: `v1/lists/related`,
+      params: {
+        page,
+        movie_id,
+        limit: this.limit,
+      },
+    });
   }
 
-  static search(q) {
-    return this.req(
-      `v2/search?q=${q}&from_recent=false&type=movie&movie_type=all&movie_sort_by=relevance&movie_filter_by=all&page=1&limit=24`,
-    );
+  // 影片搜索
+  static search(q, page = 1) {
+    return this.req({
+      url: "v2/search",
+      params: {
+        q,
+        page,
+        type: "movie",
+        limit: this.limit,
+        movie_type: "all",
+        from_recent: false,
+        movie_filter_by: "all",
+        movie_sort_by: "relevance",
+      },
+    });
+  }
+
+  // 排行榜 FC2
+  static rankings(period = "daily") {
+    return this.req(`v1/rankings?type=4&period=${period}`);
+  }
+
+  // 排行榜 热播
+  static playback(period = "daily", filter_by = "high_score") {
+    return this.req(`v1/rankings/playback?period=${period}&filter_by=${filter_by}`);
   }
 }
 
