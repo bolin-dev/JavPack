@@ -42,7 +42,7 @@
   const parseNode = (node) => {
     const titleNode = node.querySelector(".video-title");
     const code = titleNode.querySelector("strong").textContent;
-    const title = titleNode.textContent.replace(code, "").trim();
+    const title = titleNode.textContent.split(code).pop().trim();
     const score = node
       .querySelector(".score .value")
       .textContent.replace(/\u00A0/g, "")
