@@ -2,10 +2,7 @@ class ReqTrailer extends Req {
   static dmm(code) {
     return this.request({
       url: `https://jav-pack-apis.vercel.app/api/trailer?code=${code}`,
-      responseType: "json",
-    }).then((res) => {
-      const trailer = res?.src;
-      if (trailer && !/\.m3u8?$/i.test(trailer)) return trailer;
+      responseType: "text",
     });
   }
 
