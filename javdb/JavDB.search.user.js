@@ -16,13 +16,16 @@
 // ==/UserScript==
 
 (function () {
+  const IS_SEARCH = location.pathname.startsWith("/search");
+  const IS_DETAIL = location.pathname.startsWith("/v/");
+
   document.addEventListener("keydown", async (e) => {
     if (e.ctrlKey && e.code === "Slash") {
       const txt = await navigator.clipboard.readText();
       if (!txt) return;
 
       const url = `${location.origin}/search?q=${txt}`;
-      if (location.pathname !== "/search") return Grant.openTab(url);
+      if (!IS_SEARCH && !IS_DETAIL) return Grant.openTab(url);
       location.href = url;
     }
   });
