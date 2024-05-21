@@ -62,14 +62,14 @@ class Req {
   }
 
   static async tasks(res, steps) {
-    for (const step of steps) {
-      res = await this.request(res);
-      if (!res) break;
-
-      if (step) {
+    try {
+      for (const step of steps) {
+        res = await this.request(res);
         res = step(res);
         if (!res) break;
       }
+    } catch (err) {
+      return Promise.reject(err);
     }
     return res;
   }
