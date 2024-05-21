@@ -193,15 +193,19 @@
     const trailer = localStorage.getItem(`trailer_${mid}`);
     if (details) return createDom(JSON.parse(details), trailer);
 
-    Req.tasks(href, [parseElem]).then((res) => {
-      if (!res) {
-        modalBody.innerHTML = "获取失败";
-        return;
-      }
+    Req.tasks(href, [parseElem])
+      .then((res) => {
+        if (!res) {
+          modalBody.innerHTML = "获取失败";
+          return;
+        }
 
-      localStorage.setItem(detailsMid, JSON.stringify(res));
-      if (href === modal.dataset.href) createDom(res, trailer);
-    });
+        localStorage.setItem(detailsMid, JSON.stringify(res));
+        if (href === modal.dataset.href) createDom(res, trailer);
+      })
+      .catch(() => {
+        modalBody.innerHTML = "获取失败";
+      });
   }
 
   function parseElem(dom) {
