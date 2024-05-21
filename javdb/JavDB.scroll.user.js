@@ -38,6 +38,7 @@
   container.insertAdjacentElement("afterend", loading);
 
   const useCallback = () => {
+    let res;
     let next = nextUrl;
     let isLoading = false;
 
@@ -52,7 +53,15 @@
 
       isLoading = true;
       loading.textContent = "加载中...";
-      const res = await Req.tasks(next, [parseDom]);
+
+      try {
+        res = await Req.tasks(next, [parseDom]);
+      } catch (_) {
+        isLoading = false;
+        loading.textContent = "加载失败，滚动以重试";
+        return;
+      }
+
       isLoading = false;
 
       if (!res) {
