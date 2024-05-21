@@ -13,5 +13,6 @@
     "stylelint": "^15.11.0",
     "stylelint-config-recess-order": "^4.4.0",
     "stylelint-config-standard": "^34.0.0"
-  }
+  },
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
 }
