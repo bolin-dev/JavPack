@@ -41,13 +41,19 @@ class Req {
 
     if (details.method === "GET") details.responseType ??= "document";
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
-        onerror: () => resolve(false),
-        ontimeout: () => resolve(false),
+        ontimeout: () => reject(new Error("Request timeout")),
+        onerror: (err) => reject(new Error(`Request error: ${err.statusText}`)),
         onload: ({ status, finalUrl, response }) => {
-          if (status >= 400) resolve(false);
-          if (details.method === "HEAD") resolve(finalUrl);
+          if (status >= 400) {
+            reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
+          }
+
+          if (details.method === "HEAD") {
+            finalUrl.includes("removed") ? reject(new Error("Removed content")) : resolve(finalUrl);
+          }
+
           resolve(response);
         },
         ...details,
