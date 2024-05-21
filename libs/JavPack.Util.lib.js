@@ -1,16 +1,18 @@
 class Util {
+  static CD_KEY = "CD";
+
   static upLocal() {
     const date = new Date().getDate();
-    if (localStorage.getItem("CD") === date.toString()) return;
+    if (localStorage.getItem(this.CD_KEY) === date.toString()) return;
     localStorage.clear();
-    localStorage.setItem("CD", date);
+    localStorage.setItem(this.CD_KEY, date);
   }
 
   static upStore() {
     const date = new Date().getDate();
-    if (GM_getValue("CD") === date) return;
+    if (GM_getValue(this.CD_KEY) === date) return;
     GM_listValues().forEach((key) => GM_deleteValue(key));
-    GM_setValue("CD", date);
+    GM_setValue(this.CD_KEY, date);
   }
 
   static codeParse(code) {
