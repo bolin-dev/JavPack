@@ -3,15 +3,15 @@ class Req {
 
   static request(details) {
     if (typeof details === "string") details = { url: details };
+    if (!details.url) throw new Error("URL is required");
     details = { method: "GET", timeout: 10000, ...details };
 
     if (details.params) {
       const url = new URL(details.url);
       const searchParams = new URLSearchParams(details.params);
 
-      url.search = searchParams.toString();
+      searchParams.forEach((val, key) => url.searchParams.append(key, val));
       details.url = url.toString();
-
       delete details.params;
     }
 
@@ -22,17 +22,14 @@ class Req {
         const formData = new FormData();
 
         for (const [key, val] of Object.entries(details.data)) {
-          if (Array.isArray(val)) {
-            val.forEach((v, i) => formData.append(`${key}[${i}]`, v));
+          if (!Array.isArray(val) && !this.isPlainObj(val)) {
+            formData.append(key, val);
             continue;
           }
 
-          if (this.isPlainObj(val)) {
-            for (const [k, v] of Object.entries(val)) formData.append(`${key}[${k}]`, v);
-            continue;
+          for (const k in val) {
+            if (Object.hasOwnProperty.call(val, k)) formData.append(`${key}[${k}]`, val[k]);
           }
-
-          formData.append(key, val);
         }
 
         details.data = formData;
@@ -64,13 +61,15 @@ class Req {
   static async tasks(res, steps) {
     try {
       for (const step of steps) {
+        if (!res) break;
         res = await this.request(res);
         res = step(res);
-        if (!res) break;
       }
+      if (!res) throw new Error("Task failed");
     } catch (err) {
-      return Promise.reject(err);
+      throw new Error(`Task failed: ${err.message}`);
     }
+
     return res;
   }
 }
