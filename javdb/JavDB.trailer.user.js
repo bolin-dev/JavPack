@@ -101,10 +101,15 @@ const guessStudio = ReqTrailer.useStudio();
 
       e.preventDefault();
       e.stopPropagation();
-
-      video.style.zIndex = 11;
       video.focus();
-      video.paused ? video.play() : video.pause();
+
+      if (video.paused) {
+        video.style.zIndex = 11;
+        return video.play();
+      }
+
+      video.style.zIndex = "auto";
+      video.pause();
     });
   };
 
@@ -115,12 +120,13 @@ const guessStudio = ReqTrailer.useStudio();
   if (trailer) return setTrailer(trailer);
 
   const code = document.querySelector(".first-block .value").textContent;
+
   trailer = ReqTrailer.heydouga(code);
   if (trailer) return setTrailer(trailer);
 
   getDmm(code).then(setTrailer);
-
   if (!isUncensored()) return;
+
   const studio = getStudio();
   if (studio) guessStudio(code, studio).then(setTrailer);
 })();
