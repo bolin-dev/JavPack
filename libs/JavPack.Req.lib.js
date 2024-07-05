@@ -11,8 +11,10 @@ class Req {
     if (params) {
       const url = new URL(details.url);
       const searchParams = new URLSearchParams(params);
+
       searchParams.forEach((val, key) => url.searchParams.append(key, val));
       details.url = url.toString();
+
       delete details.params;
     }
 
@@ -35,9 +37,7 @@ class Req {
 
         details.data = formData;
       }
-    } else if (method === "GET") {
-      details.responseType ??= "document";
-    }
+    } else if (method === "GET") details.responseType ??= "document";
 
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({

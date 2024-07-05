@@ -13,48 +13,38 @@ class ReqTrailer extends Req {
   ];
 
   static async getCid(code) {
-    try {
-      const res = await this.request(`https://jav.land/en/id_search.php?keys=${code}`);
-      const target = res.querySelector(".videotextlist");
-      if (!target) throw new Error("Not found info");
+    const res = await this.request(`https://jav.land/en/id_search.php?keys=${code}`);
 
-      const cid = target.querySelector("tr td:nth-child(2)")?.textContent;
-      if (!cid) throw new Error("Not found cid");
+    const target = res.querySelector(".videotextlist");
+    if (!target) throw new Error("Not found target");
 
-      return cid;
-    } catch (err) {
-      throw new Error(`Cid search failed: ${err.message}`);
-    }
+    const cid = target.querySelector("tr td:nth-child(2)")?.textContent;
+    if (!cid) throw new Error("Not found cid");
+
+    return cid;
   }
 
   static async getDmm(cid, { path, selector, reg }) {
-    try {
-      const res = await this.request({
-        url: `https://www.dmm.co.jp/${path}/=/cid=${cid}`,
-        cookie: "age_check_done=1",
-      });
-      const target = res.querySelector(selector)?.textContent;
-      if (!target) throw new Error("Not found target");
+    const res = await this.request({
+      url: `https://www.dmm.co.jp/${path}/=/cid=${cid}`,
+      cookie: "age_check_done=1",
+    });
 
-      const match = reg.exec(target);
-      if (!match) throw new Error("Not found match");
+    const target = res.querySelector(selector)?.textContent;
+    if (!target) throw new Error("Not found target");
 
-      const trailer = match[1];
-      if (!trailer) throw new Error("Not found trailer");
+    const match = reg.exec(target);
+    if (!match) throw new Error("Not found match");
 
-      return trailer.replace(/\\\//g, "/");
-    } catch (err) {
-      throw new Error(`DMM search failed: ${err.message}`);
-    }
+    const trailer = match[1];
+    if (!trailer) throw new Error("Not found trailer");
+
+    return trailer.replace(/\\\//g, "/");
   }
 
   static async dmm(code) {
-    try {
-      const cid = await this.getCid(code);
-      return Promise.any(this.DMM_OPTIONS.map((item) => this.getDmm(cid, item)));
-    } catch (err) {
-      throw new Error(err.message);
-    }
+    const cid = await this.getCid(code);
+    return Promise.any(this.DMM_OPTIONS.map((item) => this.getDmm(cid, item)));
   }
 
   static useStudio() {
