@@ -65,8 +65,8 @@ function useVideo() {
     video.src = src;
     video.title = "";
     video.poster = poster;
-    video.preload = "none";
     video.controls = true;
+    video.preload = "none";
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
     video.addEventListener("keydown", handleKeydown);
@@ -156,7 +156,7 @@ const guessStudio = ReqTrailer.useStudio();
   let currElem = null;
 
   function handleMouse(onHover) {
-    const interval = 250;
+    const interval = 200;
     const sensitivity = 0;
 
     let trackSpeedInterval = null;
@@ -228,7 +228,7 @@ const guessStudio = ReqTrailer.useStudio();
       }
 
       destroy(currElem);
-      onLeave(currElem);
+      onLeave();
       currElem = null;
     };
 
@@ -237,19 +237,21 @@ const guessStudio = ReqTrailer.useStudio();
       clearInterval(trackSpeedInterval);
     };
 
-    const onLeave = (elem) => {
-      const video = elem.querySelector("video") ?? document.querySelector(`${TARGET_SELECTOR} video`);
-      if (!video) return;
+    const onLeave = () => {
+      const videos = document.querySelectorAll(`${TARGET_SELECTOR} video`);
+      if (!videos.length) return;
 
-      video.classList.remove("fade-in");
-      setTimeout(() => video.remove(), 200);
+      videos.forEach((video) => {
+        video.classList.remove("fade-in");
+        setTimeout(() => video.remove(), 200);
+      });
     };
 
     const onOver = () => {
       if (!currElem) return;
 
       destroy(currElem);
-      onLeave(currElem);
+      onLeave();
       currElem = null;
     };
 
@@ -286,7 +288,7 @@ const guessStudio = ReqTrailer.useStudio();
     };
 
     const LOAD_DMM = "x-loading-dmm";
-    const LOAD_DB = "x-loading-javdb";
+    const LOAD_DB = "x-loading-db";
 
     return (elem) => {
       const { classList, dataset } = elem;
@@ -342,6 +344,5 @@ const guessStudio = ReqTrailer.useStudio();
     };
   }
 
-  const ovHover = handleHover();
-  handleMouse(ovHover);
+  handleMouse(handleHover());
 })();
