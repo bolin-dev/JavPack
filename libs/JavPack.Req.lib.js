@@ -4,24 +4,25 @@ class Req {
   static request(details) {
     if (typeof details === "string") details = { url: details };
     if (!details.url) throw new Error("URL is required");
+
     details = { method: "GET", timeout: 10000, ...details };
+    const { params, method, data } = details;
 
-    if (details.params) {
+    if (params) {
       const url = new URL(details.url);
-      const searchParams = new URLSearchParams(details.params);
-
+      const searchParams = new URLSearchParams(params);
       searchParams.forEach((val, key) => url.searchParams.append(key, val));
       details.url = url.toString();
       delete details.params;
     }
 
-    if (details.method === "POST") {
+    if (method === "POST") {
       details.responseType ??= "json";
 
-      if (this.isPlainObj(details.data)) {
+      if (this.isPlainObj(data)) {
         const formData = new FormData();
 
-        for (const [key, val] of Object.entries(details.data)) {
+        for (const [key, val] of Object.entries(data)) {
           if (!Array.isArray(val) && !this.isPlainObj(val)) {
             formData.append(key, val);
             continue;
@@ -34,20 +35,18 @@ class Req {
 
         details.data = formData;
       }
+    } else if (method === "GET") {
+      details.responseType ??= "document";
     }
-
-    if (details.method === "GET") details.responseType ??= "document";
 
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
         ontimeout: () => reject(new Error("Request timeout")),
         onerror: () => reject(new Error("Request error")),
         onload: ({ status, finalUrl, response }) => {
-          if (status >= 400) {
-            reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
-          }
+          if (status >= 400) reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
 
-          if (details.method === "HEAD") {
+          if (method === "HEAD") {
             finalUrl.includes("removed") ? reject(new Error("Removed content")) : resolve(finalUrl);
           }
 
@@ -59,17 +58,13 @@ class Req {
   }
 
   static async tasks(res, steps) {
-    try {
-      for (const step of steps) {
-        if (!res) break;
-        res = await this.request(res);
-        res = step(res);
-      }
-      if (!res) throw new Error("No result found");
-    } catch (err) {
-      throw new Error(`Task failed: ${err.message}`);
+    for (const step of steps) {
+      if (!res) break;
+      res = await this.request(res);
+      res = step(res);
     }
 
+    if (!res) throw new Error("No result found");
     return res;
   }
 }
