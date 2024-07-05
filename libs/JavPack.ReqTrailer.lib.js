@@ -49,6 +49,14 @@ class ReqTrailer extends Req {
     };
   }
 
+  static heydouga(code) {
+    const codes = code.split("-");
+    if (codes[0] !== "heydouga") return;
+
+    codes.shift();
+    return `https://sample.heydouga.com/contents/${codes.join("/")}/sample.mp4`;
+  }
+
   static useStudio() {
     const RES = ["720p", "1080p", "480p", "360p"];
     const trans = (sample) => RES.map((res) => `${sample}${res}.mp4`);
@@ -102,13 +110,5 @@ class ReqTrailer extends Req {
 
       if (list.length) return Promise.any(list.map((url) => this.request({ method: "HEAD", url })));
     };
-  }
-
-  static heydouga(code) {
-    const codes = code.split("-");
-    if (codes[0] !== "heydouga") return;
-
-    codes.shift();
-    return `https://sample.heydouga.com/contents/${codes.join("/")}/sample.mp4`;
   }
 }
