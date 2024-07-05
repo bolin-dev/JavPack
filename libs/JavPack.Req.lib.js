@@ -41,7 +41,7 @@ class Req {
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
         ontimeout: () => reject(new Error("Request timeout")),
-        onerror: (err) => reject(new Error(`Request error: ${err.statusText}`)),
+        onerror: () => reject(new Error("Request error")),
         onload: ({ status, finalUrl, response }) => {
           if (status >= 400) {
             reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
@@ -65,7 +65,7 @@ class Req {
         res = await this.request(res);
         res = step(res);
       }
-      if (!res) throw new Error("Task failed");
+      if (!res) throw new Error("No result found");
     } catch (err) {
       throw new Error(`Task failed: ${err.message}`);
     }
