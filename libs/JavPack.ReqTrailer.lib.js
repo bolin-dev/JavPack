@@ -47,6 +47,14 @@ class ReqTrailer extends Req {
     return Promise.any(this.DMM_OPTIONS.map((item) => this.getDmm(cid, item)));
   }
 
+  static async heydouga(code) {
+    const codes = code.split("-");
+    if (codes[0] !== "heydouga") throw new Error("Invalid code");
+
+    codes.shift();
+    return `https://sample.heydouga.com/contents/${codes.join("/")}/sample.mp4`;
+  }
+
   static useStudio() {
     const resolutions = ["720p", "1080p", "480p", "360p"];
     const transSample = (sample) => resolutions.map((res) => `${sample}${res}.mp4`);
