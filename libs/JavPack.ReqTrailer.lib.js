@@ -49,7 +49,7 @@ class ReqTrailer extends Req {
 
   static async heydouga(code) {
     const codes = code.split("-");
-    if (codes[0] !== "heydouga") throw new Error("Invalid code");
+    if (codes[0] !== "heydouga") return;
 
     codes.shift();
     return `https://sample.heydouga.com/contents/${codes.join("/")}/sample.mp4`;
