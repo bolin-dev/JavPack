@@ -1,8 +1,4 @@
 class ReqSprite extends Req {
-  static checkRemoved(url) {
-    if (!url.includes("removed.png")) return url;
-  }
-
   static blogjav(code) {
     return this.tasks({ url: "https://blogjav.net/", params: { s: code } }, [
       (dom) => {
@@ -21,7 +17,7 @@ class ReqSprite extends Req {
         img = img.replace("//t", "//img").replace("/thumbs/", "/images/");
         return { method: "HEAD", url: img };
       },
-      this.checkRemoved,
+      (url) => url,
     ]);
   }
 
@@ -39,6 +35,7 @@ class ReqSprite extends Req {
 
         let img = link.href;
         if (!img || img.includes(".mp4")) return;
+
         if (regex.test(img)) {
           img = img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
           return { method: "HEAD", url: img };
@@ -46,12 +43,13 @@ class ReqSprite extends Req {
 
         img = link.querySelector("img")?.src;
         if (!img || img.includes(".mp4")) return;
+
         if (regex.test(img)) {
           img = img.replace(".th.", ".");
           return { method: "HEAD", url: img };
         }
       },
-      this.checkRemoved,
+      (url) => url,
     ]);
   }
 }
