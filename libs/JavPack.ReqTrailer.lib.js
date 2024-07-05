@@ -21,7 +21,7 @@ class ReqTrailer extends Req {
       const target = res.querySelector(selector)?.textContent;
       if (!target) throw new Error("Not found target");
 
-      const match = reg.exec(target);
+      const match = target.match(reg);
       if (!match) throw new Error("Not found match");
 
       const trailer = match[1];
@@ -63,45 +63,45 @@ class ReqTrailer extends Req {
 
     const MAP = [
       {
-        studio: ["東京熱", "Tokyo-Hot"],
+        studios: ["東京熱", "Tokyo-Hot"],
         samples: [`https://my.cdn.tokyo-hot.com/media/samples/%s.mp4`],
       },
       {
-        studio: ["加勒比", "カリビアンコム"],
+        studios: ["加勒比", "カリビアンコム"],
         samples: trans("https://smovie.caribbeancom.com/sample/movies/%s/"),
       },
       {
-        studio: ["一本道"],
+        studios: ["一本道"],
         samples: trans("http://smovie.1pondo.tv/sample/movies/%s/"),
       },
       {
-        studio: ["HEYZO"],
+        studios: ["HEYZO"],
         parse: (code) => code.replaceAll("HEYZO-", ""),
         samples: [`https://sample.heyzo.com/contents/3000/%s/heyzo_hd_%s_sample.mp4`],
       },
       {
-        studio: ["10musume", "天然むすめ"],
+        studios: ["10musume", "天然むすめ"],
         samples: trans("https://smovie.10musume.com/sample/movies/%s/"),
       },
       {
-        studio: ["pacopacomama", "パコパコママ"],
+        studios: ["pacopacomama", "パコパコママ"],
         samples: trans("https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/"),
       },
       {
-        studio: ["muramura"],
+        studios: ["muramura"],
         samples: trans("https://smovie.muramura.tv/sample/movies/%s/"),
       },
     ];
 
     return async (code, studio) => {
-      studio = studio
+      const studios = studio
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean);
 
       let list = [];
       for (const { samples, ...item } of MAP) {
-        if (!studio.some((it) => item.studio.includes(it))) continue;
+        if (!studios.some((it) => item.studios.includes(it))) continue;
 
         const rep = item?.parse ? item.parse(code) : code;
         list = samples.map((url) => url.replaceAll("%s", rep));
