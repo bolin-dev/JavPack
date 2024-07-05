@@ -10,14 +10,15 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqTrailer.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
-// @connect         caribbeancom.com
 // @connect         pacopacomama.com
+// @connect         caribbeancom.com
 // @connect         tokyo-hot.com
 // @connect         10musume.com
 // @connect         muramura.tv
-// @connect         vercel.app
 // @connect         1pondo.tv
 // @connect         heyzo.com
+// @connect         dmm.co.jp
+// @connect         jav.land
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
@@ -75,6 +76,7 @@ function useVideo() {
 }
 
 const createVideo = useVideo();
+const getDmm = ReqTrailer.useDmm();
 const guessStudio = ReqTrailer.useStudio();
 
 (function () {
@@ -106,14 +108,17 @@ const guessStudio = ReqTrailer.useStudio();
     });
   };
 
-  let trailer = getTrailer();
+  let trailer = localStorage.getItem(mid);
   if (trailer) return setTrailer(trailer);
 
-  trailer = localStorage.getItem(mid);
+  trailer = getTrailer();
   if (trailer) return setTrailer(trailer);
 
   const code = document.querySelector(".first-block .value").textContent;
-  ReqTrailer.dmm(code).then(setTrailer);
+  trailer = ReqTrailer.heydouga(code);
+  if (trailer) return setTrailer(trailer);
+
+  getDmm(code).then(setTrailer);
 
   if (!isUncensored()) return;
   const studio = getStudio();
@@ -318,7 +323,7 @@ const guessStudio = ReqTrailer.useStudio();
       classList.add(LOAD_DMM);
       classList.add(LOAD_DB);
 
-      ReqTrailer.dmm(code)
+      getDmm(code)
         .then(setTrailer)
         .finally(() => classList.remove(LOAD_DMM));
 
