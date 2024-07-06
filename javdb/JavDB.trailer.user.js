@@ -159,6 +159,8 @@ const guessStudio = ReqTrailer.useStudio();
     const interval = 200;
     const sensitivity = 0;
 
+    let scrollTimer = null;
+    let isScrolling = false;
     let trackSpeedInterval = null;
 
     let prevX = null;
@@ -199,7 +201,7 @@ const guessStudio = ReqTrailer.useStudio();
         speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
       }
 
-      if (speed <= sensitivity && isElementInViewport(currElem)) {
+      if (speed <= sensitivity && isElementInViewport(currElem) && !isScrolling) {
         destroy(currElem);
         onHover(currElem);
       } else {
@@ -222,9 +224,10 @@ const guessStudio = ReqTrailer.useStudio();
     const handleMouseout = ({ relatedTarget }) => {
       if (!currElem) return;
 
-      while (relatedTarget) {
-        if (relatedTarget === currElem) return;
-        relatedTarget = relatedTarget.parentNode;
+      let node = relatedTarget;
+      while (node) {
+        if (node === currElem) return;
+        node = node.parentNode;
       }
 
       destroy(currElem);
@@ -239,8 +242,6 @@ const guessStudio = ReqTrailer.useStudio();
 
     const onLeave = () => {
       const videos = document.querySelectorAll(`${TARGET_SELECTOR} video`);
-      if (!videos.length) return;
-
       videos.forEach((video) => {
         video.classList.remove("fade-in");
         setTimeout(() => video.remove(), 200);
@@ -255,9 +256,18 @@ const guessStudio = ReqTrailer.useStudio();
       currElem = null;
     };
 
+    const handleScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 500);
+    };
+
     document.addEventListener("mouseover", handleMouseover);
     document.addEventListener("mouseout", handleMouseout);
     document.addEventListener("visibilitychange", onOver);
+    window.addEventListener("scroll", handleScroll);
     window.addEventListener("blur", onOver);
   }
 
