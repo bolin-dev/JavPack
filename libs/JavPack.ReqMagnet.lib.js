@@ -1,14 +1,14 @@
 class ReqMagnet extends Req {
   static btdig(code) {
-    const spaceReg = /\s/g;
-    const host = "https://btdig.com";
+    const REG = /\s/g;
+    const HOST = "https://btdig.com";
 
     return this.tasks(
       {
-        url: `${host}/search`,
+        url: `${HOST}/search`,
         params: { q: code },
         headers: {
-          "Referer": `${host}/index.htm`,
+          "Referer": `${HOST}/index.htm`,
           "Sec-Fetch-Dest": "document",
           "Sec-Fetch-Mode": "navigate",
           "Sec-Fetch-Site": "same-origin",
@@ -23,7 +23,7 @@ class ReqMagnet extends Req {
               return {
                 name: item.querySelector(".torrent_name").textContent,
                 url: item.querySelector(".torrent_magnet a").href,
-                size: item.querySelector(".torrent_size").textContent.replace(spaceReg, ""),
+                size: item.querySelector(".torrent_size").textContent.replace(REG, ""),
                 files: item.querySelector(".torrent_files")?.textContent ?? "1",
                 date: item.querySelector(".torrent_age").textContent,
               };
