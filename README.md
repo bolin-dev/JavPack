@@ -16,9 +16,7 @@
 | JavDB.style                     | 样式调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)      |
 | JavDB.layout                    | 布局调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.layout.user.js)     |
 | [JavDB.search](#search)         | 快捷搜索     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.search.user.js)     |
-| [JavDB.nav](#nav)               | 快捷翻页     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.nav.user.js)        |
 | [JavDB.openTab](#opentab)       | 新标签页打开 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.openTab.user.js)    |
-| [JavDB.quickLook](#quicklook)   | 快速查看     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.quickLook.user.js)  |
 | JavDB.scroll                    | 滚动加载     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.scroll.user.js)     |
 | JavDB.filter                    | 影片筛选     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.filter.user.js)     |
 | [JavDB.trailer](#trailer)       | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
@@ -39,19 +37,13 @@
 
 - 按键 `Ctrl` + `/` 搜索粘贴板首项
 
-### nav
-
-- 按键 `←` `→` 翻页
-
 ### openTab
 
 - 鼠标左键新标签页前台打开，右键后台打开
 
-### quickLook
-
-- 鼠标悬停卡片后，按键 `Space` 弹窗预览影片详情，再次键入 `Space` / `Esc` 关闭弹窗；`Enter` / `F` 打开详情页
-
 ### trailer
+
+- [jav.land](https://jav.land) 需分流代理至 `非日节点`
 
 - 方向键或 `W` `A` `S` `D` 控制播放进度及音量
 
