@@ -45,7 +45,7 @@ class ReqTrailer extends Req {
 
     return async (code) => {
       const cid = await getCid(code);
-      return Promise.any(MAP.map((item) => getDmm(cid, item)));
+      return code.includes("VR") ? Promise.any(MAP.map((item) => getDmm(cid, item))) : getDmm(cid, MAP[0]);
     };
   }
 
