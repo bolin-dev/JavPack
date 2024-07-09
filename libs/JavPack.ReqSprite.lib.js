@@ -1,10 +1,15 @@
 class ReqSprite extends Req {
   static blogjav(code) {
-    return this.tasks({ url: "https://blogjav.net/", params: { s: code } }, [
+    const word = code.replace("HEYZO-", "HEYZO ");
+
+    return this.tasks({ url: "https://blogjav.net/", params: { s: word } }, [
       (dom) => {
-        const word = code.replace("HEYZO-", "HEYZO ");
         const list = dom.querySelectorAll("#main .entry-title > a");
-        const item = [...list].find((item) => item.textContent.toUpperCase().includes(word));
+        const item = [...list].find((item) => {
+          const title = item.textContent.toUpperCase();
+          return title.includes(word) || title.includes(code);
+        });
+
         return item?.href;
       },
       (dom) => {
@@ -22,11 +27,16 @@ class ReqSprite extends Req {
   }
 
   static javstore(code) {
-    return this.tasks(`https://javstore.net/search/${code}.html`, [
+    const word = code.replace("HEYZO-", "HEYZO ");
+
+    return this.tasks(`https://javstore.net/search/${word}.html`, [
       (dom) => {
-        const word = code.replace("HEYZO-", "HEYZO ");
         const list = dom.querySelectorAll("#content_news li > a");
-        const item = [...list].find((item) => item.title.toUpperCase().includes(word));
+        const item = [...list].find((item) => {
+          const title = item.title.toUpperCase();
+          return title.includes(word) || title.includes(code);
+        });
+
         return item?.href;
       },
       (dom) => {
