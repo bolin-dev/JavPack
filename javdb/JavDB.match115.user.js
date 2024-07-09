@@ -247,7 +247,7 @@ function listenClick(onTabClose) {
         list.forEach(({ tag, regex }) => {
           this.setTag(
             tag,
-            data.filter((item) => regex.test(item.n)),
+            data.filter(({ n }) => regex.test(n)),
           );
         });
       });
@@ -261,16 +261,16 @@ function listenClick(onTabClose) {
       let className = "is-normal";
 
       if (res.length) {
-        const zhItem = res.find((item) => Magnet.zhReg.test(item.n));
-        const crackItem = res.find((item) => Magnet.crackReg.test(item.n));
-        const isBoth = zhItem && crackItem && zhItem.fid === crackItem.fid;
-        const currItem = zhItem ?? crackItem ?? res[0];
+        const zhItem = res.find(({ n }) => Magnet.zhReg.test(n));
+        const crackItem = res.find(({ n }) => Magnet.crackReg.test(n));
+        const bothItem = res.find(({ n }) => Magnet.zhReg.test(n) && Magnet.crackReg.test(n));
+        const currItem = bothItem ?? zhItem ?? crackItem ?? res[0];
 
         pc = currItem.pc;
         cid = currItem.cid;
         textContent = "已匹配";
         title = `[${currItem.t}] ${currItem.n}`;
-        className = isBoth ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
+        className = bothItem ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
       }
 
       tag.title = title;
@@ -301,17 +301,25 @@ function listenClick(onTabClose) {
   window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
   MatchChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
-  const matchPrefix = async (target) => {
-    const item = target.closest(".item");
+  const matchPrefix = (target) => {
+    const item = target.closest(TARGET_SELECTOR);
     const mid = item.querySelector("a").href.split("/").pop();
     const code = item.querySelector(".video-title strong").textContent;
     const { prefix } = Util.codeParse(code);
 
     GM_deleteValue(code);
     GM_deleteValue(prefix);
-    await QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
-    await Req115.sleep(0.5);
-    MatchChannel.postMessage(mid);
+
+    Req115.videosSearch(prefix)
+      .then(async ({ data }) => {
+        data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+        GM_setValue(prefix, data);
+        await Req115.sleep(0.2);
+      })
+      .finally(() => {
+        QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
+        MatchChannel.postMessage(mid);
+      });
   };
 
   listenClick(matchPrefix);
