@@ -146,6 +146,9 @@ function listenClick(onTabClose) {
   if (!childList.length) return;
 
   GM_addStyle(`
+  ${TARGET_SELECTOR} .video-title .${TARGET_CLASS}.is-normal:hover {
+    text-decoration: none;
+  }
   ${TARGET_SELECTOR} .video-title:has(.is-danger, .is-warning, .is-info, .is-success) {
     font-weight: bold;
   }
@@ -289,7 +292,7 @@ function listenClick(onTabClose) {
       QueueMatch.add(intersected);
     };
 
-    const observer = new IntersectionObserver(callback, { threshold: 0.2 });
+    const observer = new IntersectionObserver(callback, { threshold: 0.3 });
     return (nodeList) => nodeList.forEach((node) => observer.observe(node));
   }
   const insertQueue = createObserver();
@@ -308,8 +311,9 @@ function listenClick(onTabClose) {
     Req115.videosSearch(prefix).then(({ data }) => {
       data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
       GM_setValue(prefix, data);
+
       QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
-      MatchChannel.postMessage(mid);
+      Req115.sleep(0.5).then(() => MatchChannel.postMessage(mid));
     });
   };
 
