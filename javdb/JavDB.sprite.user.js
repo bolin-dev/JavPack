@@ -40,7 +40,7 @@
 
     const IMG_ALT = "雪碧图";
     localStorage.setItem(mid, sprite);
-    const targetHTML = `<div style="display: none;" id="${TARGET_ID}"><img src="${sprite}" alt="${IMG_ALT}"></div>`;
+    const targetHTML = `<div style="display: none;" id="${TARGET_ID}"><img src="${sprite}" alt="${IMG_ALT}" loading="lazy" referrerpolicy="no-referrer"></div>`;
     document.body.insertAdjacentHTML("beforeend", targetHTML);
 
     const insertHTML = `
@@ -51,7 +51,7 @@
       data-caption="${IMG_ALT}"
       data-src="#${TARGET_ID}"
     >
-      <img src="${sprite}" alt="${IMG_ALT}" loading="lazy">
+      <img src="${sprite}" alt="${IMG_ALT}" loading="lazy" referrerpolicy="no-referrer">
     </a>
     `;
 
