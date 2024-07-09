@@ -24,11 +24,10 @@
 
 html {
   padding-block: 0 !important;
-  overflow-y: overlay;
 }
 
 body {
-  padding-top: 3.25rem;
+  padding-top: 3.34rem;
 }
 
 video:focus-visible {
