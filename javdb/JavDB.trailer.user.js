@@ -320,7 +320,7 @@ const guessStudio = ReqTrailer.useStudio();
       }
 
       const trailerMid = `trailer_${mid}`;
-      trailer = localStorage.getItem(trailerMid);
+      trailer = localStorage.getItem(trailerMid) ?? ReqTrailer.heydouga(code);
 
       if (trailer) {
         dataset.trailer = trailer;
