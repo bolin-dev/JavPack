@@ -33,21 +33,16 @@ const VOID = "javascript:void(0);";
 const TARGET_CLASS = "x-match-item";
 const MatchChannel = new BroadcastChannel("Match115");
 
-const ACTION_MAP = {
-  click: {
-    key: "pc",
-    url: "https://v.anxia.com/?pickcode=%s",
-  },
-  contextmenu: {
-    key: "cid",
-    url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
-  },
-};
-
 function listenClick(onTabClose) {
-  const handleClose = async (target) => {
-    await Req115.sleep(0.5);
-    onTabClose(target);
+  const ACTION_MAP = {
+    click: {
+      key: "pc",
+      url: "https://v.anxia.com/?pickcode=%s",
+    },
+    contextmenu: {
+      key: "cid",
+      url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
+    },
   };
 
   const handleClick = (e) => {
@@ -64,7 +59,7 @@ function listenClick(onTabClose) {
     if (!val) return;
 
     const tab = Grant.openTab(action.url.replaceAll("%s", val));
-    tab.onclose = () => handleClose(target);
+    tab.onclose = () => Req115.sleep(0.5).then(() => onTabClose(target));
   };
 
   document.addEventListener("click", handleClick);
@@ -100,18 +95,21 @@ function listenClick(onTabClose) {
     `);
 
     document.querySelector(".movie-panel-info .review-buttons+.panel-block").insertAdjacentHTML("afterend", domStr);
-    return document.querySelector(`#${DOM_ID}`);
+    return document.getElementById(DOM_ID);
   }
 
   const matchResNode = createDom();
   const { codes, regex } = Util.codeParse(code);
   const matchResTarget = matchResNode.parentNode.querySelector("a");
 
-  const matchCode = () => {
-    if (matchResTarget.textContent === "资源匹配") return;
-    matchResTarget.textContent = "资源匹配";
+  const TXT = "资源匹配";
+  const MID = PATHNAME.split("/").pop();
 
-    return Req115.videosSearch(codes.join(" "))
+  const matchCode = () => {
+    if (matchResTarget.textContent === TXT) return;
+    matchResTarget.textContent = TXT;
+
+    Req115.videosSearch(codes.join(" "))
       .then(({ state, data }) => {
         if (!state) {
           matchResNode.innerHTML = "查询失败，检查登录状态";
@@ -126,12 +124,9 @@ function listenClick(onTabClose) {
           return;
         }
 
-        matchResNode.innerHTML = data.reduce(
-          (acc, { pc, cid, t, n }) =>
-            `${acc}
-          <a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`,
-          "",
-        );
+        matchResNode.innerHTML = data.reduce((acc, { pc, cid, t, n }) => {
+          return `${acc}<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
+        }, "");
       })
       .finally(() => {
         matchResTarget.textContent = "115资源";
@@ -142,7 +137,7 @@ function listenClick(onTabClose) {
   listenClick(matchCode);
   unsafeWindow["reMatch"] = matchCode;
   matchResTarget.addEventListener("click", matchCode);
-  window.addEventListener("beforeunload", () => MatchChannel.postMessage(PATHNAME.split("/").pop()));
+  window.addEventListener("beforeunload", () => MatchChannel.postMessage(MID));
 })();
 
 (function () {
