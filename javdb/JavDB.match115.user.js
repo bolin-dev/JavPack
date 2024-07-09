@@ -146,9 +146,6 @@ function listenClick(onTabClose) {
   if (!childList.length) return;
 
   GM_addStyle(`
-  ${TARGET_SELECTOR} .video-title .${TARGET_CLASS}.is-normal:hover {
-    text-decoration: none;
-  }
   ${TARGET_SELECTOR} .video-title:has(.is-danger, .is-warning, .is-info, .is-success) {
     font-weight: bold;
   }
@@ -308,16 +305,12 @@ function listenClick(onTabClose) {
     const { prefix } = Util.codeParse(code);
     GM_deleteValue(code);
 
-    Req115.videosSearch(prefix)
-      .then(async ({ data }) => {
-        data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
-        GM_setValue(prefix, data);
-        await Req115.sleep(0.2);
-      })
-      .finally(() => {
-        QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
-        MatchChannel.postMessage(mid);
-      });
+    Req115.videosSearch(prefix).then(({ data }) => {
+      data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+      GM_setValue(prefix, data);
+      QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
+      MatchChannel.postMessage(mid);
+    });
   };
 
   listenClick(matchPrefix);
