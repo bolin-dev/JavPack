@@ -306,9 +306,7 @@ function listenClick(onTabClose) {
     const mid = item.querySelector("a").href.split("/").pop();
     const code = item.querySelector(".video-title strong").textContent;
     const { prefix } = Util.codeParse(code);
-
     GM_deleteValue(code);
-    GM_deleteValue(prefix);
 
     Req115.videosSearch(prefix)
       .then(async ({ data }) => {
