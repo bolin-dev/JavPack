@@ -292,7 +292,7 @@ function listenClick(onTabClose) {
       QueueMatch.add(intersected);
     };
 
-    const observer = new IntersectionObserver(callback, { threshold: 0.3 });
+    const observer = new IntersectionObserver(callback, { threshold: 0.2 });
     return (nodeList) => nodeList.forEach((node) => observer.observe(node));
   }
   const insertQueue = createObserver();
