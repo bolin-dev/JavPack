@@ -154,35 +154,32 @@ function getDetails(dom = document) {
     const value = item.querySelector(".value")?.textContent;
     if (!label || !value || value.includes("N/A")) return;
 
-    if (label === "日期:") {
-      info.date = value;
-      return;
+    switch (label) {
+      case "日期:":
+        info.date = value;
+        break;
+      case "導演:":
+        info.director = value;
+        break;
+      case "片商:":
+        info.maker = value;
+        break;
+      case "發行:":
+        info.publisher = value;
+        break;
+      case "系列:":
+        info.series = value;
+        break;
+      case "類別:":
+        info.genres = value.split(",").map((item) => item.trim());
+        break;
+      case "演員:":
+        info.actors = value
+          .split("\n")
+          .map((item) => item.replace(/♀|♂/, "").trim())
+          .filter(Boolean);
+        break;
     }
-    if (label === "導演:") {
-      info.director = value;
-      return;
-    }
-    if (label === "片商:") {
-      info.maker = value;
-      return;
-    }
-    if (label === "發行:") {
-      info.publisher = value;
-      return;
-    }
-    if (label === "系列:") {
-      info.series = value;
-      return;
-    }
-    if (label === "類別:") {
-      info.genres = value.split(",").map((item) => item.trim());
-      return;
-    }
-    if (label !== "演員:") return;
-    info.actors = value
-      .split("\n")
-      .map((item) => item.replace(/♀|♂/, "").trim())
-      .filter(Boolean);
   });
 
   if (prefix) info.prefix = prefix;
