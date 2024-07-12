@@ -147,10 +147,10 @@ video:focus-visible {
 }
 
 .movie-panel-info {
-  align-items: normal;
   font-size: var(--x-title-size);
 
   & div.panel-block {
+    align-items: normal;
     padding: 0.5rem 0;
 
     & .copy-to-clipboard {
