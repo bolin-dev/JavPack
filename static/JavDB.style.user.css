@@ -147,6 +147,7 @@ video:focus-visible {
 }
 
 .movie-panel-info {
+  align-items: normal;
   font-size: var(--x-title-size);
 
   & div.panel-block {
