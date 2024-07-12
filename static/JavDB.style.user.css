@@ -159,6 +159,10 @@ video:focus-visible {
       padding: 0;
     }
   }
+
+  & .review-buttons .panel-block:nth-child(2) {
+    display: none;
+  }
 }
 
 .movie-panel-info > div.panel-block:first-child {
