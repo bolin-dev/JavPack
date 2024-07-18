@@ -193,13 +193,13 @@ function listenClick(onTabClose) {
     static insertHTML = `<a class="${TARGET_CLASS} tag" href="${VOID}">匹配中</a>&nbsp;`;
 
     static async add(items) {
-      if (!items.length) return;
+      if (!items?.length) return;
 
       items = this.handleBefore(items);
       if (!items.length) return;
 
       this.list.push(...items);
-      if (this.lock || !this.list.length) return;
+      if (this.lock) return;
 
       this.lock = true;
       await this.handleQueue();
@@ -304,10 +304,10 @@ function listenClick(onTabClose) {
     const observer = new IntersectionObserver(callback, { threshold: 0.2 });
     return (nodeList) => nodeList.forEach((node) => observer.observe(node));
   }
-  const insertQueue = createObserver();
+  const addObserver = createObserver();
 
-  insertQueue(childList);
-  window.addEventListener("scroll.loadmore", ({ detail }) => insertQueue(detail));
+  addObserver(childList);
+  window.addEventListener("scroll.loadmore", ({ detail }) => addObserver(detail));
   MatchChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
   const matchPrefix = (target) => {
