@@ -157,37 +157,33 @@ function listenClick(onTabClose) {
     &:focus-visible {
       box-shadow: none !important;
     }
-
     .video-title {
       font-weight: bold;
     }
   }
-  ${TARGET_SELECTOR} .video-title a.is-normal:hover {
-    text-decoration: none;
+  .movie-list:has(.item) {
+    --x-danger: #ee1742;
+    --x-warning: #ffd257;
+    --x-info: #2b74b1;
+    --x-success: #34a873;
   }
-  ${TARGET_SELECTOR}:has(a.is-danger) {
-    border: 0.375rem solid #ee1742;
+  [data-theme="dark"] .movie-list:has(.item) {
+    --x-danger: #f14668;
+    --x-warning: #ffe08a;
+    --x-info: #3e8ed0;
+    --x-success: #48c78e;
   }
-  ${TARGET_SELECTOR}:has(a.is-warning) {
-    border: 0.375rem solid #ffd257;
+  ${TARGET_SELECTOR}:has(.video-title a.is-danger) {
+    border: 0.375rem solid var(--x-danger);
   }
-  ${TARGET_SELECTOR}:has(a.is-info) {
-    border: 0.375rem solid #2b74b1;
+  ${TARGET_SELECTOR}:has(.video-title a.is-warning) {
+    border: 0.375rem solid var(--x-warning);
   }
-  ${TARGET_SELECTOR}:has(a.is-success) {
-    border: 0.375rem solid #34a873;
+  ${TARGET_SELECTOR}:has(.video-title a.is-info) {
+    border: 0.375rem solid var(--x-info);
   }
-  [data-theme="dark"] ${TARGET_SELECTOR}:has(a.is-danger) {
-    border-color: #f14668;
-  }
-  [data-theme="dark"] ${TARGET_SELECTOR}:has(a.is-warning) {
-    border-color: #ffe08a;
-  }
-  [data-theme="dark"] ${TARGET_SELECTOR}:has(a.is-info) {
-    border-color: #3e8ed0;
-  }
-  [data-theme="dark"] ${TARGET_SELECTOR}:has(a.is-success) {
-    border-color: #48c78e;
+  ${TARGET_SELECTOR}:has(.video-title a.is-success) {
+    border: 0.375rem solid var(--x-success);
   }
   `);
 
