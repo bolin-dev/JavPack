@@ -34,7 +34,7 @@ const TARGET_CLASS = "x-match-item";
 const MatchChannel = new BroadcastChannel("Match115");
 
 function listenClick(onTabClose) {
-  const ACTION_MAP = {
+  const ACS = {
     click: {
       key: "pc",
       url: "https://v.anxia.com/?pickcode=%s",
@@ -52,7 +52,7 @@ function listenClick(onTabClose) {
     e.preventDefault();
     e.stopPropagation();
 
-    const action = ACTION_MAP[e.type];
+    const action = ACS[e.type];
     if (!action) return;
 
     const val = target.dataset[action.key];
@@ -73,17 +73,16 @@ function listenClick(onTabClose) {
   const code = document.querySelector(".first-block .value").textContent;
   if (!code) return;
 
-  function createDom() {
-    const DOM_ID = "x-match-res";
+  const MID = PATHNAME.split("/").pop();
+  const ORIGIN_TXT = "115资源";
+  const LOAD_TXT = "资源匹配";
 
-    const domStr = `
-    <div class="panel-block">
-      <strong><a href="${VOID}">115资源</a>:</strong>&nbsp;<span class="value" id="${DOM_ID}">查询中...</span>
-    </div>
-    `;
+  function createDom() {
+    const LABEL_ID = "x-match-label";
+    const CONTAINER_ID = "x-match-res";
 
     GM_addStyle(`
-    #${DOM_ID} a {
+    #${CONTAINER_ID} .${TARGET_CLASS} {
       display: -webkit-box;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -94,25 +93,30 @@ function listenClick(onTabClose) {
     }
     `);
 
-    document.querySelector(".movie-panel-info .review-buttons+.panel-block").insertAdjacentHTML("afterend", domStr);
-    return document.getElementById(DOM_ID);
+    document.querySelector(".movie-panel-info .review-buttons+.panel-block").insertAdjacentHTML(
+      "afterend",
+      `<div class="panel-block">
+        <strong><a href="${VOID}" id="${LABEL_ID}">${ORIGIN_TXT}</a>:</strong>&nbsp;<span class="value" id="${CONTAINER_ID}">匹配中...</span>
+      </div>`,
+    );
+
+    return {
+      label: document.getElementById(LABEL_ID),
+      container: document.getElementById(CONTAINER_ID),
+    };
   }
 
-  const matchResNode = createDom();
+  const { label, container } = createDom();
   const { codes, regex } = Util.codeParse(code);
-  const matchResTarget = matchResNode.parentNode.querySelector("a");
-
-  const TXT = "资源匹配";
-  const MID = PATHNAME.split("/").pop();
 
   const matchCode = () => {
-    if (matchResTarget.textContent === TXT) return;
-    matchResTarget.textContent = TXT;
+    if (label.textContent === LOAD_TXT) return;
+    label.textContent = LOAD_TXT;
 
     Req115.videosSearch(codes.join(" "))
       .then(({ state, data }) => {
         if (!state) {
-          matchResNode.innerHTML = "查询失败，检查登录状态";
+          container.innerHTML = "查询失败，检查登录状态";
           return;
         }
 
@@ -120,23 +124,23 @@ function listenClick(onTabClose) {
         GM_setValue(code, data);
 
         if (!data.length) {
-          matchResNode.innerHTML = "暂无资源";
+          container.innerHTML = "暂无资源";
           return;
         }
 
-        matchResNode.innerHTML = data.reduce((acc, { pc, cid, t, n }) => {
+        container.innerHTML = data.reduce((acc, { pc, cid, t, n }) => {
           return `${acc}<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
         }, "");
       })
       .finally(() => {
-        matchResTarget.textContent = "115资源";
+        label.textContent = ORIGIN_TXT;
       });
   };
 
   matchCode();
   listenClick(matchCode);
   unsafeWindow["reMatch"] = matchCode;
-  matchResTarget.addEventListener("click", matchCode);
+  label.addEventListener("click", matchCode);
   window.addEventListener("beforeunload", () => MatchChannel.postMessage(MID));
 })();
 
