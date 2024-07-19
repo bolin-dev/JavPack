@@ -49,9 +49,10 @@ Util.upStore();
     let domStr = "暂无数据";
 
     if (data?.lists?.length) {
-      if (!isCache) GM_setValue(mid, data.lists);
-      domStr = data.lists.reduce((acc, cur) => `${acc}${createList(cur)}`, "");
+      const _lists = data.lists.map(({ id, name, movies_count }) => ({ id, name, movies_count }));
+      domStr = _lists.reduce((acc, cur) => `${acc}${createList(cur)}`, "");
       domStr = `<div class="plain-grid-list">${domStr}</div>`;
+      if (!isCache) GM_setValue(mid, _lists);
     }
 
     lists.innerHTML = createDom(domStr);
