@@ -35,6 +35,7 @@ class ReqDB extends Req {
       params: {
         page,
         movie_id,
+        limit: 24,
       },
     });
   }
