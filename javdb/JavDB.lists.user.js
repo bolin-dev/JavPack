@@ -12,8 +12,6 @@
 // @connect         hechuangxinxi.xyz
 // @run-at          document-body
 // @grant           GM_xmlhttpRequest
-// @grant           GM_getValue
-// @grant           GM_setValue
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
