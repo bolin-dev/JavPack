@@ -578,3 +578,27 @@ nav.pagination {
 .payment-form {
   padding-block: 1rem;
 }
+
+.plain-grid-list {
+  gap: 0.75rem;
+
+  a.box {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    padding: 0.75rem;
+    margin-bottom: 0;
+    font-size: var(--x-title-size);
+
+    strong {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      font-size: var(--x-sub-size);
+    }
+  }
+}
