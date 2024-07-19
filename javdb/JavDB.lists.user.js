@@ -8,14 +8,21 @@
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqDB.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         hechuangxinxi.xyz
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
+// @grant           GM_deleteValue
+// @grant           GM_listValues
+// @grant           GM_setValue
+// @grant           GM_getValue
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
 // @compatible      edge last 2 versions
 // ==/UserScript==
+
+Util.upStore();
 
 (function () {
   const parent = document.querySelector(".tabs.no-bottom ul");
@@ -38,10 +45,11 @@
     loading.style.display = "block";
   };
 
-  const onload = ({ data }) => {
+  const onload = ({ data }, isCache = false) => {
     let domStr = "暂无数据";
 
     if (data?.lists?.length) {
+      if (!isCache) GM_setValue(mid, data.lists);
       domStr = data.lists.reduce((acc, cur) => `${acc}${createList(cur)}`, "");
       domStr = `<div class="plain-grid-list">${domStr}</div>`;
     }
@@ -62,6 +70,9 @@
     reviews.style.display = "none";
     lists.style.display = "block";
     if (lists.hasChildNodes()) return;
+
+    const _lists = GM_getValue(mid);
+    if (_lists) return onload({ data: { lists: _lists } }, true);
 
     onstart();
     ReqDB.related(mid).then(onload).catch(onerror).finally(onfinally);
