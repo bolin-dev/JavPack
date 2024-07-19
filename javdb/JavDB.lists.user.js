@@ -10,7 +10,7 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqDB.lib.js
 // @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         hechuangxinxi.xyz
-// @run-at          document-body
+// @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @license         GPL-3.0-only
 // @compatible      chrome last 2 versions
