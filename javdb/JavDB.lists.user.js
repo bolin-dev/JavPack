@@ -31,7 +31,7 @@
   };
 
   const createList = ({ id, name, movies_count }) => {
-    return `<a class="item box" href="/lists/${id}"><strong>${name}</strong><span>(${movies_count})</span></a>`;
+    return `<a class="item box" href="/lists/${id}" title="${name}" target="_blank"><strong>${name}</strong><span>(${movies_count})</span></a>`;
   };
 
   const onstart = () => {
