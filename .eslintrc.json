@@ -11,6 +11,7 @@
     "Offline": true,
     "Req": true,
     "Req115": true,
+    "ReqDB": true,
     "ReqMagnet": true,
     "ReqSprite": true,
     "ReqTrailer": true,
