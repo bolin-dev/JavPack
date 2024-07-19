@@ -22,6 +22,7 @@
 | [JavDB.trailer](#trailer)       | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
 | JavDB.sprite                    | 雪碧图       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.sprite.user.js)     |
 | JavDB.magnet                    | 磁链扩展     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.magnet.user.js)     |
+| JavDB.lists                     | 相关清单     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.lists.user.js)      |
 | JavDB.match115                  | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.match115.user.js)   |
 | [JavDB.offline115](#offline115) | 115 网盘离线 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.offline115.user.js) |
 
