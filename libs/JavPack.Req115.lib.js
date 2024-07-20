@@ -242,6 +242,12 @@ class Drive115 extends Req {
 }
 
 class Req115 extends Drive115 {
+  static async natsortFilesAll(cid, params = {}) {
+    const res = await this.natsortFiles(cid, params);
+    const { count, data, page_size } = res;
+    return count > page_size && data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
+  }
+
   // Search all files
   static async filesSearchAll(search_value, params = {}) {
     const res = await this.filesSearch(search_value, params);
@@ -249,39 +255,32 @@ class Req115 extends Drive115 {
     return count > page_size && data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
   }
 
+  // Get file list
+  static async filesAll(cid, params = {}) {
+    const res = await this.files(cid, params);
+    const { count, data, page_size } = res;
+    if (res.errNo === 20130827) return this.natsortFilesAll(cid, params);
+    return count > page_size && data.length ? this.files(cid, { ...params, limit: count }) : res;
+  }
+
   // Search for videos
   static videosSearch(search_value) {
-    return this.filesSearchAll(search_value, { type: 4, o: "user_ptime", asc: 0, star: "", suffix: "" });
-  }
-
-  static async natsortFilesAll(cid, params = {}) {
-    const res = await this.natsortFiles(cid, params);
-    const { count, data, page_size } = res;
-    return count > page_size && data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
-  }
-
-  // Get file list by order
-  static async filesByOrder(cid, params = {}) {
-    const res = await this.files(cid, params);
-    const { order: o, is_asc: asc, fc_mix, count, data, page_size } = res;
-
-    if (res.errNo === 20130827 && o === "file_name") return this.natsortFilesAll(cid, { ...params, o, asc, fc_mix });
-    return count > page_size && data.length ? this.files(cid, { ...params, limit: count }) : res;
+    return this.filesSearchAll(search_value, { type: 4 });
   }
 
   // Get video list
   static videos(cid) {
-    return this.filesByOrder(cid, { type: 4 });
+    return this.filesAll(cid, { type: 4 });
   }
 
   // Get subrip list
   static subrips(cid) {
-    return this.filesByOrder(cid, { suffix: "srt" });
+    return this.filesAll(cid, { suffix: "srt" });
   }
 
   // Get folder list
   static folders(cid) {
-    return this.filesByOrder(cid).then((res) => {
+    return this.filesAll(cid).then((res) => {
       if (res?.data.length) res.data = res.data.filter(({ pid }) => Boolean(pid));
       return res;
     });
@@ -403,7 +402,7 @@ class Req115 extends Drive115 {
       cid,
     );
 
-    const { data } = await this.filesByOrder(cid);
+    const { data } = await this.filesAll(cid);
 
     const rm_fids = data
       .filter((item) => !files.some(({ fid }) => fid === item.fid))
