@@ -40,15 +40,6 @@
 // @compatible      edge last 2 versions
 // ==/UserScript==
 
-const VERIFY_KEY = "VERIFY_STATUS";
-const VERIFY_PENDING = "PENDING";
-const VERIFY_VERIFIED = "VERIFIED";
-const VERIFY_FAILED = "FAILED";
-
-const TARGET_CLASS = "x-offline";
-const { pathname: PATHNAME } = location;
-const IS_DETAIL = PATHNAME.startsWith("/v/");
-
 const config = [
   {
     name: "云下载",
@@ -82,6 +73,15 @@ const config = [
     color: "is-danger",
   },
 ];
+
+const VERIFY_KEY = "VERIFY_STATUS";
+const VERIFY_PENDING = "PENDING";
+const VERIFY_VERIFIED = "VERIFIED";
+const VERIFY_FAILED = "FAILED";
+
+const TARGET_CLASS = "x-offline";
+const { pathname: PATHNAME } = location;
+const IS_DETAIL = PATHNAME.startsWith("/v/");
 
 const transToByte = Magnet.useTransByte();
 
