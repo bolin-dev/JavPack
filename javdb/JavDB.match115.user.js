@@ -322,7 +322,7 @@ function listenClick(onTabClose) {
       GM_setValue(prefix, data);
 
       QueueMatch.add(document.querySelectorAll(`.movie-list .x-${mid}`));
-      Req115.sleep(0.5).then(() => MatchChannel.postMessage(mid));
+      MatchChannel.postMessage(mid);
     });
   };
 
