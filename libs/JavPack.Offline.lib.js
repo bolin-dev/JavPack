@@ -108,7 +108,7 @@ class Offline {
     return magnets.slice(currIdx);
   }
 
-  static verifyAccount(key, val) {
+  static verifyAccount(key = "VERIFY_STATUS", val = "VERIFIED") {
     document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
       setTimeout(() => {
         if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;

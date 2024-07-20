@@ -270,7 +270,7 @@ async function handleClick(e, actions, dom, currIdx = 0) {
 }
 
 (function () {
-  if (location.host === "captchaapi.115.com") return Offline.verifyAccount(VERIFY_KEY, VERIFY_VERIFIED);
+  if (location.host === "captchaapi.115.com") Offline.verifyAccount();
 })();
 
 (function () {
