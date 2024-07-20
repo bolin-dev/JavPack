@@ -235,8 +235,8 @@ class Req115 extends Drive115 {
   // Search all files
   static async filesSearchAll(search_value, params = {}) {
     const res = await this.filesSearch(search_value, params);
-    const { count, data } = res;
-    return data.length && count > data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
+    const { count, data, page_size } = res;
+    return count > page_size && data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
   }
 
   // Search for videos
@@ -246,17 +246,17 @@ class Req115 extends Drive115 {
 
   static async natsortFilesAll(cid, params = {}) {
     const res = await this.natsortFiles(cid, params);
-    const { count, data } = res;
-    return data.length && count > data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
+    const { count, data, page_size } = res;
+    return count > page_size && data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
   }
 
   // Get file list by order
   static async filesByOrder(cid, params = {}) {
     const res = await this.files(cid, params);
-    const { order: o, is_asc: asc, fc_mix, count, data } = res;
+    const { order: o, is_asc: asc, fc_mix, count, data, page_size } = res;
 
     if (res.errNo === 20130827 && o === "file_name") return this.natsortFilesAll(cid, { ...params, o, asc, fc_mix });
-    return data.length && count > data.length ? this.files(cid, { ...params, limit: count }) : res;
+    return count > page_size && data.length ? this.files(cid, { ...params, limit: count }) : res;
   }
 
   // Get video list
