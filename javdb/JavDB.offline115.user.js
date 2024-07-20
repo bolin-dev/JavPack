@@ -74,6 +74,7 @@ const config = [
   },
 ];
 
+const VERIFY_URL = "https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_";
 const VERIFY_KEY = "VERIFY_STATUS";
 const VERIFY_PENDING = "PENDING";
 const VERIFY_VERIFIED = "VERIFIED";
@@ -211,9 +212,7 @@ function getMagnets(dom = document) {
 function handleVerify() {
   GM_setValue(VERIFY_KEY, VERIFY_PENDING);
 
-  const verifyTab = Grant.openTab(
-    `https://captchaapi.115.com/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`,
-  );
+  const verifyTab = Grant.openTab(`${VERIFY_URL}${new Date().getTime()}`);
 
   verifyTab.onclose = () => {
     if (GM_getValue(VERIFY_KEY) !== VERIFY_VERIFIED) GM_setValue(VERIFY_KEY, VERIFY_FAILED);
