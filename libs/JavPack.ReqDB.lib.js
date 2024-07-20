@@ -1,4 +1,6 @@
 class ReqDB extends Req {
+  static limit = 24;
+
   static signature() {
     const TS_KEY = "TS";
     const SIGN_KEY = "SIGN";
@@ -35,6 +37,7 @@ class ReqDB extends Req {
       params: {
         page,
         movie_id,
+        limit: this.limit,
       },
     });
   }
