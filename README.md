@@ -26,10 +26,6 @@
 | JavDB.match115                  | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.match115.user.js)   |
 | [JavDB.offline115](#offline115) | 115 网盘离线 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.offline115.user.js) |
 
-| JavLib          | 描述         | 安装                                                                                 |
-| :-------------- | :----------- | :----------------------------------------------------------------------------------- |
-| JavLib.match115 | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javlib/JavLib.match115.user.js) |
-
 ## 使用
 
 ### search
