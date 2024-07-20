@@ -45,7 +45,7 @@ const VERIFY_PENDING = "PENDING";
 const VERIFY_VERIFIED = "VERIFIED";
 const VERIFY_FAILED = "FAILED";
 
-const ACTIONS_CLASS = "x-offline";
+const TARGET_CLASS = "x-offline";
 const { pathname: PATHNAME } = location;
 const IS_DETAIL = PATHNAME.startsWith("/v/");
 
@@ -87,7 +87,7 @@ const transToByte = Magnet.useTransByte();
 
 function createActions(actions) {
   return `
-  <div class="${ACTIONS_CLASS} buttons are-small">
+  <div class="${TARGET_CLASS} buttons are-small">
   ${actions
     .map(({ color, index, idx, desc, name }) => {
       return `
@@ -105,7 +105,7 @@ function checkAction(e, actions) {
   const { target } = e;
   if (target.tagName !== "BUTTON") return;
 
-  const container = target.closest(`.${ACTIONS_CLASS}`);
+  const container = target.closest(`.${TARGET_CLASS}`);
   if (!container) return;
 
   e.preventDefault();
@@ -307,7 +307,7 @@ async function handleClick(e, actions, dom, currIdx = 0) {
 
   function useActions(actions) {
     GM_addStyle(`
-    ${TARGET_SELECTOR} .cover .${ACTIONS_CLASS} {
+    ${TARGET_SELECTOR} .cover .${TARGET_CLASS} {
       position: absolute;
       right: 0;
       left: 0;
