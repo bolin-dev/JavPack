@@ -248,14 +248,12 @@ class Req115 extends Drive115 {
     return count > page_size && data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
   }
 
-  // Search all files
   static async filesSearchAll(search_value, params = {}) {
     const res = await this.filesSearch(search_value, params);
     const { count, data, page_size } = res;
     return count > page_size && data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
   }
 
-  // Get file list
   static async filesAll(cid, params = {}) {
     const res = await this.files(cid, params);
     const { count, data, page_size } = res;
