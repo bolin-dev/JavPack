@@ -11,7 +11,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         115.com
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
@@ -22,9 +21,6 @@
 // @grant           GM_addStyle
 // @grant           GM_getValue
 // @grant           GM_setValue
-// @license         GPL-3.0-only
-// @compatible      chrome last 2 versions
-// @compatible      edge last 2 versions
 // ==/UserScript==
 
 Util.upStore();
@@ -307,7 +303,7 @@ function listenClick(onTabClose) {
   const addObserver = createObserver();
 
   addObserver(childList);
-  window.addEventListener("scroll.loadmore", ({ detail }) => addObserver(detail));
+  window.addEventListener("JavDB.scroll", ({ detail }) => addObserver(detail));
   MatchChannel.onmessage = ({ data }) => QueueMatch.add(document.querySelectorAll(`.movie-list .x-${data}`));
 
   const matchPrefix = (target) => {
