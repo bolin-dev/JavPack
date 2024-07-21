@@ -9,7 +9,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqTrailer.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         pacopacomama.com
 // @connect         caribbeancom.com
 // @connect         tokyo-hot.com
@@ -23,9 +22,6 @@
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           GM_addStyle
-// @license         GPL-3.0-only
-// @compatible      chrome last 2 versions
-// @compatible      edge last 2 versions
 // ==/UserScript==
 
 Util.upLocal();
