@@ -9,7 +9,6 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqDB.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         hechuangxinxi.xyz
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
@@ -17,9 +16,6 @@
 // @grant           GM_listValues
 // @grant           GM_setValue
 // @grant           GM_getValue
-// @license         GPL-3.0-only
-// @compatible      chrome last 2 versions
-// @compatible      edge last 2 versions
 // ==/UserScript==
 
 Util.upStore();
@@ -66,7 +62,7 @@ Util.upStore();
     loading.style.display = "none";
   };
 
-  function toggleLists() {
+  const toggleLists = () => {
     magnets.style.display = "none";
     reviews.style.display = "none";
     lists.style.display = "block";
@@ -77,7 +73,7 @@ Util.upStore();
 
     onstart();
     ReqDB.related(mid).then(onload).catch(onerror).finally(onfinally);
-  }
+  };
 
   parent.addEventListener(
     "click",
