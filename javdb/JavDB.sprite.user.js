@@ -9,21 +9,17 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqSprite.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         javstore.net
 // @connect         blogjav.net
 // @connect         pixhost.to
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           GM_addStyle
-// @license         GPL-3.0-only
-// @compatible      chrome last 2 versions
-// @compatible      edge last 2 versions
 // ==/UserScript==
 
-(function () {
-  Util.upLocal();
+Util.upLocal();
 
+(function () {
   const mid = `sprite_${location.pathname.split("/").pop()}`;
 
   const setSprite = (sprite) => {
