@@ -19,6 +19,8 @@ class Offline {
     max: 10,
   };
 
+  static defaultRename = "${zh}${crack} ${code} ${title}";
+
   static defaultRenameTxt = {
     no: ".${no}",
     zh: "[中字]",
@@ -42,12 +44,14 @@ class Offline {
   static getActions(config, params) {
     return config
       .map(({ type = "plain", match = [], exclude = [], ...item }, index) => {
-        let { name, dir = "云下载", rename = "${zh}${crack} ${code} ${title}" } = item;
+        let { name, dir = "云下载", rename = this.defaultRename } = item;
         if (!name) return null;
 
+        rename = rename.toString().trim() || this.defaultRename;
         rename = rename.replaceAll("${zh}", "$zh");
         rename = rename.replaceAll("${crack}", "$crack");
-        if (rename && !rename.includes("${code}")) rename = "${code} " + rename;
+        if (!rename.includes("${code}")) rename = "${code} " + rename;
+
         if (type === "plain") return { ...item, dir: this.parseDir(dir, params), rename, idx: 0, index };
 
         let classes = params[type];
@@ -73,8 +77,8 @@ class Offline {
       })
       .flat()
       .filter((item) => Boolean(item) && item.dir.every(Boolean))
-      .map(({ color = "is-info", desc, ...options }) => {
-        return { ...options, color, desc: desc ?? options.dir.join(" / ") };
+      .map(({ color = "is-info", show = true, desc, ...options }) => {
+        return { ...options, color, show, desc: desc ? desc.toString() : options.dir.join("/") };
       });
   }
 
