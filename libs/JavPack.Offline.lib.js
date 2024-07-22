@@ -77,8 +77,8 @@ class Offline {
       })
       .flat()
       .filter((item) => Boolean(item) && item.dir.every(Boolean))
-      .map(({ color = "is-info", show = true, desc, ...options }) => {
-        return { ...options, color, show, desc: desc ? desc.toString() : options.dir.join("/") };
+      .map(({ color = "is-info", inMagnets = true, desc, ...options }) => {
+        return { ...options, color, inMagnets, desc: desc ? desc.toString() : options.dir.join("/") };
       });
   }
 
