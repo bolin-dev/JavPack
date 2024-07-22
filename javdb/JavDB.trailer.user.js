@@ -41,7 +41,7 @@ function getTrailer(dom = document) {
 }
 
 function useVideo() {
-  const handleKeydown = (e) => {
+  const onKeydown = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -53,7 +53,7 @@ function useVideo() {
     if (code === "KeyD" || code === "ArrowRight") target.currentTime += 4;
   };
 
-  const handleVolumechange = ({ target }) => localStorage.setItem("volume", target.volume);
+  const onVolumechange = ({ target }) => localStorage.setItem("volume", target.volume);
 
   return (src, poster) => {
     const video = document.createElement("video");
@@ -65,8 +65,8 @@ function useVideo() {
     video.preload = "none";
     video.volume = localStorage.getItem("volume") ?? 0.2;
 
-    video.addEventListener("keydown", handleKeydown);
-    video.addEventListener("volumechange", handleVolumechange);
+    video.addEventListener("keydown", onKeydown);
+    video.addEventListener("volumechange", onVolumechange);
     return video;
   };
 }
@@ -167,7 +167,7 @@ const guessStudio = ReqTrailer.useStudio();
     let lastY = null;
     let lastTime = null;
 
-    const handleMouseover = (e) => {
+    const onMouseover = (e) => {
       if (currElem) return;
 
       const target = e.target.closest(TARGET_SELECTOR);
@@ -178,11 +178,11 @@ const guessStudio = ReqTrailer.useStudio();
       prevTime = Date.now();
 
       currElem = target;
-      currElem.addEventListener("mousemove", handleMousemove);
+      currElem.addEventListener("mousemove", onMousemove);
       trackSpeedInterval = setInterval(trackSpeed, interval);
     };
 
-    const handleMousemove = (e) => {
+    const onMousemove = (e) => {
       lastX = e.pageX;
       lastY = e.pageY;
       lastTime = Date.now();
@@ -217,7 +217,7 @@ const guessStudio = ReqTrailer.useStudio();
       );
     };
 
-    const handleMouseout = ({ relatedTarget }) => {
+    const onMouseout = ({ relatedTarget }) => {
       if (!currElem) return;
 
       let node = relatedTarget;
@@ -232,7 +232,7 @@ const guessStudio = ReqTrailer.useStudio();
     };
 
     const destroy = (elem) => {
-      elem.removeEventListener("mousemove", handleMousemove);
+      elem.removeEventListener("mousemove", onMousemove);
       clearInterval(trackSpeedInterval);
     };
 
@@ -252,7 +252,7 @@ const guessStudio = ReqTrailer.useStudio();
       currElem = null;
     };
 
-    const handleScroll = () => {
+    const onScroll = () => {
       isScrolling = true;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
@@ -260,10 +260,10 @@ const guessStudio = ReqTrailer.useStudio();
       }, 500);
     };
 
-    document.addEventListener("mouseover", handleMouseover);
-    document.addEventListener("mouseout", handleMouseout);
+    document.addEventListener("mouseover", onMouseover);
+    document.addEventListener("mouseout", onMouseout);
     document.addEventListener("visibilitychange", onOver);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScroll);
     window.addEventListener("blur", onOver);
   }
 
