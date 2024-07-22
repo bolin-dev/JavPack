@@ -1,4 +1,6 @@
 class Offline {
+  static defaultRename = "${zh}${crack} ${code} ${title}";
+
   static defaultOptions = {
     tags: ["genres", "actors"],
     clean: true,
@@ -19,8 +21,6 @@ class Offline {
     max: 10,
   };
 
-  static defaultRename = "${zh}${crack} ${code} ${title}";
-
   static defaultRenameTxt = {
     no: ".${no}",
     zh: "[中字]",
@@ -28,9 +28,8 @@ class Offline {
   };
 
   static parseVar(txt, params, rep = "") {
-    return txt
-      .replace(/\$\{([a-z]+)\}/g, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep))
-      .trim();
+    const reg = /\$\{([a-z]+)\}/g;
+    return txt.replace(reg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
   }
 
   static parseDir(dir, params) {
@@ -58,6 +57,8 @@ class Offline {
         if (!Array.isArray(classes) || !classes.length) return null;
 
         if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
+        if (!classes.length) return null;
+
         if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
         if (!classes.length) return null;
 
@@ -82,7 +83,10 @@ class Offline {
       });
   }
 
-  static parseAction({ magnetOptions = {}, verifyOptions = {}, renameTxt = {}, ...options }, details) {
+  static getOptions(
+    { magnetOptions = {}, verifyOptions = {}, renameTxt = {}, ...options },
+    { codes, regex, ...details },
+  ) {
     options = { ...this.defaultOptions, ...options };
     magnetOptions = { ...this.defaultMagnetOptions, ...magnetOptions };
     verifyOptions = { ...this.defaultVerifyOptions, ...verifyOptions };
@@ -94,8 +98,9 @@ class Offline {
       magnetOptions,
       verifyOptions,
       renameTxt,
+      codes,
+      regex,
       code: details.code,
-      regex: details.regex,
       cover: cover ? details.cover : cover,
       rename: this.parseVar(rename, details),
       tags: tags
@@ -105,11 +110,11 @@ class Offline {
     };
   }
 
-  static parseMagnets(magnets, { filter, sort, max }, currIdx) {
+  static getMagnets(magnets, { filter, sort, max }) {
     if (filter) magnets = magnets.filter(filter);
     if (sort) magnets = magnets.toSorted(sort);
     if (max) magnets = magnets.slice(0, max);
-    return magnets.slice(currIdx);
+    return magnets;
   }
 
   static verifyAccount(key = "VERIFY_STATUS", val = "VERIFIED") {
