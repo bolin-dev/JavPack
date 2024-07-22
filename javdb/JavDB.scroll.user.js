@@ -36,7 +36,7 @@
   const useCallback = () => {
     let res;
     let next = nextUrl;
-    let isLoading = false;
+    let loading = false;
 
     const parse = (dom) => {
       const list = dom.querySelectorAll(selector.list);
@@ -45,13 +45,13 @@
     };
 
     const onfinally = () => {
-      isLoading = false;
+      loading = false;
     };
 
     return async (entries, observer) => {
-      if (!entries[0].isIntersecting || isLoading) return;
+      if (!entries[0].isIntersecting || loading) return;
 
-      isLoading = true;
+      loading = true;
       loadNode.textContent = "加载中...";
 
       try {
