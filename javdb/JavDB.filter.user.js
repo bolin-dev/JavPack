@@ -10,8 +10,9 @@
 // @run-at          document-end
 // ==/UserScript==
 
+const config = [];
+
 (function () {
-  const config = [];
   if (!config.length) return;
 
   const nodeList = document.querySelectorAll(".movie-list .item");
