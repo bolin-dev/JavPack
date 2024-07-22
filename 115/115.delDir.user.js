@@ -8,8 +8,8 @@
 // @icon            https://v.anxia.com/m_r/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
-// @connect         self
 // @connect         115.com
+// @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           window.close
@@ -33,10 +33,10 @@
     target.textContent = "删除";
     target.style.pointerEvents = "auto";
 
-    const videos = document.querySelectorAll("#js-video_list > li");
-    if (videos.length === 1) return window.close();
+    const playlist = document.querySelectorAll("#js-video_list > li");
+    if (playlist.length === 1) return window.close();
 
-    const curr = [...videos].find((video) => video.classList.contains("hover"));
+    const curr = [...playlist].find((item) => item.classList.contains("hover"));
     const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
     curr.remove();
     nearby.querySelector("a").click();
