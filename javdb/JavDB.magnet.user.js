@@ -57,21 +57,26 @@ Util.upLocal();
     refactor(JSON.parse(magnets));
   } else {
     refactor();
-    const magnetTarget = document.querySelector(`#${TARGET_ID}`);
-    magnetTarget.classList.add("is-loading");
+
+    const target = document.querySelector(`#${TARGET_ID}`);
+    const icon = target.querySelector("i");
+    target.classList.add("is-loading");
+
+    const onerror = () => {
+      target.classList.replace("is-success", "is-warning");
+      icon.setAttribute("class", "icon-close");
+    };
+
+    const onfinally = () => target.classList.remove("is-loading");
 
     ReqMagnet.btdig(code)
       .then((res) => {
-        const icon = magnetTarget.querySelector("i");
-        if (res) {
-          localStorage.setItem(mid, JSON.stringify(res));
-          res.length ? refactor(res) : icon.setAttribute("class", "icon-check-circle-o");
-        } else {
-          magnetTarget.classList.replace("is-success", "is-warning");
-          icon.setAttribute("class", "icon-close");
-        }
+        if (!res) return onerror();
+        localStorage.setItem(mid, JSON.stringify(res));
+        res.length ? refactor(res) : icon.setAttribute("class", "icon-check-circle-o");
       })
-      .finally(() => magnetTarget.classList.remove("is-loading"));
+      .catch(onerror)
+      .finally(onfinally);
   }
 
   function refactor(insert = []) {
