@@ -26,18 +26,13 @@ Util.upLocal();
     if (!sprite) return;
 
     const TARGET_ID = "x-sprite";
-    if (document.querySelector(`#${TARGET_ID}`)) return;
-
-    GM_addStyle(`
-    html:has(.fancybox-slide--current #${TARGET_ID}) {
-      overflow: hidden;
-    }
-    `);
+    if (document.getElementById(TARGET_ID)) return;
+    GM_addStyle(`html:has(.fancybox-slide--current #${TARGET_ID}){overflow:hidden}`);
 
     const IMG_ALT = "雪碧图";
     localStorage.setItem(mid, sprite);
-    const targetHTML = `<div style="display: none;" id="${TARGET_ID}"><img src="${sprite}" alt="${IMG_ALT}" loading="lazy" referrerpolicy="no-referrer"></div>`;
-    document.body.insertAdjacentHTML("beforeend", targetHTML);
+    const domStr = `<div style="display: none;" id="${TARGET_ID}"><img src="${sprite}" alt="${IMG_ALT}" loading="lazy" referrerpolicy="no-referrer"></div>`;
+    document.body.insertAdjacentHTML("beforeend", domStr);
 
     const insertHTML = `
     <a
