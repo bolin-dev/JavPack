@@ -29,39 +29,35 @@
   selector.list = `${selector.container} > :is(div, a)`;
   GM_addStyle("nav.pagination,#footer{display:none}");
 
-  const loading = document.createElement("div");
-  loading.setAttribute("class", "has-text-grey pt-4 has-text-centered");
-  container.insertAdjacentElement("afterend", loading);
+  const loadNode = document.createElement("div");
+  loadNode.setAttribute("class", "has-text-grey pt-4 has-text-centered");
+  container.insertAdjacentElement("afterend", loadNode);
 
   const useCallback = () => {
     let res;
     let next = nextUrl;
     let isLoading = false;
 
-    const parseDom = (dom) => {
+    const parse = (dom) => {
       const list = dom.querySelectorAll(selector.list);
       const url = dom.querySelector(selector.pagination)?.href;
       return { list, url };
+    };
+
+    const onfinally = () => {
+      isLoading = false;
     };
 
     return async (entries, observer) => {
       if (!entries[0].isIntersecting || isLoading) return;
 
       isLoading = true;
-      loading.textContent = "加载中...";
+      loadNode.textContent = "加载中...";
 
       try {
-        res = await Req.tasks(next, [parseDom]);
+        res = await Req.tasks(next, [parse]).finally(onfinally);
       } catch (_) {
-        isLoading = false;
-        loading.textContent = "加载失败，滚动以重试";
-        return;
-      }
-
-      isLoading = false;
-
-      if (!res) {
-        loading.textContent = "加载失败，滚动以重试";
+        loadNode.textContent = "加载失败，滚动以重试";
         return;
       }
 
@@ -73,7 +69,7 @@
       }
 
       if (!url) {
-        loading.textContent = "暂无更多";
+        loadNode.textContent = "暂无更多";
         return observer.disconnect();
       }
 
@@ -83,5 +79,5 @@
 
   const callback = useCallback();
   const observer = new IntersectionObserver(callback, { rootMargin: "500px" });
-  observer.observe(loading);
+  observer.observe(loadNode);
 })();
