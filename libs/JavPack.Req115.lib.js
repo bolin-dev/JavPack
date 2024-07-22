@@ -304,7 +304,7 @@ class Req115 extends Drive115 {
     });
   }
 
-  static async verifyTask(info_hash, { regex, code }, { max, filter }) {
+  static async verifyTask(info_hash, { regex, codes }, { max, filter }) {
     let file_id = "";
     let videos = [];
 
@@ -333,9 +333,8 @@ class Req115 extends Drive115 {
       const task = tasks.find((task) => task.info_hash === info_hash);
 
       if (task.status === 2) {
-        const codes = code.split(/-|_/).slice(1);
         const { data } = await this.videos(file_id);
-        videos = data.filter((item) => codes.every((it) => item.n.includes(it)));
+        videos = data.filter((item) => codes.some((it) => item.n.includes(it)));
       }
     }
 
@@ -419,41 +418,40 @@ class Req115 extends Drive115 {
     return this.upload({ ...res, filename, file });
   }
 
-  static async handleSmartOffline({ code, dir, regex, verifyOptions, rename, renameTxt, tags, clean, cover }, magnets) {
-    const cid = await this.generateCid(dir);
-    if (!cid) return { state: "error", msg: `${code} 获取目录失败` };
+  static async handleSmartOffline(options, magnets) {
+    const { dir, regex, codes, verifyOptions, code, rename, renameTxt, tags, clean, cover } = options;
 
-    const res = { state: "", msg: "" };
+    const cid = await this.generateCid(dir);
+    if (!cid) return { status: "error", msg: `获取目录失败: ${dir.join("/")}` };
+
+    const res = { status: "", msg: "" };
 
     for (let index = 0, { length } = magnets; index < length; index++) {
       const { url, zh, crack } = magnets[index];
 
       const { state, errcode, error_msg, info_hash } = await this.lixianAddTaskUrl(url, cid);
       if (!state) {
-        res.state = "error";
-        res.msg = `${code} ${error_msg}`;
+        res.msg = error_msg;
+        res.status = "error";
+        res.currIdx = index;
         if (errcode === 10008) continue;
-        if (errcode === 911) {
-          res.state = "warn";
-          res.msg = error_msg;
-          res.currIdx = index;
-        }
+        if (errcode === 911) res.status = "warn";
         break;
       }
 
-      const { file_id, videos } = await this.verifyTask(info_hash, { regex, code }, verifyOptions);
+      const { file_id, videos } = await this.verifyTask(info_hash, { regex, codes }, verifyOptions);
       if (!videos.length) {
         if (verifyOptions.clean) {
           this.lixianTaskDel([info_hash]);
           if (file_id) this.rbDelete([file_id], cid);
         }
-        res.state = "error";
-        res.msg = `${code} 离线失败`;
+        res.status = "error";
+        res.msg = `${code} 离线任务失败`;
         continue;
       }
 
-      res.state = "success";
-      res.msg = `${code} 离线成功`;
+      res.status = "success";
+      res.msg = `${code} 离线任务成功`;
 
       const { data: subs } = await this.subrips(file_id);
       if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
