@@ -184,12 +184,12 @@ const openVerify = () => {
   verifyTab.onclose = closeVerify;
 };
 
-const offline = async ({ options, magnets, onstart, onfinally }, currIdx = 0) => {
-  onstart();
+const offline = async ({ options, magnets, onstart, onprogress, onfinally }, currIdx = 0) => {
+  onstart?.();
   const res = await Req115.handleSmartOffline(options, magnets.slice(currIdx));
 
-  if (res.status !== "warn") return onfinally(res);
-  Util.setFavicon(res.status);
+  if (res.status !== "warn") return onfinally?.(res);
+  onprogress?.(res);
 
   if (GM_getValue(VERIFY_KEY) !== VERIFY_PENDING) {
     Grant.notify(res);
@@ -197,10 +197,10 @@ const offline = async ({ options, magnets, onstart, onfinally }, currIdx = 0) =>
   }
 
   const listener = GM_addValueChangeListener(VERIFY_KEY, (_name, _old_value, new_value) => {
-    if (new_value !== VERIFY_FAILED && new_value !== VERIFY_VERIFIED) return;
+    if (![VERIFY_FAILED, VERIFY_VERIFIED].includes(new_value)) return;
     GM_removeValueChangeListener(listener);
-    if (new_value === VERIFY_FAILED) return onfinally();
-    offline({ options, magnets, onstart, onfinally }, res.currIdx);
+    if (new_value === VERIFY_FAILED) return onfinally?.();
+    offline({ options, magnets, onstart, onprogress, onfinally }, res.currIdx);
   });
 };
 
@@ -234,19 +234,19 @@ const offline = async ({ options, magnets, onstart, onfinally }, currIdx = 0) =>
     const inMagnets = actions.find(({ inMagnets }) => Boolean(inMagnets));
     if (!inMagnets) return;
 
-    const inMagnetsAct = createAction(inMagnets);
+    const inMagnetsTxt = createAction(inMagnets);
     const magnetsNode = document.querySelector("#magnets-content");
 
-    const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsAct);
+    const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsTxt);
     const insertMagnets = () => magnetsNode.querySelectorAll(".item.columns").forEach(insert);
     insertMagnets();
 
     const callback = (mutations) => mutations.forEach(({ type }) => type === "childList" && insertMagnets());
-    const obs = new MutationObserver(callback);
-    obs.observe(magnetsNode, { childList: true, attributes: false, characterData: false });
+    const observer = new MutationObserver(callback);
+    observer.observe(magnetsNode, { childList: true, attributes: false, characterData: false });
   };
 
-  const queryMagnets = (target, options) => {
+  const findMagnets = (target, options) => {
     if (!target.closest("#magnets-content")) return Offline.getMagnets(getMagnets(), options);
     return [parseMagnet(target.closest(".item.columns"))];
   };
@@ -259,6 +259,8 @@ const offline = async ({ options, magnets, onstart, onfinally }, currIdx = 0) =>
       item.disabled = true;
     });
   };
+
+  const onprogress = (res) => Util.setFavicon(res.status);
 
   const onfinally = (res) => {
     document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => {
@@ -280,13 +282,14 @@ const offline = async ({ options, magnets, onstart, onfinally }, currIdx = 0) =>
     if (!action) return;
 
     const { magnetOptions, ...options } = Offline.getOptions(action, details);
-    const magnets = queryMagnets(target, magnetOptions);
+    const magnets = findMagnets(target, magnetOptions);
     if (!magnets.length) return;
 
     offline({
       options,
       magnets,
       onstart: () => onstart(target),
+      onprogress,
       onfinally,
     });
   };
