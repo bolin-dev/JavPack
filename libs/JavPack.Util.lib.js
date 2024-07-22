@@ -30,11 +30,10 @@ class Util {
     };
   }
 
-  static setTabBar({ text, icon }) {
-    if (text) document.title = text;
-    if (!icon) return;
+  static setFavicon(icon) {
+    const favicon = GM_getResourceURL(icon);
+    if (!favicon) return;
 
-    const href = GM_getResourceURL(icon);
-    document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", href));
+    document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", favicon));
   }
 }
