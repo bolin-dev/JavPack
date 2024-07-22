@@ -420,11 +420,10 @@ class Req115 extends Drive115 {
 
   static async handleSmartOffline(options, magnets) {
     const { dir, regex, codes, verifyOptions, code, rename, renameTxt, tags, clean, cover } = options;
-
     const cid = await this.generateCid(dir);
-    if (!cid) return { status: "error", msg: `获取目录失败: ${dir.join("/")}` };
 
-    const res = { status: "", msg: "" };
+    if (!cid) return { status: "error", msg: `获取目录失败: ${dir.join("/")}` };
+    const res = { msg: "", status: "" };
 
     for (let index = 0, { length } = magnets; index < length; index++) {
       const { url, zh, crack } = magnets[index];
@@ -445,13 +444,10 @@ class Req115 extends Drive115 {
           this.lixianTaskDel([info_hash]);
           if (file_id) this.rbDelete([file_id], cid);
         }
-        res.status = "error";
         res.msg = `${code} 离线任务失败`;
+        res.status = "error";
         continue;
       }
-
-      res.status = "success";
-      res.msg = `${code} 离线任务成功`;
 
       const { data: subs } = await this.subrips(file_id);
       if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
@@ -459,6 +455,8 @@ class Req115 extends Drive115 {
       if (clean) await this.handleClean([...videos, ...subs], file_id);
       if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);
 
+      res.msg = `${code} 离线任务成功`;
+      res.status = "success";
       break;
     }
 
