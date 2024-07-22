@@ -26,7 +26,7 @@
 Util.upStore();
 
 const VOID = "javascript:void(0);";
-const TARGET_CLASS = "x-match-item";
+const TARGET_CLASS = "x-match";
 const MatchChannel = new BroadcastChannel("Match115");
 
 function listenClick(onTabClose) {
@@ -97,22 +97,22 @@ function listenClick(onTabClose) {
     );
 
     return {
-      label: document.getElementById(LABEL_ID),
-      container: document.getElementById(CONTAINER_ID),
+      labelNode: document.getElementById(LABEL_ID),
+      containerNode: document.getElementById(CONTAINER_ID),
     };
   }
 
-  const { label, container } = createDom();
+  const { labelNode, containerNode } = createDom();
   const { codes, regex } = Util.codeParse(code);
 
   const matchCode = () => {
-    if (label.textContent === LOAD_TXT) return;
-    label.textContent = LOAD_TXT;
+    if (labelNode.textContent === LOAD_TXT) return;
+    labelNode.textContent = LOAD_TXT;
 
     Req115.videosSearch(codes.join(" "))
       .then(({ state, data }) => {
         if (!state) {
-          container.innerHTML = "查询失败，检查登录状态";
+          containerNode.innerHTML = "查询失败，检查登录状态";
           return;
         }
 
@@ -120,23 +120,23 @@ function listenClick(onTabClose) {
         GM_setValue(code, data);
 
         if (!data.length) {
-          container.innerHTML = "暂无资源";
+          containerNode.innerHTML = "暂无资源";
           return;
         }
 
-        container.innerHTML = data.reduce((acc, { pc, cid, t, n }) => {
+        containerNode.innerHTML = data.reduce((acc, { pc, cid, t, n }) => {
           return `${acc}<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
         }, "");
       })
       .finally(() => {
-        label.textContent = ORIGIN_TXT;
+        labelNode.textContent = ORIGIN_TXT;
       });
   };
 
   matchCode();
   listenClick(matchCode);
   unsafeWindow["reMatch"] = matchCode;
-  label.addEventListener("click", matchCode);
+  labelNode.addEventListener("click", matchCode);
   window.addEventListener("beforeunload", () => MatchChannel.postMessage(MID));
 })();
 
