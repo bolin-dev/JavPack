@@ -43,15 +43,15 @@
 })();
 
 (function () {
-  const videoList = document.querySelector("#js-video_list");
-  if (!videoList) return;
+  const playlist = document.querySelector("#js-video_list");
+  if (!playlist) return;
 
-  const fullscreen = document.querySelector(".player-h5 .bar-side .btn-opt[rel='fullscreen']");
+  const fullscreen = document.querySelector(".bar-side .btn-opt[rel='fullscreen']");
 
   document.addEventListener("keyup", ({ code }) => {
     if (code === "KeyF") return fullscreen?.click();
 
-    const curr = videoList.querySelector("li.hover");
+    const curr = playlist.querySelector("li.hover");
     if (code === "BracketRight") return curr.nextElementSibling?.querySelector("a").click();
     if (code === "BracketLeft") return curr.previousElementSibling?.querySelector("a").click();
   });
@@ -69,20 +69,20 @@
     handleReplaceVideos();
   });
 
-  const obs = new MutationObserver((mutationList, observer) => {
-    for (const { type } of mutationList) {
+  const obs = new MutationObserver((mutations, observer) => {
+    mutations.forEach(({ type }) => {
       if (type !== "childList") return;
       loaded = true;
       handleReplaceVideos();
       observer.disconnect();
-    }
+    });
   });
-  obs.observe(videoList, { childList: true, attributes: false, characterData: false });
+  obs.observe(playlist, { childList: true, attributes: false, characterData: false });
 
   function handleReplaceVideos() {
     if (!loaded || !videos.length) return;
 
-    videoList.innerHTML = `
+    playlist.innerHTML = `
     ${videos
       .map(({ pc, n }) => {
         return `
