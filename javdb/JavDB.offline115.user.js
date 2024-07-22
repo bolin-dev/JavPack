@@ -269,6 +269,7 @@ const offline = async ({ options, magnets, onstart, onfinally }, currIdx = 0) =>
     if (!res) return;
     Grant.notify(res);
     Util.setFavicon(res.status);
+    Req115.sleep(0.5).then(() => unsafeWindow["reMatch"]?.());
   };
 
   const onclick = (e) => {
