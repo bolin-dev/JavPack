@@ -17,7 +17,6 @@
 // @resource        pending https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
 // @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
-// @supportURL      https://t.me/+bAWrOoIqs3xmMjll
 // @connect         jdbstatic.com
 // @connect         aliyuncs.com
 // @connect         115.com
@@ -35,9 +34,6 @@
 // @grant           GM_setValue
 // @grant           GM_addStyle
 // @grant           GM_info
-// @license         GPL-3.0-only
-// @compatible      chrome last 2 versions
-// @compatible      edge last 2 versions
 // ==/UserScript==
 
 const config = [
@@ -86,21 +82,21 @@ const IS_DETAIL = PATHNAME.startsWith("/v/");
 
 const transToByte = Magnet.useTransByte();
 
-function createActions(actions) {
+const createAction = ({ color, index, idx, desc, name }) => {
+  return `
+  <button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}">
+    ${name}
+  </button>
+  `;
+};
+
+const createActions = (actions) => {
   return `
   <div class="${TARGET_CLASS} buttons are-small">
-  ${actions
-    .map(({ color, index, idx, desc, name }) => {
-      return `
-      <button class="button ${color}" data-index="${index}" data-idx="${idx}" title="${desc}">
-        ${name}
-      </button>
-      `;
-    })
-    .join("")}
+    ${actions.map(createAction).join("")}
   </div>
   `;
-}
+};
 
 function checkAction(e, actions) {
   const { target } = e;
@@ -341,7 +337,7 @@ async function handleClick(e, actions, dom, currIdx = 0) {
 
   const insertActions = useActions(actions);
   insertActions(childList);
-  window.addEventListener("scroll.loadmore", ({ detail }) => insertActions(detail));
+  window.addEventListener("JavDB.scroll", ({ detail }) => insertActions(detail));
   document.addEventListener("click", (e) => handleClick(e, actions), true);
 })();
 
