@@ -244,7 +244,7 @@ video:focus-visible {
   }
 
   & .buttons,
-  & .buttons button:last-child {
+  & .buttons button {
     margin-bottom: 0;
   }
 }
