@@ -21,13 +21,12 @@
 Util.upStore();
 
 (function () {
-  const parent = document.querySelector(".tabs.no-bottom ul");
-  const container = document.querySelector("#tabs-container");
-  const magnets = container.querySelector("#magnets");
-  const reviews = container.querySelector("#reviews");
-  const lists = container.querySelector("#lists");
-  const loading = container.querySelector("article[data-movie-tab-target=loading]");
   const mid = location.pathname.split("/").pop();
+  const tabsNode = document.querySelector(".tabs.no-bottom");
+  const magnetsNode = document.querySelector("#magnets");
+  const reviewsNode = document.querySelector("#reviews");
+  const listsNode = document.querySelector("#lists");
+  const loadNode = document.querySelector("#tabs-container > article");
 
   const createDom = (domStr) => {
     return `<article class="message video-panel"><div class="message-body">${domStr}</div></article>`;
@@ -38,59 +37,58 @@ Util.upStore();
   };
 
   const onstart = () => {
-    loading.style.display = "block";
+    loadNode.style.display = "block";
   };
 
   const onload = ({ data }, isCache = false) => {
     let domStr = "暂无数据";
 
     if (data?.lists?.length) {
-      const _lists = data.lists.map(({ id, name, movies_count }) => ({ id, name, movies_count }));
-      domStr = _lists.reduce((acc, cur) => `${acc}${createList(cur)}`, "");
+      const lists = data.lists.map(({ id, name, movies_count }) => ({ id, name, movies_count }));
+      domStr = lists.reduce((acc, cur) => `${acc}${createList(cur)}`, "");
       domStr = `<div class="plain-grid-list">${domStr}</div>`;
-      if (!isCache) GM_setValue(mid, _lists);
+      if (!isCache) GM_setValue(mid, lists);
     }
 
-    lists.innerHTML = createDom(domStr);
+    listsNode.innerHTML = createDom(domStr);
   };
 
   const onerror = () => {
-    lists.innerHTML = createDom("读取失败");
+    listsNode.innerHTML = createDom("读取失败");
   };
 
   const onfinally = () => {
-    loading.style.display = "none";
+    loadNode.style.display = "none";
   };
 
-  const toggleLists = () => {
-    magnets.style.display = "none";
-    reviews.style.display = "none";
-    lists.style.display = "block";
-    if (lists.hasChildNodes()) return;
+  const loadLists = () => {
+    magnetsNode.style.display = "none";
+    reviewsNode.style.display = "none";
+    listsNode.style.display = "block";
+    if (listsNode.hasChildNodes()) return;
 
-    const _lists = GM_getValue(mid);
-    if (_lists) return onload({ data: { lists: _lists } }, true);
+    const lists = GM_getValue(mid);
+    if (lists) return onload({ data: { lists } }, true);
 
     onstart();
     ReqDB.related(mid).then(onload).catch(onerror).finally(onfinally);
   };
 
-  parent.addEventListener(
-    "click",
-    (e) => {
-      if (e.target.nodeName === "UL") return;
+  const onclick = (e) => {
+    const target = e.target.closest("li");
+    if (!target) return;
 
-      const { dataset, classList } = e.target.closest("li");
-      if (dataset.movieTabTarget !== "listTab") return;
+    const { dataset, classList } = target;
+    if (dataset.movieTabTarget !== "listTab") return;
 
-      e.preventDefault();
-      e.stopPropagation();
-      if (classList.contains("is-active")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (classList.contains("is-active")) return;
 
-      parent.querySelector("li.is-active").classList.remove("is-active");
-      classList.add("is-active");
-      toggleLists();
-    },
-    true,
-  );
+    tabsNode.querySelector("li.is-active").classList.remove("is-active");
+    classList.add("is-active");
+    loadLists();
+  };
+
+  tabsNode.addEventListener("click", onclick, true);
 })();
