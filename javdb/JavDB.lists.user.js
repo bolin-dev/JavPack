@@ -36,10 +36,6 @@ Util.upStore();
     return `<a class="item box" href="/lists/${id}" title="${name}" target="_blank"><strong>${name}</strong><span>(${movies_count})</span></a>`;
   };
 
-  const onstart = () => {
-    loadNode.style.display = "block";
-  };
-
   const onload = ({ data }, isCache = false) => {
     let domStr = "暂无数据";
 
@@ -70,7 +66,7 @@ Util.upStore();
     const lists = GM_getValue(mid);
     if (lists) return onload({ data: { lists } }, true);
 
-    onstart();
+    loadNode.style.display = "block";
     ReqDB.related(mid).then(onload).catch(onerror).finally(onfinally);
   };
 
