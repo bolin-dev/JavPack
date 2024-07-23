@@ -13,10 +13,10 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
-// @resource        pending https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
-// @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
+// @resource        pend https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
+// @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
+// @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
 // @connect         jdbstatic.com
 // @connect         aliyuncs.com
 // @connect         115.com
@@ -251,7 +251,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   };
 
   const onstart = (target) => {
-    Util.setFavicon("pending");
+    Util.setFavicon("pend");
     target.classList.add("is-loading");
 
     document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => {
