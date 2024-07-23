@@ -32,7 +32,6 @@
 // @grant           window.close
 // @grant           GM_getValue
 // @grant           GM_setValue
-// @grant           GM_addStyle
 // @grant           GM_info
 // ==/UserScript==
 
@@ -278,6 +277,9 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     const target = e.target.closest(`.${TARGET_CLASS}`);
     if (!target) return;
 
+    e.preventDefault();
+    e.stopPropagation();
+
     const action = findAction(target.dataset, actions);
     if (!action) return;
 
@@ -292,6 +294,112 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       onprogress,
       onfinally,
     });
+  };
+
+  insertActions(actions);
+  document.addEventListener("click", onclick);
+})();
+
+(function () {
+  if (IS_DETAIL) return;
+
+  const MOVIE_SELECTOR = ".movie-list .item";
+  const movieNodeList = document.querySelectorAll(MOVIE_SELECTOR);
+  if (!movieNodeList.length) return;
+
+  const getParams = () => {
+    if (PATHNAME.startsWith("/tags")) {
+      const categoryNodeList = document.querySelectorAll("#tags .tag-category");
+      const genreNodeList = [...categoryNodeList].filter((item) => Number(item.dataset.cid) !== 10);
+      const genres = [...genreNodeList].map((item) => {
+        return [...item.querySelectorAll(".tag_labels .tag.is-info")].map((it) => it.textContent.trim());
+      });
+      return { genres: genres.flat() };
+    }
+
+    const getLastName = (txt) => txt.split(", ").at(-1).trim();
+    const actorSectionName = document.querySelector(".actor-section-name")?.textContent ?? "";
+    const sectionName = document.querySelector(".section-name")?.textContent ?? "";
+
+    if (PATHNAME.startsWith("/actors")) return { actors: [getLastName(actorSectionName)] };
+    if (PATHNAME.startsWith("/series")) return { series: sectionName };
+    if (PATHNAME.startsWith("/makers")) return { maker: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/directors")) return { director: getLastName(sectionName) };
+    if (PATHNAME.startsWith("/video_codes")) return { prefix: sectionName };
+    if (PATHNAME.startsWith("/lists")) return { list: actorSectionName };
+    if (PATHNAME.startsWith("/publishers")) return { publisher: getLastName(sectionName) };
+    return {};
+  };
+
+  const params = getParams();
+  const actions = Offline.getActions(config, params);
+  if (!actions.length) return;
+
+  const insertActions = (actions) => {
+    const actionsTxt = `
+    <div class="px-2 pt-2 buttons" style="position:absolute;z-index:2">
+      ${actions.map(createAction).join("")}
+    </div>
+    `;
+
+    const insert = (node) => node.querySelector(".cover").insertAdjacentHTML("beforeend", actionsTxt);
+    const insertList = (nodeList) => nodeList.forEach(insert);
+
+    insertList(movieNodeList);
+    window.addEventListener("JavDB.scroll", ({ detail }) => insertList(detail));
+  };
+
+  const onstart = (target) => {
+    target.classList.add("is-loading");
+
+    target
+      .closest(MOVIE_SELECTOR)
+      .querySelectorAll(`.${TARGET_CLASS}`)
+      .forEach((item) => {
+        item.disabled = true;
+      });
+  };
+
+  const onfinally = (target, res) => {
+    target
+      .closest(MOVIE_SELECTOR)
+      .querySelectorAll(`.${TARGET_CLASS}`)
+      .forEach((item) => {
+        item.disabled = false;
+        item.classList.remove("is-loading");
+      });
+
+    if (res) Req115.sleep(0.5).then(() => unsafeWindow["reMatch"]?.(target));
+  };
+
+  const onclick = async (e) => {
+    const target = e.target.closest(`.${TARGET_CLASS}`);
+    if (!target) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const action = findAction(target.dataset, actions);
+    if (!action) return;
+    onstart(target);
+
+    try {
+      const dom = await Req.request(target.closest("a").href);
+      const details = getDetails(dom);
+      if (!details) return onfinally(target);
+
+      const { magnetOptions, ...options } = Offline.getOptions(action, details);
+      const magnets = Offline.getMagnets(getMagnets(dom), magnetOptions);
+      if (!magnets.length) return onfinally(target);
+
+      offline({
+        options,
+        magnets,
+        onfinally: (res) => onfinally(target, res),
+      });
+    } catch (_) {
+      return onfinally(target);
+    }
   };
 
   insertActions(actions);
