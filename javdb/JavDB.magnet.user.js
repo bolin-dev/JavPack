@@ -32,10 +32,9 @@ Util.upLocal();
   const HD_STR = '<span class="tag is-primary is-small is-light">高清</span>';
 
   const code = document.querySelector(".first-block .value").textContent;
-  const isUncensored = document.querySelector(".title.is-4").textContent.includes("無碼");
-  const magnetNode = document.querySelector("#magnets-content");
+  const magnetsNode = document.querySelector("#magnets-content");
 
-  magnetNode.insertAdjacentHTML(
+  magnetsNode.insertAdjacentHTML(
     "beforebegin",
     `<div class="buttons are-small mb-1">
       <a class="button is-success" id="${TARGET_ID}" href="${HOST}/search?q=${code}" target="_blank">
@@ -53,35 +52,9 @@ Util.upLocal();
   const mid = `magnet_${location.pathname.split("/").pop()}`;
   const magnets = localStorage.getItem(mid);
 
-  if (magnets) {
-    refactor(JSON.parse(magnets));
-  } else {
-    refactor();
-
-    const target = document.querySelector(`#${TARGET_ID}`);
-    const icon = target.querySelector("i");
-    target.classList.add("is-loading");
-
-    const onerror = () => {
-      target.classList.replace("is-success", "is-warning");
-      icon.setAttribute("class", "icon-close");
-    };
-
-    const onfinally = () => target.classList.remove("is-loading");
-
-    ReqMagnet.btdig(code)
-      .then((res) => {
-        if (!res) return onerror();
-        localStorage.setItem(mid, JSON.stringify(res));
-        res.length ? refactor(res) : icon.setAttribute("class", "icon-check-circle-o");
-      })
-      .catch(onerror)
-      .finally(onfinally);
-  }
-
-  function refactor(insert = []) {
-    magnetNode.innerHTML =
-      [...magnetNode.querySelectorAll(".item.columns")]
+  const refactor = (insert = []) => {
+    magnetsNode.innerHTML =
+      [...magnetsNode.querySelectorAll(".item.columns")]
         .map((item) => {
           const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
           return {
@@ -110,7 +83,7 @@ Util.upLocal();
 
           if (!zh) zh = Magnet.zhReg.test(name);
 
-          const crack = !isUncensored && Magnet.crackReg.test(name);
+          const crack = Magnet.crackReg.test(name);
 
           if (!hd) hd = parseFloat(size) >= hdSize;
 
@@ -156,9 +129,34 @@ Util.upLocal();
           `;
         })
         .join("") || "暂无数据";
+  };
+
+  if (magnets) {
+    refactor(JSON.parse(magnets));
+  } else {
+    refactor();
+
+    const target = document.getElementById(TARGET_ID);
+    const iconNode = target.querySelector("i");
+
+    const onfinally = () => target.classList.remove("is-loading");
+
+    const onerror = () => {
+      target.classList.replace("is-success", "is-warning");
+      iconNode.setAttribute("class", "icon-close");
+    };
+
+    const onload = (res) => {
+      if (!res) return onerror();
+      localStorage.setItem(mid, JSON.stringify(res));
+      res.length ? refactor(res) : iconNode.setAttribute("class", "icon-check-circle-o");
+    };
+
+    target.classList.add("is-loading");
+    ReqMagnet.btdig(code).then(onload).catch(onerror).finally(onfinally);
   }
 
-  magnetNode.addEventListener("contextmenu", (e) => {
+  magnetsNode.addEventListener("contextmenu", (e) => {
     const target = e.target.closest("a");
     if (!target) return;
 
