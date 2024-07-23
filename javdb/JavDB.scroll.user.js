@@ -20,8 +20,8 @@
     pagination: "nav.pagination .pagination-next",
   };
 
-  const container = document.querySelector(selector.container);
-  if (!container) return;
+  const containerNode = document.querySelector(selector.container);
+  if (!containerNode) return;
 
   const nextUrl = document.querySelector(selector.pagination)?.href;
   if (!nextUrl) return;
@@ -31,7 +31,7 @@
 
   const loadNode = document.createElement("div");
   loadNode.setAttribute("class", "has-text-grey pt-4 has-text-centered");
-  container.insertAdjacentElement("afterend", loadNode);
+  containerNode.insertAdjacentElement("afterend", loadNode);
 
   const useCallback = () => {
     let res;
@@ -64,7 +64,7 @@
       const { list, url } = res;
 
       if (list.length) {
-        container.append(...list);
+        containerNode.append(...list);
         window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail: list }));
       }
 
