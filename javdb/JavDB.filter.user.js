@@ -34,7 +34,7 @@ const config = [];
   const filter = (list) => {
     list.forEach((item) => {
       const txt = parse(item);
-      if (config.some((cfg) => cfg.test(txt))) item.classList.add("is-hidden");
+      if (config.some((reg) => reg.test(txt))) item.classList.add("is-hidden");
     });
   };
 
