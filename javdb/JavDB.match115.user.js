@@ -164,6 +164,44 @@ const listenClick = (onclose) => {
     let lock = false;
     let queue = [];
 
+    GM_addStyle(`
+    ${MOVIE_SELECTOR} a:has(a.is-danger, a.is-warning, a.is-info, a.is-success) {
+      &:active,
+      &:hover,
+      &:focus,
+      &:focus-visible {
+        box-shadow: none !important;
+      }
+      .video-title {
+        font-weight: bold;
+      }
+    }
+    .movie-list:has(.item) {
+      --x-danger: #ee1742;
+      --x-warning: #ffd257;
+      --x-info: #2b74b1;
+      --x-success: #34a873;
+    }
+    [data-theme="dark"] .movie-list:has(.item) {
+      --x-danger: #f14668;
+      --x-warning: #ffe08a;
+      --x-info: #3e8ed0;
+      --x-success: #48c78e;
+    }
+    ${MOVIE_SELECTOR}:has(.video-title a.is-danger) {
+      border: 0.375rem solid var(--x-danger);
+    }
+    ${MOVIE_SELECTOR}:has(.video-title a.is-warning) {
+      border: 0.375rem solid var(--x-warning);
+    }
+    ${MOVIE_SELECTOR}:has(.video-title a.is-info) {
+      border: 0.375rem solid var(--x-info);
+    }
+    ${MOVIE_SELECTOR}:has(.video-title a.is-success) {
+      border: 0.375rem solid var(--x-success);
+    }
+    `);
+
     const getList = (nodeList) => {
       return [...nodeList].map((node) => {
         const mid = node.querySelector("a").href.split("/").pop();
