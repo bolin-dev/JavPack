@@ -111,6 +111,7 @@ class Offline {
   }
 
   static getMagnets(magnets, { filter, sort, max }) {
+    if (!magnets?.length) return [];
     if (filter) magnets = magnets.filter(filter);
     if (sort) magnets = magnets.toSorted(sort);
     if (max) magnets = magnets.slice(0, max);
