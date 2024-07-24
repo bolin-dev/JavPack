@@ -107,7 +107,7 @@ class Drive115 extends Req {
    * @param {string[]} fid Array of file IDs
    * @param {string} pid Parent folder ID
    */
-  static rbDelete(fid, pid) {
+  static rbDelete(fid, pid = "") {
     return this.request({
       method: "POST",
       url: "https://webapi.115.com/rb/delete",
