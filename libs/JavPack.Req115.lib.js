@@ -115,6 +115,35 @@ class Drive115 extends Req {
     });
   }
 
+  static rb() {
+    return this.request({
+      url: "https://webapi.115.com/rb",
+      params: {
+        aid: 7,
+        cid: 0,
+        offset: 0,
+        limit: this.limit,
+        source: "",
+        format: "json",
+      },
+      responseType: "json",
+    });
+  }
+
+  /**
+   * Bulk clean files
+   * @param {string} password
+   * @param {string[]} rid Array of deleted file IDs
+   * @returns
+   */
+  static rbClean(password, rid) {
+    return this.request({
+      method: "POST",
+      url: "https://webapi.115.com/rb/clean",
+      data: { password, rid },
+    });
+  }
+
   /**
    * Bulk rename files
    * @param {object} files_new_name { [fid]: rename }
