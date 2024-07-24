@@ -422,15 +422,7 @@ class Req115 extends Drive115 {
     return this.filesBatchLabel(files.map(({ fid }) => fid).toString(), labels.toString());
   }
 
-  static async rbCleanByCid(cid, pwd) {
-    const res = await this.rb();
-    if (!res?.data.length) return;
-
-    const rid = res.data.filter((item) => item.cid === cid).map((item) => item.id);
-    if (rid.length) this.rbClean(pwd, rid);
-  }
-
-  static async handleClean(files, cid, pwd) {
+  static async handleClean(files, cid) {
     await this.filesMove(
       files.map((file) => file.fid),
       cid,
@@ -442,8 +434,7 @@ class Req115 extends Drive115 {
       .filter((item) => !files.some(({ fid }) => fid === item.fid))
       .map((item) => item.fid ?? item.cid);
 
-    if (!rm_fids.length) return;
-    this.rbDelete(rm_fids, cid).then(() => pwd && this.rbCleanByCid(cid, pwd));
+    if (rm_fids.length) return this.rbDelete(rm_fids, cid);
   }
 
   static async handleUpload(url, cid, filename) {
@@ -454,6 +445,14 @@ class Req115 extends Drive115 {
     if (!res?.host) return res;
 
     return this.upload({ ...res, filename, file });
+  }
+
+  static async rbCleanByCid(cid, pwd) {
+    const res = await this.rb();
+    if (!res?.data.length) return;
+
+    const rid = res.data.filter((item) => item.cid === cid).map((item) => item.id);
+    if (rid.length) this.rbClean(pwd, rid);
   }
 
   static async handleSmartOffline(options, magnets) {
@@ -490,8 +489,9 @@ class Req115 extends Drive115 {
       const { data: subs } = await this.subrips(file_id);
       if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
       if (tags.length) this.handleTags(videos, tags);
-      if (clean) await this.handleClean([...videos, ...subs], file_id, cleanPwd);
+      if (clean) await this.handleClean([...videos, ...subs], file_id);
       if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);
+      if (cleanPwd && clean) this.rbCleanByCid(file_id, cleanPwd);
 
       res.msg = `${code} 离线任务成功`;
       res.status = "success";
