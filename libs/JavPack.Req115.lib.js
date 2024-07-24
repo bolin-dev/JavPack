@@ -422,7 +422,15 @@ class Req115 extends Drive115 {
     return this.filesBatchLabel(files.map(({ fid }) => fid).toString(), labels.toString());
   }
 
-  static async handleClean(files, cid) {
+  static async rbCleanByCid(cid, pwd) {
+    const res = await this.rb();
+    if (!res?.data.length) return;
+
+    const rid = res.data.filter((item) => item.cid === cid).map((item) => item.id);
+    if (rid.length) this.rbClean(pwd, rid);
+  }
+
+  static async handleClean(files, cid, pwd) {
     await this.filesMove(
       files.map((file) => file.fid),
       cid,
@@ -434,7 +442,8 @@ class Req115 extends Drive115 {
       .filter((item) => !files.some(({ fid }) => fid === item.fid))
       .map((item) => item.fid ?? item.cid);
 
-    if (rm_fids.length) return this.rbDelete(rm_fids, cid);
+    if (!rm_fids.length) return;
+    this.rbDelete(rm_fids, cid).then(() => pwd && this.rbCleanByCid(cid, pwd));
   }
 
   static async handleUpload(url, cid, filename) {
@@ -448,7 +457,7 @@ class Req115 extends Drive115 {
   }
 
   static async handleSmartOffline(options, magnets) {
-    const { dir, regex, codes, verifyOptions, code, rename, renameTxt, tags, clean, cover } = options;
+    const { dir, regex, codes, verifyOptions, code, rename, renameTxt, tags, clean, cleanPwd, cover } = options;
     const cid = await this.generateCid(dir);
 
     if (!cid) return { status: "error", msg: `获取目录失败: ${dir.join("/")}` };
@@ -481,7 +490,7 @@ class Req115 extends Drive115 {
       const { data: subs } = await this.subrips(file_id);
       if (rename) this.handleRename(videos, file_id, { rename, renameTxt, zh, crack, subs });
       if (tags.length) this.handleTags(videos, tags);
-      if (clean) await this.handleClean([...videos, ...subs], file_id);
+      if (clean) await this.handleClean([...videos, ...subs], file_id, cleanPwd);
       if (cover) await this.handleUpload(cover, file_id, `${code}.cover.jpg`);
 
       res.msg = `${code} 离线任务成功`;

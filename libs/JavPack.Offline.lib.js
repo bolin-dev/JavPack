@@ -4,6 +4,7 @@ class Offline {
   static defaultOptions = {
     tags: ["genres", "actors"],
     clean: true,
+    cleanPwd: "",
     cover: true,
   };
 

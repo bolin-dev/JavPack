@@ -73,7 +73,8 @@
 | `renameTxt.zh`         | `string`                          | 重命名中字匹配格式                                                                                                                          | `"[中字]"`                                   |
 | `renameTxt.crack`      | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
 | `tags`                 | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
-| `clean`                | `boolean`                         | 清理垃圾                                                                                                                                    | `true`                                       |
+| `clean`                | `boolean`                         | 清理不相关文件                                                                                                                              | `true`                                       |
+| `cleanPwd`             | `string`                          | 从回收站删除对应文件                                                                                                                        | `""`                                         |
 | `cover`                | `boolean`                         | 上传封面                                                                                                                                    | `true`                                       |
 
 <details><summary>动态参数及示例</summary>
