@@ -1,11 +1,13 @@
 class Req {
+  static defaultDetails = { method: "GET", timeout: 10000 };
+
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
   static request(details) {
     if (typeof details === "string") details = { url: details };
     if (!details.url) throw new Error("URL is required");
 
-    details = { method: "GET", timeout: 10000, ...details };
+    details = { ...this.defaultDetails, ...details };
     const { params, method, data } = details;
 
     if (params) {
@@ -58,13 +60,11 @@ class Req {
   }
 
   static async tasks(res, steps) {
-    for (const step of steps) {
-      if (!res) break;
+    for (let index = 0, { length } = steps; index < length; index++) {
       res = await this.request(res);
-      res = step(res);
+      res = steps[index](res);
+      if (!res) throw new Error("No result found");
     }
-
-    if (!res) throw new Error("No result found");
     return res;
   }
 }
