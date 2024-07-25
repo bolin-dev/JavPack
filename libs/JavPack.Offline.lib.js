@@ -43,7 +43,7 @@ class Offline {
 
   static getActions(config, params) {
     return config
-      .map(({ type = "plain", match = [], exclude = [], ...item }, index) => {
+      .flatMap(({ type = "plain", match = [], exclude = [], ...item }, index) => {
         let { name, dir = "云下载", rename = this.defaultRename } = item;
         if (!name) return null;
 
@@ -77,7 +77,6 @@ class Offline {
           };
         });
       })
-      .flat()
       .filter((item) => Boolean(item) && item.dir.every(Boolean))
       .map(({ color = "is-info", inMagnets = true, desc, ...options }) => {
         return { ...options, color, inMagnets, desc: desc ? desc.toString() : options.dir.join("/") };
@@ -104,10 +103,7 @@ class Offline {
       code: details.code,
       cover: cover ? details.cover : cover,
       rename: this.parseVar(rename, details),
-      tags: tags
-        .map((key) => details[key])
-        .flat()
-        .filter(Boolean),
+      tags: tags.flatMap((key) => details[key]).filter(Boolean),
     };
   }
 

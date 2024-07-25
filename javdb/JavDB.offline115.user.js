@@ -311,10 +311,10 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     if (PATHNAME.startsWith("/tags")) {
       const categoryNodeList = document.querySelectorAll("#tags .tag-category");
       const genreNodeList = [...categoryNodeList].filter((item) => Number(item.dataset.cid) !== 10);
-      const genres = [...genreNodeList].map((item) => {
+      const genres = [...genreNodeList].flatMap((item) => {
         return [...item.querySelectorAll(".tag_labels .tag.is-info")].map((it) => it.textContent.trim());
       });
-      return { genres: genres.flat() };
+      return { genres };
     }
 
     const getLastName = (txt) => txt.split(", ").at(-1).trim();
