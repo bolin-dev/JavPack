@@ -1,5 +1,5 @@
 class Drive115 extends Req {
-  static limit = 11500;
+  static limit = 1150;
 
   // Get file list
   static files(cid = "0", params = {}) {
