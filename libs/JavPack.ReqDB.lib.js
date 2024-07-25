@@ -4,17 +4,17 @@ class ReqDB extends Req {
   static signature() {
     const TS_KEY = "TS";
     const SIGN_KEY = "SIGN";
-    const CURR = Math.floor(Date.now() / 1000);
 
-    let ts = localStorage.getItem(TS_KEY) || 0;
-    if (CURR - ts <= 20) return localStorage.getItem(SIGN_KEY) || "";
+    const curr = Math.floor(Date.now() / 1000);
+    const ts = localStorage.getItem(TS_KEY) || 0;
+    if (curr - ts <= 20) return localStorage.getItem(SIGN_KEY);
 
     const secret = md5(
-      `${CURR}71cf27bb3c0bcdf207b64abecddc970098c7421ee7203b9cdae54478478a199e7d5a6e1a57691123c1a931c057842fb73ba3b3c83bcd69c17ccf174081e3d8aa`,
+      `${curr}71cf27bb3c0bcdf207b64abecddc970098c7421ee7203b9cdae54478478a199e7d5a6e1a57691123c1a931c057842fb73ba3b3c83bcd69c17ccf174081e3d8aa`,
     );
-    const sign = `${CURR}.lpw6vgqzsp.${secret}`;
+    const sign = `${curr}.lpw6vgqzsp.${secret}`;
 
-    localStorage.setItem(TS_KEY, CURR);
+    localStorage.setItem(TS_KEY, curr);
     localStorage.setItem(SIGN_KEY, sign);
     return sign;
   }
@@ -33,7 +33,7 @@ class ReqDB extends Req {
   // Related lists
   static related(movie_id, page = 1) {
     return this.req({
-      url: `v1/lists/related`,
+      url: "v1/lists/related",
       params: {
         page,
         movie_id,
