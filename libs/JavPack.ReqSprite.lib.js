@@ -44,7 +44,7 @@ class ReqSprite extends Req {
         const regex = /\.(jpg|png)$/i;
 
         let img = link.href;
-        if (!img || img.includes(".mp4")) return;
+        if (!img) return;
 
         if (regex.test(img)) {
           img = img.replace("//pixhost.to/show/", "//img89.pixhost.to/images/");
@@ -52,7 +52,7 @@ class ReqSprite extends Req {
         }
 
         img = link.querySelector("img")?.src;
-        if (!img || img.includes(".mp4")) return;
+        if (!img) return;
 
         if (regex.test(img)) {
           img = img.replace(".th.", ".");
