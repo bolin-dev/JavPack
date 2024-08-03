@@ -59,9 +59,11 @@
   const playlistNode = document.querySelector("#js-video_list");
   if (!playlistNode) return;
 
+  const favNode = document.querySelector("#js-play_slide_opt a[btn='fav']");
   const fullscreenNode = document.querySelector(".bar-side .btn-opt[rel='fullscreen']");
 
   const onkeyup = ({ code }) => {
+    if (code === "KeyL") return favNode?.click();
     if (code === "KeyF") return fullscreenNode?.click();
 
     const currNode = playlistNode.querySelector("li.hover");
