@@ -26,17 +26,15 @@
 
     const { parent_id, file_id } = await Req115.filesVideo(pc);
     const { data } = await Req115.videos(parent_id);
+    Req115.rbDelete([data.length === 1 ? parent_id : file_id]);
 
-    const fid = data.length === 1 ? parent_id : file_id;
-    await Req115.rbDelete([fid]);
+    const listNode = document.querySelector("#js-video_list");
+    if (listNode.querySelectorAll("li").length === 1) return window.close();
 
     target.textContent = "删除";
     target.style.pointerEvents = "auto";
 
-    const playlist = document.querySelectorAll("#js-video_list > li");
-    if (playlist.length === 1) return window.close();
-
-    const curr = [...playlist].find((item) => item.classList.contains("hover"));
+    const curr = listNode.querySelector(".hover");
     const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
     curr.remove();
     nearby.querySelector("a").click();
@@ -49,7 +47,5 @@
   delNode.addEventListener("click", smartDel);
 
   document.querySelector(".vt-headline")?.insertAdjacentElement("beforeend", delNode);
-  document.addEventListener("keyup", ({ code }) => {
-    if (code === "Delete") delNode.click();
-  });
+  document.addEventListener("keyup", ({ code }) => code === "Delete" && delNode.click());
 })();
