@@ -28,13 +28,13 @@
     const { data } = await Req115.videos(parent_id);
     Req115.rbDelete([data.length === 1 ? parent_id : file_id]);
 
-    const listNode = document.querySelector("#js-video_list");
-    if (listNode.querySelectorAll("li").length === 1) return window.close();
+    const playlistNode = document.querySelector("#js-video_list");
+    if (playlistNode.querySelectorAll("li").length === 1) return window.close();
 
     target.textContent = "删除";
     target.style.pointerEvents = "auto";
 
-    const curr = listNode.querySelector(".hover");
+    const curr = playlistNode.querySelector(".hover");
     const nearby = curr.nextElementSibling ?? curr.previousElementSibling;
     curr.remove();
     nearby.querySelector("a").click();
