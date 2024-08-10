@@ -26,7 +26,7 @@
 
     const { parent_id, file_id } = await Req115.filesVideo(pc);
     const { data } = await Req115.videos(parent_id);
-    Req115.rbDelete([data.length === 1 ? parent_id : file_id]);
+    await Req115.rbDelete([data.length === 1 ? parent_id : file_id]);
 
     const playlistNode = document.querySelector("#js-video_list");
     if (playlistNode.querySelectorAll("li").length === 1) return window.close();
