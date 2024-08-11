@@ -17,7 +17,7 @@ class Offline {
   };
 
   static defaultVerifyOptions = {
-    filter: ({ s }) => s > 314572800,
+    filter: ({ s }) => s > 52428800,
     clean: true,
     max: 10,
   };
