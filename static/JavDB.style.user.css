@@ -22,7 +22,7 @@
 
     .column-video-cover a,
     .tile-small .tile-item img {
-      background-color: #333;
+      background-color: #444;
     }
   }
 }
@@ -193,6 +193,11 @@ nav.sub-header,
   }
 
   .item {
+    .cover img {
+      object-fit: contain;
+      width: 100%;
+    }
+
     .cover:hover img {
       z-index: 0;
       transform: none;
