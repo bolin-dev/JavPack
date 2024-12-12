@@ -13,12 +13,11 @@
 // ==/UserScript==
 
 (function () {
-  const MATCH_SELECTOR = ":is(.actors, .movie-list, .section-container) a";
-  const EXCLUDE_SELECTOR = ".button";
+  const MATCH_SELECTOR = ":is(.actors, .movie-list, .section-container) a:not(.button)";
 
   const handleOpen = (e) => {
     const target = e.target.closest(MATCH_SELECTOR);
-    if (!target || e.target.matches(EXCLUDE_SELECTOR)) return;
+    if (!target) return;
 
     e.preventDefault();
     e.stopPropagation();
