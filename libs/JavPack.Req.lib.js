@@ -44,8 +44,8 @@ class Req {
 
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
-        ontimeout: () => reject(new Error("Request timeout")),
-        onerror: () => reject(new Error("Request error")),
+        ontimeout: () => reject(new Error(`Request timed out for ${details.url}`)),
+        onerror: () => reject(new Error(`Request error for ${details.url}`)),
         onload: ({ status, finalUrl, response }) => {
           if (status >= 400) reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
           if (method === "HEAD") resolve(finalUrl);
