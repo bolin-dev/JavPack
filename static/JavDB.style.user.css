@@ -481,6 +481,10 @@ br + .title {
   margin-bottom: 1rem !important;
 }
 
+.section:has(.video-detail) {
+  padding-bottom: 0;
+}
+
 .video-meta-panel {
   padding: 0.75rem;
   margin-bottom: 1rem;
