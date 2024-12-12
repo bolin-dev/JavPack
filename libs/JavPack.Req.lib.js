@@ -4,19 +4,20 @@ class Req {
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
   static request(details) {
+    if (!details) throw new Error("Details is required");
+
     if (typeof details === "string") details = { url: details };
-    if (!details.url) throw new Error("URL is required");
+    if (!details?.url) throw new Error("URL is required");
 
     details = { ...this.defaultDetails, ...details };
     const { params, method, data } = details;
 
-    if (params) {
-      const url = new URL(details.url);
+    if (this.isPlainObj(params)) {
+      const urlObj = new URL(details.url);
       const searchParams = new URLSearchParams(params);
 
-      searchParams.forEach((val, key) => url.searchParams.append(key, val));
-      details.url = url.toString();
-
+      urlObj.searchParams.append(...searchParams.entries());
+      details.url = urlObj.toString();
       delete details.params;
     }
 
@@ -47,11 +48,7 @@ class Req {
         onerror: () => reject(new Error("Request error")),
         onload: ({ status, finalUrl, response }) => {
           if (status >= 400) reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
-
-          if (method === "HEAD") {
-            finalUrl.includes("removed") ? reject(new Error("Removed content")) : resolve(finalUrl);
-          }
-
+          if (method === "HEAD") resolve(finalUrl);
           resolve(response);
         },
         ...details,
@@ -63,7 +60,6 @@ class Req {
     for (let index = 0, { length } = steps; index < length; index++) {
       res = await this.request(res);
       res = steps[index](res);
-      if (!res) throw new Error("No result found");
     }
     return res;
   }
