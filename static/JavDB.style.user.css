@@ -626,11 +626,6 @@ br + .title {
   margin-bottom: 0;
 }
 
-#magnets-content {
-  max-height: calc(54px * 5);
-  overflow-y: overlay;
-}
-
 .review-items .review-item {
   padding: 0.75rem 0;
 
