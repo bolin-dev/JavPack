@@ -1,5 +1,6 @@
 :root {
   --x-gap: 0.75rem;
+  --x-radius: 2px;
   --x-size-sm: 0.75rem;
   --x-size-md: 0.875rem;
   --x-trans: all 0.3s cubic-bezier(0, 0, 0.5, 1);
@@ -174,6 +175,8 @@ nav.sub-header,
 
   .box {
     padding: 0 0 0.5rem;
+    overflow: hidden;
+    border-radius: var(--x-radius);
     transition: var(--x-trans);
 
     &:is(:focus, :hover, :active) {
@@ -311,7 +314,9 @@ nav.pagination {
 
   .box {
     margin-bottom: 0;
+    overflow: hidden;
     font-size: var(--x-size-md);
+    border-radius: var(--x-radius);
     transition: var(--x-trans);
 
     &:is(:focus, :hover, :active) {
@@ -397,7 +402,9 @@ br + .title {
 
   .box {
     padding: 1rem;
+    overflow: hidden;
     font-size: var(--x-size-md);
+    border-radius: var(--x-radius);
     transition: var(--x-trans);
 
     &:is(:focus, :hover, :active) {
@@ -653,6 +660,7 @@ br + .title {
 
 .plain-grid-list {
   gap: var(--x-gap);
+  align-items: start;
 
   a.box {
     display: flex;
@@ -660,7 +668,9 @@ br + .title {
     align-items: baseline;
     padding: 1rem;
     margin-bottom: 0;
+    overflow: hidden;
     font-size: var(--x-size-md);
+    border-radius: var(--x-radius);
     transition: var(--x-trans);
 
     &:is(:focus, :hover, :active) {
