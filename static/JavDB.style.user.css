@@ -21,6 +21,7 @@
       border-bottom: none !important;
     }
 
+    .preview-images a,
     .column-video-cover a,
     .tile-small .tile-item img {
       background-color: #444;
@@ -618,11 +619,12 @@ br + .title {
 
 .preview-images a {
   aspect-ratio: 4 / 3;
+  background-color: #aa9084;
 
   img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
@@ -697,7 +699,8 @@ br + .title {
   img {
     flex: 1;
     width: 100%;
-    object-fit: contain;
+    margin-bottom: 0.375rem;
     background-color: #aa9084;
+    object-fit: contain;
   }
 }
