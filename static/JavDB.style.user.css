@@ -2,8 +2,8 @@
   --x-gap: 0.75rem;
   --x-size-sm: 0.75rem;
   --x-size-md: 0.875rem;
-  --x-trans: all 0.2s ease;
-  --x-shadow: 0 1px 2px -2px rgb(0 0 0 / 16%), 0 3px 6px 0 rgb(0 0 0 / 12%), 0 5px 12px 4px rgb(0 0 0 / 9%);
+  --x-trans: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  --x-shadow: 2px 4px 16px #00000029;
 
   &[data-theme="dark"] {
     background-color: transparent;
