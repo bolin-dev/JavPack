@@ -1,5 +1,5 @@
 :root {
-  --x-gap: 0.75rem;
+  --x-gap: 1rem;
   --x-radius: 2px;
   --x-size-sm: 0.75rem;
   --x-size-md: 0.875rem;
@@ -556,7 +556,7 @@ br + .title {
 
 .video-panel {
   .tile-images {
-    gap: var(--x-gap);
+    gap: 0.75rem;
     font-size: 0;
 
     .tile-item :is(.video-number, .video-title) {
@@ -659,7 +659,7 @@ br + .title {
 }
 
 .plain-grid-list {
-  gap: var(--x-gap);
+  gap: 0.75rem;
   align-items: start;
 
   a.box {
