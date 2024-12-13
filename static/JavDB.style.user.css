@@ -48,6 +48,7 @@ nav.sub-header,
 .actor-filter hr,
 #magnets .top-meta,
 .app-desktop-banner,
+.x-load + nav.pagination,
 #magnets-content .magnet-name br,
 #navbar-menu-hero .navbar-start > a.navbar-item,
 .movie-panel-info .review-buttons .panel-block:nth-child(2) {

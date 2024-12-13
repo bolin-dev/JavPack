@@ -11,69 +11,65 @@
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
-// @grant           GM_addStyle
 // ==/UserScript==
 
 (function () {
   const selector = {
-    container: ":is(.actors, .movie-list, .section-container)",
-    pagination: "nav.pagination .pagination-next",
+    cont: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)",
+    list: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination) > :is(div, a)",
+    next: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination) + nav.pagination .pagination-next",
   };
 
-  const containerNode = document.querySelector(selector.container);
-  if (!containerNode) return;
+  const contNode = document.querySelector(selector.cont);
+  if (!contNode) return;
 
-  const nextUrl = document.querySelector(selector.pagination)?.href;
+  const nextUrl = document.querySelector(selector.next)?.href;
   if (!nextUrl) return;
 
-  selector.list = `${selector.container} > :is(div, a)`;
-  GM_addStyle("nav.pagination,#footer{display:none}");
-
   const loadNode = document.createElement("div");
-  loadNode.setAttribute("class", "has-text-grey pt-4 has-text-centered");
-  containerNode.insertAdjacentElement("afterend", loadNode);
+  loadNode.classList.add("has-text-grey", "pt-4", "has-text-centered", "x-load");
+  contNode.insertAdjacentElement("afterend", loadNode);
 
   const useCallback = () => {
-    let res;
+    let load = false;
     let next = nextUrl;
-    let loading = false;
 
     const parse = (dom) => {
       const list = dom.querySelectorAll(selector.list);
-      const url = dom.querySelector(selector.pagination)?.href;
+      const url = dom.querySelector(selector.next)?.href;
       return { list, url };
     };
 
     const onfinally = () => {
-      loading = false;
+      load = false;
     };
 
-    return async (entries, observer) => {
-      if (!entries[0].isIntersecting || loading) return;
+    const onerror = () => {
+      loadNode.textContent = "加载失败，滚动以重试";
+    };
 
-      loading = true;
+    return async (entries, obs) => {
+      if (!entries[0].isIntersecting || load) return;
+
+      load = true;
       loadNode.textContent = "加载中...";
 
       try {
-        res = await Req.tasks(next, [parse]).finally(onfinally);
-      } catch (_) {
-        loadNode.textContent = "加载失败，滚动以重试";
-        return;
-      }
+        const { list, url } = await Req.tasks(next, [parse]).finally(onfinally);
+        if (!list.length) return onerror();
 
-      const { list, url } = res;
-
-      if (list.length) {
-        containerNode.append(...list);
+        contNode.append(...list);
         window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail: list }));
-      }
 
-      if (!url) {
-        loadNode.textContent = "暂无更多";
-        return observer.disconnect();
-      }
+        if (!url) {
+          loadNode.textContent = "暂无更多";
+          return obs.disconnect();
+        }
 
-      next = url;
+        next = url;
+      } catch (_) {
+        onerror();
+      }
     };
   };
 
