@@ -21,10 +21,9 @@
   };
 
   const contNode = document.querySelector(selector.cont);
-  if (!contNode) return;
-
+  const currList = document.querySelectorAll(selector.list);
   const nextUrl = document.querySelector(selector.next)?.href;
-  if (!nextUrl) return;
+  if (!contNode || !currList.length || !nextUrl) return;
 
   const loadNode = document.createElement("div");
   loadNode.classList.add("has-text-grey", "pt-4", "has-text-centered", "x-load");
@@ -33,6 +32,7 @@
   const useCallback = () => {
     let load = false;
     let next = nextUrl;
+    let curr = currList;
 
     const parse = (dom) => {
       const list = dom.querySelectorAll(selector.list);
@@ -48,6 +48,18 @@
       loadNode.textContent = "加载失败，滚动以重试";
     };
 
+    const serialize = (node) => {
+      return node.outerHTML || new XMLSerializer().serializeToString(node);
+    };
+
+    const filter = (list) => {
+      const arrCurr = Array.from(curr);
+      const arrList = Array.from(list);
+
+      const setCurr = new Set(arrCurr.map(serialize));
+      return arrList.filter((node) => !setCurr.has(serialize(node)));
+    };
+
     return async (entries, obs) => {
       if (!entries[0].isIntersecting || load) return;
 
@@ -58,14 +70,16 @@
         const { list, url } = await Req.tasks(next, [parse]).finally(onfinally);
         if (!list.length) return onerror();
 
-        contNode.append(...list);
-        window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail: list }));
+        const detail = filter(list);
+        contNode.append(...detail);
+        window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail }));
 
         if (!url) {
           loadNode.textContent = "暂无更多";
           return obs.disconnect();
         }
 
+        curr = list;
         next = url;
       } catch (_) {
         onerror();
