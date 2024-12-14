@@ -6,6 +6,7 @@
     "greasemonkey": true
   },
   "globals": {
+    "GM_deleteValues": true,
     "Grant": true,
     "Magnet": true,
     "Offline": true,
