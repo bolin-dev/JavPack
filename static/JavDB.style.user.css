@@ -290,6 +290,7 @@ nav.pagination {
       order: 3;
       float: none;
       margin-top: 0;
+      transform: translateY(-1px);
     }
 
     strong {
