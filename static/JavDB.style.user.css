@@ -458,6 +458,10 @@ br + .title {
   margin: -1.75rem !important;
 }
 
+#user-menu .menu-label {
+  padding-inline: 0.75rem;
+}
+
 .message-container,
 .message:not(:last-child) {
   margin-bottom: 1rem;
