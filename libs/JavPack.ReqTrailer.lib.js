@@ -1,114 +1,157 @@
 class ReqTrailer extends Req {
   static useDmm() {
-    const getCid = async (code) => {
-      const res = await this.request(`https://jav.land/en/id_search.php?keys=${code}`);
+    const host = "https://www.dmm.co.jp";
 
-      const target = res.querySelector(".videotextlist");
+    const options = {
+      cookie: "age_check_done=1",
+      headers: { "accept-language": "ja-JP,ja;q=0.9" },
+    };
+
+    const rules = [
+      {
+        path: "service/digitalapi/-/html5_player",
+        selector: "#dmmplayer + script",
+        parse: (text) => {
+          const match = text.match(/const args = (.*);/);
+          if (!match) throw new Error("Not found match");
+
+          const { src, bitrates } = JSON.parse(match[1]);
+          if (!src && !bitrates?.length) throw new Error("Not found res");
+
+          const samples = [src, ...bitrates.map(({ src }) => src)].filter((item) => item.endsWith(".mp4"));
+          if (!samples.length) throw new Error("Not found mp4");
+
+          return [...new Set(samples)];
+        },
+      },
+      {
+        path: "digital/-/vr-sample-player",
+        selector: "#player + script + script",
+        parse: (text) => {
+          const match = text.match(/var sampleUrl = "(.*)";/);
+          if (!match) throw new Error("Not found match");
+
+          const sample = match[1];
+          if (!sample) throw new Error("Not found sample");
+          if (!sample.endsWith(".mp4")) throw new Error("Not found mp4");
+
+          return [sample];
+        },
+      },
+    ];
+
+    const getCid = async (searchstr) => {
+      const res = await this.request({ ...options, url: `${host}/search/=/searchstr=${searchstr}` });
+
+      const target = res.querySelector("#list .tmb a")?.href;
       if (!target) throw new Error("Not found target");
 
-      const cid = target.querySelector("tr td:nth-child(2)")?.textContent;
+      const cid = target
+        .split("/")
+        .find((item) => item.startsWith("cid="))
+        ?.replace("cid=", "");
       if (!cid) throw new Error("Not found cid");
 
       return cid;
     };
 
-    const getDmm = async (cid, { path, selector, reg }) => {
-      const res = await this.request({
-        url: `https://www.dmm.co.jp/${path}/=/cid=${cid}`,
-        cookie: "age_check_done=1",
-      });
+    const getDmm = async (cid, { path, selector, parse }) => {
+      const res = await this.request({ ...options, url: `${host}/${path}/=/cid=${cid}` });
 
       const target = res.querySelector(selector)?.textContent;
       if (!target) throw new Error("Not found target");
 
-      const match = target.match(reg);
-      if (!match) throw new Error("Not found match");
-
-      const trailer = match[1];
-      if (!trailer) throw new Error("Not found trailer");
-
-      return trailer.replace(/\\\//g, "/");
+      return parse(target);
     };
 
-    const MAP = [
-      {
-        path: "service/digitalapi/-/html5_player",
-        selector: "#dmmplayer + script",
-        reg: /"src"\s*:\s*"([^"]+)"/,
-      },
-      {
-        path: "digital/-/vr-sample-player",
-        selector: "#player + script + script",
-        reg: /sampleUrl\s*=\s*"(.*)"/,
-      },
-    ];
-
-    return async (code) => {
-      const cid = await getCid(code);
-      return code.includes("VR") ? Promise.any(MAP.map((item) => getDmm(cid, item))) : getDmm(cid, MAP[0]);
+    return async (searchstr, isVR) => {
+      const cid = await getCid(searchstr);
+      return Promise.any((isVR ? rules : rules.slice(0, 1)).map((item) => getDmm(cid, item)));
     };
-  }
-
-  static heydouga(code) {
-    const codes = code.split("-");
-    if (codes[0] !== "heydouga") return;
-
-    codes.shift();
-    return `https://sample.heydouga.com/contents/${codes.join("/")}/sample.mp4`;
   }
 
   static useStudio() {
-    const RES = ["720p", "1080p", "480p", "360p"];
-    const trans = (sample) => RES.map((res) => `${sample}${res}.mp4`);
+    const parse = (code, domain) => {
+      const bitrates = ["1080p", "720p", "480p", "360p", "240p"];
+      const sample = `https://smovie.${domain}/sample/movies/${code}/%s.mp4`;
+      return bitrates.map((item) => sample.replace("%s", item));
+    };
 
-    const MAP = [
+    const rules = [
       {
-        studios: ["東京熱", "Tokyo-Hot"],
-        samples: [`https://my.cdn.tokyo-hot.com/media/samples/%s.mp4`],
+        studios: ["Tokyo-Hot", "東京熱"],
+        samples: (code) => [`https://my.cdn.tokyo-hot.com/media/samples/${code}.mp4`],
       },
       {
-        studios: ["加勒比", "カリビアンコム"],
-        samples: trans("https://smovie.caribbeancom.com/sample/movies/%s/"),
-      },
-      {
-        studios: ["一本道"],
-        samples: trans("http://smovie.1pondo.tv/sample/movies/%s/"),
+        studios: ["Heydouga"],
+        samples: (code) => {
+          code = code.toLowerCase().replace("heydouga-", "").replaceAll("-", "/");
+          const url = "https://sample.heydouga.com/contents";
+
+          return [`${url}/${code}/sample.mp4`, `${url}/${code}/sample_thumb.mp4`];
+        },
       },
       {
         studios: ["HEYZO"],
-        parse: (code) => code.replaceAll("HEYZO-", ""),
-        samples: [`https://sample.heyzo.com/contents/3000/%s/heyzo_hd_%s_sample.mp4`],
+        samples: (code) => {
+          code = code.toUpperCase().replace("HEYZO-", "");
+          const url = "https://sample.heyzo.com/contents/3000";
+
+          return [
+            `${url}/${code}/heyzo_hd_${code}_sample.mp4`,
+            `${url}/${code}/sample.mp4`,
+            `${url}/${code}/sample_low.mp4`,
+          ];
+        },
       },
       {
-        studios: ["10musume", "天然むすめ"],
-        samples: trans("https://smovie.10musume.com/sample/movies/%s/"),
+        studios: ["一本道"],
+        samples: (code) => parse(code, "1pondo.tv"),
       },
       {
-        studios: ["pacopacomama", "パコパコママ"],
-        samples: trans("https://fms.pacopacomama.com/hls/sample/pacopacomama.com/%s/"),
+        studios: ["pacopacomama,パコパコママ"],
+        samples: (code) => parse(code, "pacopacomama.com"),
       },
       {
         studios: ["muramura"],
-        samples: trans("https://smovie.muramura.tv/sample/movies/%s/"),
+        samples: (code) => parse(code, "muramura.tv"),
+      },
+      {
+        studios: ["10musume", "天然むすめ"],
+        samples: (code) => parse(code, "10musume.com"),
+      },
+      {
+        studios: ["Caribbeancom", "加勒比", "カリビアンコム"],
+        samples: (code) => parse(code, "caribbeancom.com"),
       },
     ];
 
     return async (code, studio) => {
-      const studios = studio
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean);
+      if (!studio) throw new Error("Studio is required");
+      studio = studio.toUpperCase();
 
-      let list = [];
-      for (const { samples, ...item } of MAP) {
-        if (!studios.some((it) => item.studios.includes(it))) continue;
+      const samples = rules.find(({ studios }) => studios.some((st) => st.toUpperCase() === studio))?.samples(code);
+      if (!samples?.length) throw new Error("Not found samples");
 
-        const rep = item?.parse ? item.parse(code) : code;
-        list = samples.map((url) => url.replaceAll("%s", rep));
-        break;
-      }
+      const results = await Promise.allSettled(samples.map((url) => this.request({ method: "HEAD", url })));
+      const sources = results.filter(({ status }) => status === "fulfilled").map(({ value }) => value);
+      if (!sources.length) throw new Error("Not found sources");
 
-      if (list.length) return Promise.any(list.map((url) => this.request({ method: "HEAD", url })));
+      return sources;
     };
+  }
+
+  static async getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
+    if (isFC2) {
+      throw new Error("Not Support FC2");
+    } else if (isWestern) {
+      throw new Error("Not Support Western");
+    } else if (isUncensored) {
+      const guessStudio = this.useStudio();
+      return guessStudio(code, studio);
+    } else {
+      const getDmm = this.useDmm();
+      return getDmm(title, isVR);
+    }
   }
 }
