@@ -524,6 +524,10 @@ br + .title {
       object-fit: contain;
       max-height: none;
     }
+
+    video {
+      background-color: #000;
+    }
   }
 
   .cover-container {
