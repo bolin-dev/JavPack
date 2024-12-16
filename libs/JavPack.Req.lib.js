@@ -4,8 +4,6 @@ class Req {
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
   static request(details) {
-    if (!details) throw new Error("Details is required");
-
     if (typeof details === "string") details = { url: details };
     if (!details?.url) throw new Error("URL is required");
 
