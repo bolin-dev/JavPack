@@ -43,6 +43,10 @@ body {
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+video:focus {
+  outline: none;
+}
+
 .actors + br,
 nav.sub-header,
 .actor-filter hr,
