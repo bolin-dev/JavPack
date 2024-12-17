@@ -138,3 +138,124 @@ const useVideo = () => {
     .then(onsuccess)
     .catch((err) => console.error(err.message));
 })();
+
+(function () {
+  const SELECTOR = ".movie-list .cover";
+  if (!document.querySelector(SELECTOR)) return;
+
+  const handleHover = (selector, onEnter, onLeave) => {
+    let currElem = null;
+
+    let prevX = null;
+    let prevY = null;
+    let prevTime = null;
+
+    let lastX = null;
+    let lastY = null;
+    let lastTime = null;
+
+    let trackSpeedInterval = null;
+    const interval = 200;
+    const sensitivity = 0.02;
+
+    let scrollTimer = null;
+    let isScrolling = false;
+
+    const onMousemove = (e) => {
+      lastX = e.pageX;
+      lastY = e.pageY;
+      lastTime = Date.now();
+    };
+
+    const isInViewport = (elem) => {
+      const rect = elem.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
+    };
+
+    const clearTrack = (elem) => {
+      elem.removeEventListener("mousemove", onMousemove);
+      clearInterval(trackSpeedInterval);
+    };
+
+    const trackSpeed = () => {
+      let speed = 0;
+
+      if (lastTime && lastTime !== prevTime) {
+        speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
+      }
+
+      if (speed <= sensitivity && isInViewport(currElem) && !isScrolling) {
+        clearTrack(currElem);
+        onEnter?.(currElem);
+      } else {
+        prevX = lastX;
+        prevY = lastY;
+        prevTime = Date.now();
+      }
+    };
+
+    const onMouseover = (e) => {
+      if (currElem) return;
+
+      const target = e.target.closest(selector);
+      if (!target) return;
+
+      prevX = e.pageX;
+      prevY = e.pageY;
+      prevTime = Date.now();
+
+      currElem = target;
+      currElem.addEventListener("mousemove", onMousemove);
+      trackSpeedInterval = setInterval(trackSpeed, interval);
+    };
+
+    const onMouseout = ({ relatedTarget }) => {
+      if (!currElem) return;
+
+      let node = relatedTarget;
+      while (node) {
+        if (node === currElem) return;
+        node = node.parentNode;
+      }
+
+      clearTrack(currElem);
+      onLeave?.(currElem);
+      currElem = null;
+    };
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+    };
+
+    const onScrollEnd = () => {
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 500);
+    };
+
+    const onOut = () => {
+      if (!currElem) return;
+
+      clearTrack(currElem);
+      onLeave?.(currElem);
+      currElem = null;
+    };
+
+    document.addEventListener("mouseover", onMouseover);
+    document.addEventListener("mouseout", onMouseout);
+    document.addEventListener("visibilitychange", onOut);
+    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scrollend", onScrollEnd);
+    window.addEventListener("blur", onOut);
+  };
+
+  const onEnter = () => {};
+  const onLeave = () => {};
+  handleHover(SELECTOR, onEnter, onLeave);
+})();
