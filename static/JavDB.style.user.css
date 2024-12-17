@@ -208,6 +208,16 @@ nav.sub-header,
       transform: none;
     }
 
+    .cover video {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      object-fit: contain;
+    }
+
     .video-title {
       display: -webkit-box;
       height: calc(2em * 1.5 + 0.75rem);
