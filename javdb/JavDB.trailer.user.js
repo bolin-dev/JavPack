@@ -31,6 +31,8 @@ Util.upStore();
 
 const getDetails = (dom = document) => {
   const infoNode = dom.querySelector(".movie-panel-info");
+  if (!infoNode) throw new Error("Not found info");
+
   const code = infoNode.querySelector(".first-block .value").textContent.trim();
   const isFC2 = code.startsWith("FC2");
   const isWestern = /\.\d{2}\.\d{2}\.\d{2}$/.test(code);
@@ -107,6 +109,7 @@ const useVideo = () => {
 
       e.preventDefault();
       e.stopPropagation();
+      video.focus();
 
       if (video.paused) {
         video.style.zIndex = 11;
@@ -255,7 +258,60 @@ const useVideo = () => {
     window.addEventListener("blur", onOut);
   };
 
-  const onEnter = () => {};
-  const onLeave = () => {};
+  const TAG = "x-hovered";
+
+  const createVideo = useVideo();
+
+  const setTrailer = (elem, { sources, cover }) => {
+    if (!elem.classList.contains(TAG)) return;
+
+    const video = createVideo(sources.toReversed(), cover);
+    elem.append(video);
+
+    video.muted = true;
+    video.currentTime = 4;
+    video.focus();
+    video.play();
+
+    const ctx = new AudioContext();
+    const canAutoPlay = ctx.state === "running";
+    ctx.close();
+
+    if (canAutoPlay) video.muted = false;
+  };
+
+  const onEnter = async (elem) => {
+    elem.classList.add(TAG);
+
+    const url = elem.closest("a").href;
+    const mid = url.split("/").at(-1);
+    let details = GM_getValue(mid);
+
+    if (!details) {
+      try {
+        const dom = await Req.request(url);
+        details = getDetails(dom);
+        GM_setValue(mid, details);
+      } catch (err) {
+        return console.error(err.message);
+      }
+    }
+
+    if (details.sources.length) return setTrailer(elem, details);
+
+    ReqTrailer.getTrailer(details)
+      .then((sources) => {
+        details.sources = sources;
+        GM_setValue(mid, details);
+        setTrailer(elem, details);
+      })
+      .catch((err) => console.error(err.message));
+  };
+
+  const onLeave = (elem) => {
+    elem.classList.remove(TAG);
+    elem.querySelector("video")?.remove();
+  };
+
   handleHover(SELECTOR, onEnter, onLeave);
 })();
