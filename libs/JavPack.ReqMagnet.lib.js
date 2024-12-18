@@ -23,9 +23,10 @@ class ReqMagnet extends Req {
         return [...dom.querySelectorAll(".torrent-list tbody > tr")]
           .map((node) => {
             const tds = node.querySelectorAll("td");
+            const nameList = tds[1].querySelectorAll("a");
             return {
               url: tds[2].querySelectorAll("a")?.[1]?.href,
-              name: tds[1].textContent?.trim() ?? "",
+              name: nameList[nameList.length - 1]?.textContent?.trim() ?? "",
               size: tds[3].textContent?.replace(/\s/g, "") ?? "",
               date: tds[4].textContent?.trim() ?? "",
             };
