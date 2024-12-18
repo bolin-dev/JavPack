@@ -71,10 +71,13 @@
         if (!list.length) return onerror();
 
         const detail = filter(list);
-        contNode.append(...detail);
-        window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail }));
 
-        if (!url) {
+        if (detail.length) {
+          contNode.append(...detail);
+          window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail }));
+        }
+
+        if (!url || !detail.length) {
           loadNode.textContent = "暂无更多";
           return obs.disconnect();
         }
