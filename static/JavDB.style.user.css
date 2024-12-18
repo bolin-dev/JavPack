@@ -35,6 +35,10 @@ html {
   &.has-navbar-fixed-bottom {
     padding-bottom: 0;
   }
+
+  &:has(.fancybox-slide--current #x-sprite) {
+    overflow: hidden;
+  }
 }
 
 body {

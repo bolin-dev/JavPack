@@ -10,46 +10,44 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqSprite.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @connect         javstore.net
-// @connect         blogjav.net
-// @connect         pixhost.to
+// @connect         javbee.me
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
-// @grant           GM_addStyle
+// @grant           GM_deleteValues
+// @grant           GM_listValues
+// @grant           unsafeWindow
+// @grant           GM_getValue
+// @grant           GM_setValue
 // ==/UserScript==
 
-Util.upLocal();
+Util.upStore();
 
 (function () {
-  const mid = `sprite_${location.pathname.split("/").pop()}`;
+  const mid = unsafeWindow.appData.split("/").at(-1);
+  if (!mid) return;
 
-  const setSprite = (sprite) => {
-    if (!sprite) return;
+  const setSprite = (source) => {
+    const TARGET = "x-sprite";
+    const ALT = "雪碧图";
 
-    const TARGET_ID = "x-sprite";
-    if (document.getElementById(TARGET_ID)) return;
-    GM_addStyle(`html:has(.fancybox-slide--current #${TARGET_ID}){overflow:hidden}`);
-
-    const IMG_ALT = "雪碧图";
-    localStorage.setItem(mid, sprite);
-    const domStr = `<div style="display: none;" id="${TARGET_ID}"><img src="${sprite}" alt="${IMG_ALT}" loading="lazy" referrerpolicy="no-referrer"></div>`;
-    document.body.insertAdjacentHTML("beforeend", domStr);
+    const imgHTML = `<img src="${source}" alt="${ALT}" loading="lazy" referrerpolicy="no-referrer">`;
+    document.body.insertAdjacentHTML("beforeend", `<div style="display: none;" id="${TARGET}">${imgHTML}</div>`);
 
     const insertHTML = `
     <a
       class="tile-item"
       href="javascript:void(0);"
       data-fancybox="gallery"
-      data-caption="${IMG_ALT}"
-      data-src="#${TARGET_ID}"
+      data-caption="${ALT}"
+      data-src="#${TARGET}"
     >
-      <img src="${sprite}" alt="${IMG_ALT}" loading="lazy" referrerpolicy="no-referrer">
+      ${imgHTML}
     </a>
     `;
 
     const container = document.querySelector(".tile-images.preview-images");
     if (!container) {
-      const previous = document.querySelector(".video-meta-panel");
-      return previous.insertAdjacentHTML(
+      return document.querySelector(".video-meta-panel").insertAdjacentHTML(
         "afterend",
         `<div class="columns">
           <div class="column">
@@ -64,17 +62,18 @@ Util.upLocal();
     }
 
     const tileItem = container.querySelector(".tile-item");
-    if (tileItem) {
-      tileItem.insertAdjacentHTML("beforebegin", insertHTML);
-    } else {
-      container.insertAdjacentHTML("beforeend", insertHTML);
-    }
+    if (tileItem) return tileItem.insertAdjacentHTML("beforebegin", insertHTML);
+
+    container.insertAdjacentHTML("beforeend", insertHTML);
   };
 
-  const sprite = localStorage.getItem(mid);
+  const sprite = GM_getValue(mid);
   if (sprite) return setSprite(sprite);
 
-  const code = document.querySelector(".first-block .value").textContent;
-  ReqSprite.blogjav(code).then(setSprite);
-  ReqSprite.javstore(code).then(setSprite);
+  ReqSprite.getSprite(document.querySelector(".first-block .value").textContent)
+    .then((source) => {
+      GM_setValue(mid, source);
+      setSprite(source);
+    })
+    .catch((err) => console.warn(err.message));
 })();
