@@ -141,7 +141,7 @@ class ReqTrailer extends Req {
     };
   }
 
-  static async getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
+  static getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
     if (isFC2) {
       throw new Error("Not Support FC2");
     } else if (isWestern) {
