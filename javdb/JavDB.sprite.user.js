@@ -9,8 +9,7 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqSprite.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
-// @connect         javstore.net
-// @connect         javbee.me
+// @connect         *
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           GM_deleteValues
