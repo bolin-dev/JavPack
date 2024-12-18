@@ -220,6 +220,12 @@ nav.sub-header,
       height: 100%;
       background-color: #000;
       object-fit: contain;
+      opacity: 0;
+      transition: var(--x-trans);
+
+      &.x-show {
+        opacity: 1;
+      }
     }
 
     .video-title {
