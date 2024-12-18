@@ -107,6 +107,7 @@ const useVideo = () => {
 
   return (sources, poster) => {
     const video = document.createElement("video");
+
     video.title = "";
     video.poster = poster;
     video.controls = true;
@@ -294,6 +295,8 @@ const useVideo = () => {
   };
 
   const TAG = "x-hovered";
+  const SHOW = "x-show";
+
   const createVideo = useVideo();
   let audioContext = null;
 
@@ -307,6 +310,7 @@ const useVideo = () => {
     video.currentTime = 4;
 
     elem.append(video);
+    requestAnimationFrame(() => video.classList.add(SHOW));
     video.focus();
 
     if (!audioContext) audioContext = new AudioContext();
@@ -342,7 +346,11 @@ const useVideo = () => {
 
   const onLeave = (elem) => {
     elem.classList.remove(TAG);
-    elem.querySelector("video")?.remove();
+    const video = elem.querySelector("video");
+    if (!video) return;
+
+    video.addEventListener("transitionend", () => video.remove());
+    video.classList.remove(SHOW);
   };
 
   handleHover(SELECTOR, onEnter, onLeave);
