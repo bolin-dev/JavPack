@@ -633,15 +633,17 @@ br + .title {
       }
 
       .tags {
-        flex-shrink: 0;
-        width: 200px;
+        flex: 1;
         padding-top: 0;
       }
     }
 
     .date {
+      flex-shrink: 0;
       order: 2;
+      width: 120px;
       font-size: var(--x-size-md);
+      text-align: left;
     }
 
     .buttons {
