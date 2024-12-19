@@ -181,6 +181,13 @@ const useVideo = () => {
   const SELECTOR = ".movie-list .cover";
   if (!document.querySelector(SELECTOR)) return;
 
+  const TAG = "x-hovered";
+  const SHOW = "x-show";
+  const HIDE = "x-hide";
+
+  const createVideo = useVideo();
+  let audioContext = null;
+
   const handleHover = (selector, onEnter, onLeave) => {
     let currElem = null;
 
@@ -256,6 +263,12 @@ const useVideo = () => {
       trackSpeedInterval = setInterval(trackSpeed, interval);
     };
 
+    const destroy = () => {
+      clearTrack(currElem);
+      onLeave?.(currElem);
+      currElem = null;
+    };
+
     const onMouseout = ({ relatedTarget }) => {
       if (!currElem) return;
 
@@ -265,9 +278,15 @@ const useVideo = () => {
         node = node.parentNode;
       }
 
-      clearTrack(currElem);
-      onLeave?.(currElem);
-      currElem = null;
+      destroy();
+    };
+
+    const onVisibilitychange = () => {
+      if (document.hidden) currElem ? destroy() : document.querySelector(`${selector} .${HIDE}`)?.remove();
+    };
+
+    const onBlur = () => {
+      if (currElem) destroy();
     };
 
     const onScroll = () => {
@@ -279,26 +298,12 @@ const useVideo = () => {
       }, scrollEndDelay);
     };
 
-    const onOut = () => {
-      if (!currElem) return;
-
-      clearTrack(currElem);
-      onLeave?.(currElem);
-      currElem = null;
-    };
-
     document.addEventListener("mouseover", onMouseover);
     document.addEventListener("mouseout", onMouseout);
-    document.addEventListener("visibilitychange", onOut);
+    document.addEventListener("visibilitychange", onVisibilitychange);
     window.addEventListener("scroll", onScroll);
-    window.addEventListener("blur", onOut);
+    window.addEventListener("blur", onBlur);
   };
-
-  const TAG = "x-hovered";
-  const SHOW = "x-show";
-
-  const createVideo = useVideo();
-  let audioContext = null;
 
   const setTrailer = (elem, { sources, cover }) => {
     if (!elem.classList.contains(TAG)) return;
@@ -350,7 +355,7 @@ const useVideo = () => {
     if (!video) return;
 
     video.addEventListener("transitionend", () => video.remove());
-    video.classList.remove(SHOW);
+    video.classList.replace(SHOW, HIDE);
   };
 
   handleHover(SELECTOR, onEnter, onLeave);
