@@ -143,9 +143,9 @@ class ReqTrailer extends Req {
 
   static getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
     if (isFC2) {
-      throw new Error("Not Support FC2");
+      throw new Error("Not Supported FC2");
     } else if (isWestern) {
-      throw new Error("Not Support Western");
+      throw new Error("Not Supported Western");
     } else if (isUncensored) {
       const guessStudio = this.useStudio();
       return guessStudio(code, studio);
