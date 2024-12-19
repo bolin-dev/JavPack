@@ -6,165 +6,137 @@
 // @description     磁链扩展
 // @match           https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
-// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Magnet.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqMagnet.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @connect         btdig.com
+// @connect         nyaa.si
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
-// @grant           GM_openInTab
+// @grant           GM_deleteValues
+// @grant           GM_listValues
+// @grant           unsafeWindow
+// @grant           GM_getValue
+// @grant           GM_setValue
 // ==/UserScript==
 
-Util.upLocal();
+Util.upStore();
 
 (function () {
-  const TARGET_ID = "x-magnet";
-  const HOST = "https://btdig.com";
+  const mid = unsafeWindow.appData.split("/").at(-1);
+  if (!mid) return;
 
-  const transToByte = Magnet.useTransByte();
-  const hdSize = parseFloat(transToByte("2GB"));
-  const minSize = parseFloat(transToByte("300MB"));
-
-  const ZH_STR = '<span class="tag is-warning is-small is-light">字幕</span>';
-  const CRACK_STR = '<span class="tag is-info is-small is-light">破解</span>';
-  const HD_STR = '<span class="tag is-primary is-small is-light">高清</span>';
+  const transByte = Magnet.useTransByte();
+  const hdSize = parseFloat(transByte("2GB"));
+  const minSize = parseFloat(transByte("250MB"));
 
   const code = document.querySelector(".first-block .value").textContent;
   const magnetsNode = document.querySelector("#magnets-content");
+  magnetsNode.classList.add("x-magnet");
 
-  magnetsNode.insertAdjacentHTML(
-    "beforebegin",
-    `<div class="buttons are-small mb-1">
-      <a class="button is-success" id="${TARGET_ID}" href="${HOST}/search?q=${code}" target="_blank">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>BTDigg</span>
-      </a>
-      <button class="button is-success">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>自动去重</span>
-      </button>
-      <button class="button is-success">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>综合排序</span>
-      </button>
-    </div>`,
-  );
+  const getMagnets = () => {
+    return [...magnetsNode.querySelectorAll(".item.columns")]
+      .map((node) => {
+        const meta = (node.querySelector(".meta")?.textContent.trim() ?? "").split(",");
+        return {
+          url: node.querySelector(".magnet-name a")?.href,
+          name: node.querySelector(".name")?.textContent.trim() ?? "",
+          size: meta[0].replace(/\s/g, ""),
+          files: meta?.[1]?.replace("個文件", "").trim(),
+          zh: !!node.querySelector(".tags .is-warning"),
+          date: node.querySelector(".time")?.textContent.trim() ?? "",
+        };
+      })
+      .filter(({ url }) => url);
+  };
 
-  const mid = `magnet_${location.pathname.split("/").pop()}`;
-  const magnets = localStorage.getItem(mid);
-
-  const refactor = (insert = []) => {
-    magnetsNode.innerHTML =
-      [...magnetsNode.querySelectorAll(".item.columns")]
-        .map((item) => {
-          const meta = item.querySelector(".meta")?.textContent.trim() ?? "";
-          return {
-            url: item.querySelector(".magnet-name a").href,
-            name: item.querySelector(".name")?.textContent ?? "",
-            meta: meta.replace("個", "个"),
-            size: meta.split(",")[0],
-            hd: !!item.querySelector(".tags .is-primary"),
-            zh: !!item.querySelector(".tags .is-warning"),
-            date: item.querySelector(".time")?.textContent ?? "",
-          };
-        })
-        .concat(insert)
-        .map(({ url, name, meta, files, size, zh, hd, ...item }) => {
-          url = url.split("&")[0].toLowerCase();
-
-          // eslint-disable-next-line no-eq-null, eqeqeq
-          if (meta == null) {
-            meta = [];
-            if (size) meta.push(size);
-            if (files) meta.push(`${files}个文件`);
-            meta = meta.join(", ");
-          }
-
-          size = transToByte(size);
-
-          if (!zh) zh = Magnet.zhReg.test(name);
-
-          const crack = Magnet.crackReg.test(name);
-
-          if (!hd) hd = parseFloat(size) >= hdSize;
-
-          return { ...item, url, name, meta, size, zh, crack, hd };
-        })
-        .filter(({ size }) => parseFloat(size) > minSize)
-        .reduce((acc, cur) => {
-          const index = acc.findIndex((item) => item.url === cur.url);
-
-          if (index === -1) {
-            acc.push(cur);
-          } else if (!acc[index].meta.includes(",") && cur.meta.includes(",")) {
-            acc[index].meta = cur.meta;
-          }
-
-          return acc;
-        }, [])
-        .toSorted(Magnet.magnetSort)
-        .map(({ url, name, meta, zh, crack, hd, date }, idx) => {
-          const odd = !(idx % 2) ? " odd" : "";
-          const hash = url.split(":").pop();
-
-          zh = zh ? ZH_STR : "";
-          crack = crack ? CRACK_STR : "";
-          hd = hd ? HD_STR : "";
-
-          return `
-          <div class="item columns is-desktop${odd}">
-            <div class="magnet-name column is-four-fifths">
-              <a href="${url}" data-hash="${hash}" title="右键点击跳转以查看链接详情">
-                <span class="name">${name}</span><br>
-                <span class="meta">${meta}</span><br>
-                <div class="tags">${zh}${crack}${hd}</div>
-              </a>
-            </div>
-            <div class="date column"><span class="time">${date}</span></div>
-            <div class="buttons column">
-              <button class="button is-info is-small copy-to-clipboard" data-clipboard-text="${url}" type="button">
-                复制
-              </button>
-            </div>
+  const renderMagnet = ({ url, name, meta, zh, crack, hd, date }, idx) => {
+    return `
+    <div class="item columns is-desktop${(idx + 1) % 2 !== 0 ? " odd" : ""}">
+      <div class="magnet-name column is-four-fifths">
+        <a href="${url}">
+          <span class="name" title="${name}">${name}</span><br />
+          <span class="meta">${meta}</span><br />
+          <div class="tags">
+            ${zh ? "<span class='tag is-warning is-small is-light'>字幕</span>" : ""}
+            ${crack ? "<span class='tag is-info is-small is-light'>破解</span>" : ""}
+            ${hd ? "<span class='tag is-primary is-small is-light'>高清</span>" : ""}
           </div>
-          `;
-        })
+        </a>
+      </div>
+      <div class="buttons column">
+        <button class="button is-info is-small copy-to-clipboard" data-clipboard-text="${url}" type="button">
+          复制
+        </button>
+        <a class="button is-info is-small" href="https://keepshare.org/aa36p03v/${url}" target="_blank">下载</a>
+      </div>
+      <div class="date column"><span class="time">${date}</span></div>
+    </div>
+    `;
+  };
+
+  const filterMagnet = ({ size }) => parseFloat(size) > minSize;
+
+  const parseSize = ({ size, files, ...item }) => {
+    let meta = [];
+    if (size) meta.push(size);
+    if (files) meta.push(`${files}个文件`);
+    meta = meta.join(", ");
+
+    size = transByte(size);
+    const hd = parseFloat(size) >= hdSize;
+    return { ...item, meta, size, hd };
+  };
+
+  const reduceMagnet = (acc, cur) => {
+    const index = acc.findIndex((item) => item.url === cur.url);
+
+    if (index === -1) {
+      acc.push(cur);
+      return acc;
+    }
+
+    const existed = acc[index];
+    ["name", "size", "files", "zh", "crack", "date"].forEach((key) => {
+      if (!existed[key] && cur[key]) acc[index][key] = cur[key];
+    });
+
+    return acc;
+  };
+
+  const parseMagnet = ({ url, name, zh, ...item }) => {
+    url = url.split("&")[0].toLowerCase();
+    if (!zh) zh = Magnet.zhReg.test(name);
+    const crack = Magnet.crackReg.test(name);
+    return { ...item, url, name, zh, crack };
+  };
+
+  const flatMagnets = ([key, sources]) => sources.map((item) => ({ ...item, from: key }));
+
+  const setMagnets = (details) => {
+    magnetsNode.innerHTML =
+      Object.entries(details)
+        .flatMap(flatMagnets)
+        .map(parseMagnet)
+        .reduce(reduceMagnet, [])
+        .map(parseSize)
+        .filter(filterMagnet)
+        .toSorted(Magnet.magnetSort)
+        .map(renderMagnet)
         .join("") || "暂无数据";
   };
 
-  if (magnets) {
-    refactor(JSON.parse(magnets));
-  } else {
-    refactor();
+  const setDetails = (sources, key) => {
+    details[key] = sources;
+    GM_setValue(mid, details);
+    setMagnets(details);
+  };
 
-    const target = document.getElementById(TARGET_ID);
-    const iconNode = target.querySelector("i");
+  let details = GM_getValue(mid);
+  details ? setMagnets(details) : (details = {});
 
-    const onfinally = () => target.classList.remove("is-loading");
-
-    const onerror = () => {
-      target.classList.replace("is-success", "is-warning");
-      iconNode.setAttribute("class", "icon-close");
-    };
-
-    const onload = (res) => {
-      if (!res) return onerror();
-      localStorage.setItem(mid, JSON.stringify(res));
-      res.length ? refactor(res) : iconNode.setAttribute("class", "icon-check-circle-o");
-    };
-
-    target.classList.add("is-loading");
-    ReqMagnet.btdig(code).then(onload).catch(onerror).finally(onfinally);
-  }
-
-  magnetsNode.addEventListener("contextmenu", (e) => {
-    const target = e.target.closest("a");
-    if (!target) return;
-
-    const { hash } = target.dataset;
-    if (!hash) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-    Grant.openTab(`${HOST}/${hash}`);
-  });
+  if (!details.origin) setDetails(getMagnets(), "origin");
+  if (!details.btdig) ReqMagnet.btdig(code).then((sources) => setDetails(sources, "btdig"));
+  if (!details.nyaa) ReqMagnet.nyaa(code).then((sources) => setDetails(sources, "nyaa"));
 })();
