@@ -8,8 +8,8 @@ class ReqMagnet extends Req {
             return {
               url: node.querySelector(".torrent_magnet a")?.href,
               name: node.querySelector(".torrent_name")?.textContent.trim() ?? "",
-              files: node.querySelector(".torrent_files")?.textContent.trim() ?? "",
               size: node.querySelector(".torrent_size")?.textContent.replace(/\s/g, "") ?? "",
+              files: node.querySelector(".torrent_files")?.textContent.trim() ?? "",
               date: node.querySelector(".torrent_age")?.textContent.trim() ?? "",
             };
           })
