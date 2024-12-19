@@ -1,5 +1,6 @@
 class ReqMagnet extends Req {
   static btdig(code) {
+    const word = code.toUpperCase();
     return this.tasks(`https://btdig.com/search?order=0&q=${code}`, [
       (dom) => {
         return [...dom.querySelectorAll(".one_result")]
@@ -12,26 +13,26 @@ class ReqMagnet extends Req {
               date: node.querySelector(".torrent_age")?.textContent.trim() ?? "",
             };
           })
-          .filter(({ url, name }) => url && name.toUpperCase().includes(code));
+          .filter(({ url, name }) => url && name.toUpperCase().includes(word));
       },
     ]);
   }
 
   static nyaa(code) {
+    const word = code.toUpperCase();
     return this.tasks(`https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}`, [
       (dom) => {
         return [...dom.querySelectorAll(".torrent-list tbody > tr")]
           .map((node) => {
-            const tds = node.querySelectorAll("td");
-            const nameList = tds[1].querySelectorAll("a");
+            const [, name, link, size, date] = [...node.querySelectorAll("td")];
             return {
-              url: tds[2].querySelectorAll("a")?.[1]?.href,
-              name: nameList[nameList.length - 1]?.textContent?.trim() ?? "",
-              size: tds[3].textContent?.replace(/\s/g, "") ?? "",
-              date: tds[4].textContent?.trim() ?? "",
+              url: link.querySelectorAll("a")?.[1]?.href,
+              name: [...name.querySelectorAll("a")].at(-1)?.textContent.trim() ?? "",
+              size: size?.textContent.replace(/\s/g, "") ?? "",
+              date: date?.textContent.trim() ?? "",
             };
           })
-          .filter(({ url, name }) => url && name.toUpperCase().includes(code));
+          .filter(({ url, name }) => url && name.toUpperCase().includes(word));
       },
     ]);
   }
