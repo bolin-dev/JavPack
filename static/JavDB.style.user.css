@@ -232,11 +232,7 @@ nav.sub-header,
         opacity: 1;
       }
 
-      &::-webkit-media-controls-play-button,
-      &::-webkit-media-controls-current-time-display,
-      &::-webkit-media-controls-time-remaining-display,
-      &::-webkit-media-controls-volume-control-container,
-      &::-webkit-media-controls-fullscreen-button {
+      &::-webkit-media-controls-panel {
         display: none;
       }
     }
