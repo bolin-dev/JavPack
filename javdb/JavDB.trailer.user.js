@@ -310,9 +310,12 @@ const useVideo = () => {
 
     const video = createVideo(sources.toReversed(), cover);
 
+    video.loop = true;
     video.muted = true;
     video.autoplay = true;
     video.currentTime = 4;
+    video.disablePictureInPicture = true;
+    video.setAttribute("controlslist", "nodownload nofullscreen noremoteplayback noplaybackrate");
 
     elem.append(video);
     requestAnimationFrame(() => video.classList.add(SHOW));
