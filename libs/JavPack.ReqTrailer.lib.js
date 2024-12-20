@@ -41,9 +41,12 @@ class ReqTrailer extends Req {
     ];
 
     const getCid = async (searchstr) => {
-      const res = await this.request({ ...options, url: `${host}/search/=/searchstr=${searchstr}` });
+      const res = await this.request({
+        ...options,
+        url: `${host}/search/?redirect=1&enc=UTF-8&category=&searchstr=${searchstr}`,
+      });
 
-      const target = res.querySelector("#list .tmb a")?.href;
+      const target = res?.querySelector("#list .tmb a")?.href;
       if (!target) throw new Error("Not found target");
 
       const cid = target
@@ -58,7 +61,7 @@ class ReqTrailer extends Req {
     const getDmm = async (cid, { path, selector, parse }) => {
       const res = await this.request({ ...options, url: `${host}/${path}/=/cid=${cid}` });
 
-      const target = res.querySelector(selector)?.textContent;
+      const target = res?.querySelector(selector)?.textContent;
       if (!target) throw new Error("Not found target");
 
       return parse(target);
@@ -66,7 +69,7 @@ class ReqTrailer extends Req {
 
     return async (searchstr, isVR) => {
       const cid = await getCid(searchstr);
-      return Promise.any((isVR ? rules : rules.slice(0, 1)).map((item) => getDmm(cid, item)));
+      return isVR ? Promise.any(rules.map((item) => getDmm(cid, item))) : getDmm(cid, rules[0]);
     };
   }
 
