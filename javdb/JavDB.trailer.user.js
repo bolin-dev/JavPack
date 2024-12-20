@@ -42,9 +42,10 @@ const getDetails = (dom = document) => {
   const isVR = titleNode.textContent.includes("【VR】");
   const isUncensored = titleNode.textContent.includes("無碼");
 
+  const label = titleNode.querySelector("strong").textContent;
   const origin = titleNode.querySelector(".origin-title");
   const current = titleNode.querySelector(".current-title");
-  const title = (origin ?? current).textContent.replaceAll(code, "").trim();
+  const title = (origin ?? current).textContent.replace(label, "").trim();
   const cover = dom.querySelector(".video-cover")?.src ?? "";
 
   const studio =
