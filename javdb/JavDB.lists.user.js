@@ -12,62 +12,64 @@
 // @connect         hechuangxinxi.xyz
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
-// @grant           GM_deleteValue
+// @grant           GM_deleteValues
 // @grant           GM_listValues
-// @grant           GM_setValue
+// @grant           unsafeWindow
 // @grant           GM_getValue
+// @grant           GM_setValue
 // ==/UserScript==
 
 Util.upStore();
 
 (function () {
-  const mid = location.pathname.split("/").pop();
+  const mid = unsafeWindow.appData?.split("/").at(-1);
+  if (!mid) return;
+
   const tabsNode = document.querySelector(".tabs.no-bottom");
   const magnetsNode = document.querySelector("#magnets");
   const reviewsNode = document.querySelector("#reviews");
   const listsNode = document.querySelector("#lists");
   const loadNode = document.querySelector("#tabs-container > article");
 
-  const createDom = (domStr) => {
-    return `<article class="message video-panel"><div class="message-body">${domStr}</div></article>`;
+  const renderCont = (insert) => {
+    return `<article class="message video-panel"><div class="message-body">${insert}</div></article>`;
   };
 
-  const createList = ({ id, name, movies_count }) => {
+  const renderList = ({ id, name, movies_count }) => {
     return `<a class="item box" href="/lists/${id}" title="${name}" target="_blank"><strong>${name}</strong><span>(${movies_count})</span></a>`;
   };
 
-  const onload = ({ data }, isCache = false) => {
+  const setLists = (sources) => {
     let domStr = "暂无数据";
-
-    if (data?.lists?.length) {
-      const lists = data.lists.map(({ id, name, movies_count }) => ({ id, name, movies_count }));
-      domStr = lists.reduce((acc, cur) => `${acc}${createList(cur)}`, "");
-      domStr = `<div class="plain-grid-list">${domStr}</div>`;
-      if (!isCache) GM_setValue(mid, lists);
-    }
-
-    listsNode.innerHTML = createDom(domStr);
+    if (sources.length) domStr = `<div class="plain-grid-list">${sources.map(renderList).join("")}</div>`;
+    listsNode.innerHTML = renderCont(domStr);
   };
 
-  const onerror = () => {
-    listsNode.innerHTML = createDom("读取失败");
-  };
-
-  const onfinally = () => {
-    loadNode.style.display = "none";
-  };
-
-  const loadLists = () => {
+  const showLists = () => {
     magnetsNode.style.display = "none";
     reviewsNode.style.display = "none";
     listsNode.style.display = "block";
-    if (listsNode.hasChildNodes()) return;
 
-    const lists = GM_getValue(mid);
-    if (lists) return onload({ data: { lists } }, true);
+    const { dataset } = tabsNode.querySelector(".is-active");
+    if (dataset.loaded === "true") return;
+    dataset.loaded = "true";
+
+    const lists = GM_getValue(mid, []);
+    if (lists.length) return setLists(lists);
 
     loadNode.style.display = "block";
-    ReqDB.related(mid).then(onload).catch(onerror).finally(onfinally);
+    ReqDB.related(mid)
+      .then(({ data }) => {
+        const sources = data?.lists ?? [];
+        GM_setValue(mid, sources);
+        setLists(sources);
+      })
+      .catch(() => {
+        listsNode.innerHTML = renderCont("读取失败");
+      })
+      .finally(() => {
+        loadNode.style.display = "none";
+      });
   };
 
   const onclick = (e) => {
@@ -81,9 +83,9 @@ Util.upStore();
     e.stopPropagation();
     if (classList.contains("is-active")) return;
 
-    tabsNode.querySelector("li.is-active").classList.remove("is-active");
+    tabsNode.querySelector(".is-active").classList.remove("is-active");
     classList.add("is-active");
-    loadLists();
+    showLists();
   };
 
   tabsNode.addEventListener("click", onclick, true);
