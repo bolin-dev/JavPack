@@ -40,6 +40,27 @@ class ReqTrailer extends Req {
       },
     ];
 
+    const parseCid = (url) => {
+      const { hostname, pathname, searchParams } = new URL(url);
+      let cid = "";
+
+      switch (hostname) {
+        case "tv.dmm.co.jp":
+          cid = searchParams.get("content");
+          break;
+        case "www.dmm.co.jp":
+          cid = pathname
+            .split("/")
+            .find((item) => item.startsWith("cid="))
+            ?.replace("cid=", "");
+          break;
+        default:
+          break;
+      }
+
+      return cid;
+    };
+
     const getCid = async (searchstr) => {
       const res = await this.request({
         ...options,
@@ -49,10 +70,7 @@ class ReqTrailer extends Req {
       const target = res?.querySelector("#list .tmb a")?.href;
       if (!target) throw new Error("Not found target");
 
-      const cid = target
-        .split("/")
-        .find((item) => item.startsWith("cid="))
-        ?.replace("cid=", "");
+      const cid = parseCid(target);
       if (!cid) throw new Error("Not found cid");
 
       return cid;
