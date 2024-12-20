@@ -9,6 +9,8 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqSprite.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @connect         javstore.net
+// @connect         javbee.me
 // @connect         *
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
@@ -22,7 +24,7 @@
 Util.upStore();
 
 (function () {
-  const mid = unsafeWindow.appData.split("/").at(-1);
+  const mid = unsafeWindow.appData?.split("/").at(-1);
   if (!mid) return;
 
   const setSprite = (source) => {
@@ -69,7 +71,8 @@ Util.upStore();
   const sprite = GM_getValue(mid);
   if (sprite) return setSprite(sprite);
 
-  ReqSprite.getSprite(document.querySelector(".first-block .value").textContent)
+  const code = document.querySelector(".first-block .value").textContent;
+  ReqSprite.getSprite(Util.codeParse(code))
     .then((source) => {
       GM_setValue(mid, source);
       setSprite(source);
