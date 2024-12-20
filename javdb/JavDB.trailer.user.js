@@ -12,6 +12,7 @@
 // @connect         caribbeancom.com
 // @connect         pacopacomama.com
 // @connect         tokyo-hot.com
+// @connect         heydouga.com
 // @connect         10musume.com
 // @connect         muramura.tv
 // @connect         dmm.co.jp
@@ -53,7 +54,7 @@ const getDetails = (dom = document) => {
       .textContent.trim() ?? "";
 
   const sources = [...dom.querySelectorAll("#preview-video source")]
-    .map((node) => node.getAttribute("src"))
+    .map((node) => node.getAttribute("src")?.trim())
     .filter(Boolean);
 
   return { isVR, isFC2, isWestern, isUncensored, code, title, studio, cover, sources };
@@ -117,6 +118,7 @@ const useVideo = () => {
     sources.forEach((src) => {
       const source = document.createElement("source");
       source.src = src;
+      source.type = "video/mp4";
       video.append(source);
     });
 
@@ -128,10 +130,8 @@ const useVideo = () => {
 
 (function () {
   const container = document.querySelector(".column-video-cover");
-  if (!container) return;
-
-  const mid = unsafeWindow.appData.split("/").at(-1);
-  if (!mid) return;
+  const mid = unsafeWindow.appData?.split("/").at(-1);
+  if (!container || !mid) return;
 
   const setTrailer = ({ sources, cover }) => {
     const video = useVideo()(sources, cover);
