@@ -14,9 +14,9 @@ class Util {
 
     let pattern = codes.join(sep);
     if (/^fc2/i.test(code)) pattern = `${codes[0]}${sep}(ppv)?${sep}${codes.at(-1)}`;
-    if (/^heyzo/i.test(code)) pattern = `${codes[0]}${sep}(\\w){0,2}${sep}${codes.at(-1)}`;
 
     return {
+      code,
       codes,
       prefix: codes[0],
       regex: new RegExp(`(?<![a-z])${pattern}(?!\\d)`, "i"),
