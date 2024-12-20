@@ -14,7 +14,7 @@ class Req {
       const urlObj = new URL(details.url);
       const searchParams = new URLSearchParams(params);
 
-      urlObj.searchParams.append(...searchParams.entries());
+      searchParams.forEach((val, key) => urlObj.searchParams.append(key, val));
       details.url = urlObj.toString();
       delete details.params;
     }
