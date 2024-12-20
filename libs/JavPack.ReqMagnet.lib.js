@@ -9,7 +9,7 @@ class ReqMagnet extends Req {
               name: node.querySelector(".torrent_name")?.textContent.trim() ?? "",
               size: node.querySelector(".torrent_size")?.textContent.replace(/\s/g, "") ?? "",
               files: node.querySelector(".torrent_files")?.textContent.trim() ?? "",
-              date: node.querySelector(".torrent_age")?.textContent.trim() ?? "",
+              date: (node.querySelector(".torrent_age")?.textContent ?? "").replace("found", "").trim(),
             };
           })
           .filter(({ url, name }) => url && regex.test(name));
@@ -27,7 +27,7 @@ class ReqMagnet extends Req {
               url: link.querySelectorAll("a")?.[1]?.href,
               name: [...name.querySelectorAll("a")].at(-1)?.textContent.trim() ?? "",
               size: size?.textContent.replace(/\s/g, "") ?? "",
-              date: date?.textContent.trim() ?? "",
+              date: (date?.textContent ?? "").split(" ")[0].trim(),
             };
           })
           .filter(({ url, name }) => url && regex.test(name));
