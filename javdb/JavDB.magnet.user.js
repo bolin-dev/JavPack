@@ -24,7 +24,7 @@
 Util.upStore();
 
 (function () {
-  const mid = unsafeWindow.appData.split("/").at(-1);
+  const mid = unsafeWindow.appData?.split("/").at(-1);
   if (!mid) return;
 
   const transByte = Magnet.useTransByte();
@@ -33,6 +33,7 @@ Util.upStore();
 
   const code = document.querySelector(".first-block .value").textContent;
   const magnetsNode = document.querySelector("#magnets-content");
+  const codeDetails = Util.codeParse(code);
   magnetsNode.classList.add("x-magnet");
 
   const getMagnets = () => {
@@ -105,7 +106,7 @@ Util.upStore();
     return acc;
   };
 
-  const parseMagnet = ({ url, name, zh, ...item }) => {
+  const parseName = ({ url, name, zh, ...item }) => {
     url = url.split("&")[0].toLowerCase();
     if (!zh) zh = Magnet.zhReg.test(name);
     const crack = Magnet.crackReg.test(name);
@@ -118,7 +119,7 @@ Util.upStore();
     magnetsNode.innerHTML =
       Object.entries(details)
         .flatMap(flatMagnets)
-        .map(parseMagnet)
+        .map(parseName)
         .reduce(reduceMagnet, [])
         .map(parseSize)
         .filter(filterMagnet)
@@ -127,16 +128,16 @@ Util.upStore();
         .join("") || "暂无数据";
   };
 
+  let details = GM_getValue(mid);
+  details ? setMagnets(details) : (details = {});
+
   const setDetails = (sources, key) => {
     details[key] = sources;
     GM_setValue(mid, details);
     setMagnets(details);
   };
 
-  let details = GM_getValue(mid);
-  details ? setMagnets(details) : (details = {});
-
   if (!details.origin) setDetails(getMagnets(), "origin");
-  if (!details.btdig) ReqMagnet.btdig(code).then((sources) => setDetails(sources, "btdig"));
-  if (!details.nyaa) ReqMagnet.nyaa(code).then((sources) => setDetails(sources, "nyaa"));
+  if (!details.btdig) ReqMagnet.btdig(codeDetails).then((sources) => setDetails(sources, "btdig"));
+  if (!details.nyaa) ReqMagnet.nyaa(codeDetails).then((sources) => setDetails(sources, "nyaa"));
 })();
