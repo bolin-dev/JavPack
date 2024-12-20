@@ -30,7 +30,6 @@ class ReqDB extends Req {
     });
   }
 
-  // Related lists
   static related(movie_id, page = 1) {
     return this.req({
       url: "v1/lists/related",
