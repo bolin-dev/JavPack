@@ -1,6 +1,5 @@
 class ReqMagnet extends Req {
-  static btdig(code) {
-    const word = code.toUpperCase();
+  static btdig({ code, regex }) {
     return this.tasks(`https://btdig.com/search?order=0&q=${code}`, [
       (dom) => {
         return [...dom.querySelectorAll(".one_result")]
@@ -13,13 +12,12 @@ class ReqMagnet extends Req {
               date: node.querySelector(".torrent_age")?.textContent.trim() ?? "",
             };
           })
-          .filter(({ url, name }) => url && name.toUpperCase().includes(word));
+          .filter(({ url, name }) => url && regex.test(name));
       },
     ]);
   }
 
-  static nyaa(code) {
-    const word = code.toUpperCase();
+  static nyaa({ code, regex }) {
     return this.tasks(`https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}`, [
       (dom) => {
         return [...dom.querySelectorAll(".torrent-list tbody > tr")]
@@ -32,7 +30,7 @@ class ReqMagnet extends Req {
               date: date?.textContent.trim() ?? "",
             };
           })
-          .filter(({ url, name }) => url && name.toUpperCase().includes(word));
+          .filter(({ url, name }) => url && regex.test(name));
       },
     ]);
   }
