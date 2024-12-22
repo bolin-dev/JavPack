@@ -3,7 +3,7 @@
 // @namespace       JavDB.match115@blc
 // @version         0.0.1
 // @author          blc
-// @description     115 网盘匹配
+// @description     115网盘匹配
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
@@ -14,326 +14,140 @@
 // @connect         115.com
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
-// @grant           GM_deleteValue
+// @grant           GM_deleteValues
 // @grant           GM_listValues
 // @grant           unsafeWindow
 // @grant           GM_openInTab
-// @grant           GM_addStyle
 // @grant           GM_getValue
 // @grant           GM_setValue
 // ==/UserScript==
 
 Util.upStore();
 
-const TARGET_CLASS = "x-match";
+const TAG_CLASS = "x-match";
 const VOID = "javascript:void(0);";
-const CHANNEL = new BroadcastChannel("JavDB.match115");
-
-const { pathname: PATHNAME } = location;
-const IS_DETAIL = PATHNAME.startsWith("/v/");
-
-const listenClick = (onclose) => {
-  const actions = {
-    click: {
-      key: "pc",
-      url: "https://v.anxia.com/?pickcode=%s",
-    },
-    contextmenu: {
-      key: "cid",
-      url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
-    },
-  };
-
-  const onclick = (e) => {
-    const target = e.target.closest(`.${TARGET_CLASS}`);
-    if (!target) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    const action = actions[e.type];
-    if (!action) return;
-
-    const val = target.dataset[action.key];
-    if (!val) return;
-
-    const tab = Grant.openTab(action.url.replaceAll("%s", val));
-    tab.onclose = () => Req115.sleep(0.5).then(() => onclose(target));
-  };
-
-  document.addEventListener("click", onclick);
-  document.addEventListener("contextmenu", onclick);
-};
 
 (function () {
-  if (!IS_DETAIL) return;
-  const MID = PATHNAME.split("/").pop();
+  const currList = document.querySelectorAll(".movie-list .item");
+  if (!currList.length) return;
 
-  const code = document.querySelector(".first-block .value").textContent;
-  if (!code) return;
-
-  const { codes, regex } = Util.codeParse(code);
-  const ORIGIN_TXT = "115资源";
-  const LOAD_TXT = "资源匹配";
-
-  const insertMatch = () => {
-    GM_addStyle(`
-    .${TARGET_CLASS} {
-      display: -webkit-box;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      word-break: break-all;
-      white-space: unset;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-    }
-    `);
-
-    const matchTxt = `
-    <div class="panel-block">
-      <strong><a href="${VOID}">${ORIGIN_TXT}</a>:</strong>&nbsp;
-      <span class="value">匹配中...</span>
-    </div>
-    `;
-
-    const positionNode = document.querySelector(".movie-panel-info > .review-buttons + .panel-block");
-    positionNode.insertAdjacentHTML("afterend", matchTxt);
-    const matchNode = positionNode.nextElementSibling;
-
-    return {
-      labelNode: matchNode.querySelector("a"),
-      contentNode: matchNode.querySelector(".value"),
-    };
-  };
-
-  const { labelNode, contentNode } = insertMatch();
-
-  const create = ({ pc, cid, t, n }) => {
-    return `<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
-  };
-
-  const onload = ({ state, data }) => {
-    if (!state) {
-      contentNode.innerHTML = "查询失败，检查登录状态";
-      return;
+  class RequestQueue {
+    constructor() {
+      this.queue = [];
+      this.isProcessing = false;
     }
 
-    data = data.filter((item) => regex.test(item.n)).map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
-    GM_setValue(code, data);
-
-    if (!data.length) {
-      contentNode.innerHTML = "暂无资源";
-      return;
-    }
-
-    contentNode.innerHTML = data.map(create).join("");
-  };
-
-  const onfinally = () => {
-    labelNode.textContent = ORIGIN_TXT;
-  };
-
-  const matchCode = () => {
-    if (labelNode.textContent === LOAD_TXT) return;
-    labelNode.textContent = LOAD_TXT;
-
-    Req115.videosSearch(codes.join(" ")).then(onload).finally(onfinally);
-  };
-
-  matchCode();
-  listenClick(matchCode);
-  unsafeWindow["reMatch"] = matchCode;
-  labelNode.addEventListener("click", matchCode);
-  window.addEventListener("beforeunload", () => CHANNEL.postMessage(MID));
-})();
-
-(function () {
-  if (IS_DETAIL) return;
-
-  const MOVIE_SELECTOR = ".movie-list .item";
-  const movieNodeList = document.querySelectorAll(MOVIE_SELECTOR);
-  if (!movieNodeList.length) return;
-
-  const insertMatch = (nodeList) => {
-    const matchTxt = `<a href="${VOID}" class="${TARGET_CLASS} tag">匹配中</a>&nbsp;`;
-    const insert = (node) => node.querySelector(".video-title").insertAdjacentHTML("afterbegin", matchTxt);
-    nodeList.forEach(insert);
-  };
-
-  const useQueryMatch = () => {
-    let lock = false;
-    let queue = [];
-
-    GM_addStyle(`
-    ${MOVIE_SELECTOR} a:has(a.is-danger, a.is-warning, a.is-info, a.is-success) {
-      &:active,
-      &:hover,
-      &:focus,
-      &:focus-visible {
-        box-shadow: none !important;
-      }
-      .video-title {
-        font-weight: bold;
-      }
-    }
-    .movie-list:has(.item) {
-      --x-danger: #ee1742;
-      --x-warning: #ffd257;
-      --x-info: #2b74b1;
-      --x-success: #34a873;
-    }
-    [data-theme="dark"] .movie-list:has(.item) {
-      --x-danger: #f14668;
-      --x-warning: #ffe08a;
-      --x-info: #3e8ed0;
-      --x-success: #48c78e;
-    }
-    ${MOVIE_SELECTOR}:has(.video-title a.is-danger) {
-      border: 0.375rem solid var(--x-danger);
-    }
-    ${MOVIE_SELECTOR}:has(.video-title a.is-warning) {
-      border: 0.375rem solid var(--x-warning);
-    }
-    ${MOVIE_SELECTOR}:has(.video-title a.is-info) {
-      border: 0.375rem solid var(--x-info);
-    }
-    ${MOVIE_SELECTOR}:has(.video-title a.is-success) {
-      border: 0.375rem solid var(--x-success);
-    }
-    `);
-
-    const getList = (nodeList) => {
-      return [...nodeList].map((node) => {
-        const mid = node.querySelector("a").href.split("/").pop();
-        const titleNode = node.querySelector(".video-title");
-        const tagNode = titleNode.querySelector(`.${TARGET_CLASS}`);
-        const code = titleNode.querySelector("strong").textContent;
-        const { prefix, regex } = Util.codeParse(code);
-        return { code, prefix, node, mid, regex, tagNode };
+    add(requestFn) {
+      return new Promise((resolve, reject) => {
+        this.queue.push({ requestFn, resolve, reject });
+        this.processQueue();
       });
-    };
+    }
 
-    const setMatch = ({ node, mid, regex, tagNode }, res) => {
-      node.classList.add(`x-${mid}`);
-      res = res.filter((item) => regex.test(item.n));
+    processQueue() {
+      if (this.isProcessing || this.queue.length === 0) return;
 
-      let pc = "";
-      let cid = "";
-      let title = "";
-      let textContent = "未匹配";
-      let className = "is-normal";
+      const nextRequest = this.queue.shift();
+      this.isProcessing = true;
 
-      if (res.length) {
-        const zhItem = res.find(({ n }) => Magnet.zhReg.test(n));
-        const crackItem = res.find(({ n }) => Magnet.crackReg.test(n));
-        const bothItem = res.find(({ n }) => Magnet.zhReg.test(n) && Magnet.crackReg.test(n));
-        const currItem = bothItem ?? zhItem ?? crackItem ?? res[0];
+      nextRequest
+        .requestFn()
+        .then(nextRequest.resolve)
+        .catch(nextRequest.reject)
+        .finally(() => {
+          this.isProcessing = false;
+          this.processQueue();
+        });
+    }
+  }
 
-        pc = currItem.pc;
-        cid = currItem.cid;
-        textContent = "已匹配";
-        title = `[${currItem.t}] ${currItem.n}`;
-        className = bothItem ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
-      }
+  const requestQueue = new RequestQueue();
+  const inProgressRequests = new Set();
+  const waitingList = {};
 
-      tagNode.title = title;
-      tagNode.dataset.pc = pc;
-      tagNode.dataset.cid = cid;
-      tagNode.textContent = textContent;
-      tagNode.className = `${TARGET_CLASS} tag ${className}`;
-    };
+  const setTarget = ({ regex, node }, result) => {
+    const sources = result.filter((item) => regex.test(item.n));
 
-    const localMatch = (list) => {
-      return list.filter(({ code, prefix, ...item }) => {
-        const res = GM_getValue(code) ?? GM_getValue(prefix);
-        return res ? setMatch(item, res) : true;
-      });
-    };
+    let pc = "";
+    let cid = "";
+    let title = "";
+    let textContent = "未匹配";
+    let className = "is-normal";
 
-    const queryMatch = ([prefix, list]) => {
-      return Req115.videosSearch(prefix).then(({ data }) => {
-        data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+    if (sources.length) {
+      const bothItem = sources.find(({ n }) => Magnet.zhReg.test(n) && Magnet.crackReg.test(n));
+      const zhItem = sources.find(({ n }) => Magnet.zhReg.test(n));
+      const crackItem = sources.find(({ n }) => Magnet.crackReg.test(n));
+      const currItem = bothItem ?? zhItem ?? crackItem ?? sources[0];
+
+      pc = currItem.pc;
+      cid = currItem.cid;
+      textContent = "已匹配";
+      title = `[${currItem.t}] ${currItem.n}`;
+      className = bothItem ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
+    }
+
+    const tagNode = node.querySelector(`.${TAG_CLASS}`);
+    tagNode.title = title;
+    tagNode.dataset.pc = pc;
+    tagNode.dataset.cid = cid;
+    tagNode.textContent = textContent;
+    tagNode.className = `tag ${className} ${TAG_CLASS}`;
+  };
+
+  const onfinally = (prefix, data) => {
+    waitingList[prefix].forEach((item) => setTarget(item, data));
+    inProgressRequests.delete(prefix);
+    delete waitingList[prefix];
+  };
+
+  const handleTarget = (node) => {
+    if (node.classList.contains("is-hidden")) return;
+
+    const titleNode = node.querySelector(".video-title");
+    if (!titleNode) return;
+
+    const code = titleNode.querySelector("strong")?.textContent.trim();
+    if (!code) return;
+
+    titleNode.insertAdjacentHTML("afterbegin", `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`);
+
+    const codeDetails = Util.codeParse(code);
+    const nodeDetails = { ...codeDetails, node };
+    const { prefix } = codeDetails;
+
+    const cachedResult = GM_getValue(code) ?? GM_getValue(prefix);
+    if (cachedResult) return setTarget(nodeDetails, cachedResult);
+
+    if (!waitingList[prefix]) waitingList[prefix] = [];
+    waitingList[prefix].push(nodeDetails);
+
+    if (inProgressRequests.has(prefix)) return;
+    inProgressRequests.add(prefix);
+
+    requestQueue
+      .add(() => Req115.filesSearchAllVideos(prefix))
+      .then(({ data = [] }) => {
         GM_setValue(prefix, data);
-        list.forEach((item) => setMatch(item, data));
+        onfinally(prefix, data);
+      })
+      .catch((err) => {
+        console.warn(err?.message);
+        onfinally(prefix, []);
       });
-    };
-
-    const takeQueue = async () => {
-      const tasks = localMatch(queue.splice(0, 3));
-      const prefixMap = tasks.reduce((acc, { prefix, ...item }) => {
-        acc[prefix] ??= [];
-        acc[prefix].push(item);
-        return acc;
-      }, {});
-
-      await Promise.allSettled(Object.entries(prefixMap).map(queryMatch));
-      if (queue.length) return takeQueue();
-    };
-
-    return async (nodeList) => {
-      if (!nodeList?.length) return;
-
-      if (typeof nodeList === "string") nodeList = document.querySelectorAll(`.movie-list .x-${nodeList}`);
-      if (!nodeList.length) return;
-
-      const list = getList(nodeList);
-      const tasks = localMatch(list);
-      if (!tasks.length) return;
-
-      queue.push(...tasks);
-      if (lock) return;
-
-      lock = true;
-      await takeQueue();
-      lock = false;
-    };
   };
 
-  const addQueue = useQueryMatch();
-
-  const observer = (onIntersected) => {
-    const callback = (entries, observer) => {
-      const intersected = [];
-
-      entries.forEach(({ isIntersecting, target }) => {
-        if (!isIntersecting) return;
-        observer.unobserve(target);
-        intersected.push(target);
-      });
-
-      onIntersected(intersected);
-    };
-
-    const observer = new IntersectionObserver(callback, { threshold: 0.2 });
-    const observe = (nodeList) => nodeList.forEach((node) => observer.observe(node));
-
-    observe(movieNodeList);
-    window.addEventListener("JavDB.scroll", ({ detail }) => observe(detail));
-  };
-
-  observer((nodeList) => {
-    insertMatch(nodeList);
-    addQueue(nodeList);
-  });
-
-  CHANNEL.onmessage = ({ data }) => addQueue(data);
-
-  const matchPrefix = (target) => {
-    const node = target.closest(MOVIE_SELECTOR);
-    const mid = node.querySelector("a").href.split("/").pop();
-    const code = node.querySelector(".video-title strong").textContent;
-    const { prefix } = Util.codeParse(code);
-    GM_deleteValue(code);
-
-    Req115.videosSearch(prefix).then(({ data }) => {
-      data = data.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
-      GM_setValue(prefix, data);
-
-      addQueue(mid);
-      CHANNEL.postMessage(mid);
+  const callback = (entries, obs) => {
+    entries.forEach(({ isIntersecting, target }) => {
+      if (!isIntersecting) return;
+      obs.unobserve(target);
+      handleTarget(target);
     });
   };
 
-  listenClick(matchPrefix);
-  unsafeWindow["reMatch"] = matchPrefix;
+  const observer = new IntersectionObserver(callback, { threshold: 0.5 });
+  const obList = (list) => list.forEach((node) => observer.observe(node));
+
+  obList(currList);
+  window.addEventListener("JavDB.scroll", ({ detail }) => obList(detail));
 })();
