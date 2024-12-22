@@ -26,6 +26,34 @@ Util.upStore();
 
 const TAG_CLASS = "x-match";
 const VOID = "javascript:void(0);";
+const CHANNEL = new BroadcastChannel("JavDB.match115");
+
+const listenClick = (onclose) => {
+  const actions = {
+    click: { key: "pc", url: "https://v.anxia.com/?pickcode=%s" },
+    contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
+  };
+
+  const onclick = (e) => {
+    const target = e.target.closest(`.${TAG_CLASS}`);
+    if (!target) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const action = actions[e.type];
+    if (!action) return;
+
+    const val = target.dataset[action.key];
+    if (!val) return;
+
+    const tab = Grant.openTab(action.url.replaceAll("%s", val));
+    tab.onclose = onclose;
+  };
+
+  document.addEventListener("click", onclick);
+  document.addEventListener("contextmenu", onclick);
+};
 
 (function () {
   const infoNode = document.querySelector(".movie-panel-info");
@@ -47,14 +75,19 @@ const VOID = "javascript:void(0);";
     }
   };
 
+  const code = infoNode.querySelector(".first-block .value")?.textContent.trim();
+  const codeDetails = Util.codeParse(code);
+
   const insertHTML = "<div class='panel-block'><strong>115:</strong>&nbsp;<span class='value'>匹配中...</span></div>";
   const positionNode = infoNode.querySelector(".review-buttons + .panel-block");
   positionNode.insertAdjacentHTML("afterend", insertHTML);
   const container = positionNode.nextElementSibling.querySelector(".value");
 
-  const code = infoNode.querySelector(".first-block .value")?.textContent.trim();
-  const codeDetails = Util.codeParse(code);
   matchCode(codeDetails, container);
+  listenClick(() => matchCode(codeDetails, container));
+
+  unsafeWindow["reMatch"] = matchCode;
+  window.addEventListener("beforeunload", () => CHANNEL.postMessage(codeDetails));
 })();
 
 (function () {
