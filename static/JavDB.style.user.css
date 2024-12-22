@@ -586,6 +586,16 @@ br + .title {
       height: 1.25rem;
       padding: 0;
     }
+
+    .x-match {
+      display: -webkit-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+      white-space: unset;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
   }
 
   & > div.panel-block:first-child {
