@@ -28,6 +28,36 @@ const TAG_CLASS = "x-match";
 const VOID = "javascript:void(0);";
 
 (function () {
+  const infoNode = document.querySelector(".movie-panel-info");
+  if (!infoNode) return;
+
+  const render = ({ pc, cid, t, n }) => {
+    return `<a href="${VOID}" class="${TAG_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
+  };
+
+  const matchCode = async ({ code, codes, regex }, cont) => {
+    try {
+      const { data = [] } = await Req115.filesSearchAllVideos(codes.join(" "));
+      const sources = data.filter((item) => regex.test(item.n));
+      cont.innerHTML = sources.map(render).join("") || "暂未匹配";
+      GM_setValue(code, sources);
+    } catch (err) {
+      cont.innerHTML = "匹配失败";
+      console.warn(err?.message);
+    }
+  };
+
+  const insertHTML = "<div class='panel-block'><strong>115:</strong>&nbsp;<span class='value'>匹配中...</span></div>";
+  const positionNode = infoNode.querySelector(".review-buttons + .panel-block");
+  positionNode.insertAdjacentHTML("afterend", insertHTML);
+  const container = positionNode.nextElementSibling.querySelector(".value");
+
+  const code = infoNode.querySelector(".first-block .value")?.textContent.trim();
+  const codeDetails = Util.codeParse(code);
+  matchCode(codeDetails, container);
+})();
+
+(function () {
   const currList = document.querySelectorAll(".movie-list .item");
   if (!currList.length) return;
 
