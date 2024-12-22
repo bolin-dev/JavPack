@@ -1,20 +1,18 @@
 class Req {
-  static defaultDetails = { method: "GET", timeout: 10000 };
-
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
   static request(details) {
     if (typeof details === "string") details = { url: details };
     if (!details?.url) throw new Error("URL is required");
 
-    details = { ...this.defaultDetails, ...details };
+    details = { method: "GET", timeout: 10000, ...details };
     const { params, method, data } = details;
 
-    if (this.isPlainObj(params)) {
+    if (params) {
       const urlObj = new URL(details.url);
       const searchParams = new URLSearchParams(params);
 
-      searchParams.forEach((val, key) => urlObj.searchParams.append(key, val));
+      searchParams.forEach((val, key) => urlObj.searchParams.set(key, val));
       details.url = urlObj.toString();
       delete details.params;
     }
