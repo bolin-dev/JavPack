@@ -24,9 +24,9 @@
 
 Util.upStore();
 
-const TAG_CLASS = "x-match";
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel("JavDB.match115");
+const TAG_CLASS = "x-match";
 
 const listenClick = (onclose) => {
   const actions = {
@@ -35,20 +35,19 @@ const listenClick = (onclose) => {
   };
 
   const onclick = (e) => {
-    const target = e.target.closest(`.${TAG_CLASS}`);
-    if (!target) return;
-
+    if (!e.target.classList.contains(TAG_CLASS)) return;
     e.preventDefault();
     e.stopPropagation();
 
-    const action = actions[e.type];
+    const { type, target } = e;
+    const action = actions[type];
     if (!action) return;
 
     const val = target.dataset[action.key];
     if (!val) return;
 
     const tab = Grant.openTab(action.url.replaceAll("%s", val));
-    tab.onclose = onclose;
+    tab.onclose = () => onclose?.(target);
   };
 
   document.addEventListener("click", onclick);
@@ -86,12 +85,13 @@ const listenClick = (onclose) => {
   matchCode(codeDetails, container);
   listenClick(() => matchCode(codeDetails, container));
 
-  unsafeWindow["reMatch"] = matchCode;
-  window.addEventListener("beforeunload", () => CHANNEL.postMessage(codeDetails));
+  unsafeWindow["reMatch"] = () => matchCode(codeDetails, container);
+  window.addEventListener("beforeunload", () => CHANNEL.postMessage(code));
 })();
 
 (function () {
-  const currList = document.querySelectorAll(".movie-list .item");
+  const SELECTOR = ".movie-list .item";
+  const currList = document.querySelectorAll(SELECTOR);
   if (!currList.length) return;
 
   class RequestQueue {
@@ -124,11 +124,14 @@ const listenClick = (onclose) => {
     }
   }
 
+  const insertHTML = `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`;
   const requestQueue = new RequestQueue();
   const inProgressRequests = new Set();
   const waitingList = {};
 
-  const setTarget = ({ regex, node }, result) => {
+  const parseCodeClass = (code) => `x-${code}`;
+
+  const setTarget = ({ code, regex, node }, result) => {
     const sources = result.filter((item) => regex.test(item.n));
 
     let pc = "";
@@ -150,6 +153,7 @@ const listenClick = (onclose) => {
       className = bothItem ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
     }
 
+    node.classList.add(parseCodeClass(code));
     const tagNode = node.querySelector(`.${TAG_CLASS}`);
     tagNode.title = title;
     tagNode.dataset.pc = pc;
@@ -173,7 +177,7 @@ const listenClick = (onclose) => {
     const code = titleNode.querySelector("strong")?.textContent.trim();
     if (!code) return;
 
-    titleNode.insertAdjacentHTML("afterbegin", `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`);
+    if (!titleNode.querySelector(`.${TAG_CLASS}`)) titleNode.insertAdjacentHTML("afterbegin", insertHTML);
 
     const codeDetails = Util.codeParse(code);
     const nodeDetails = { ...codeDetails, node };
@@ -213,4 +217,17 @@ const listenClick = (onclose) => {
 
   obList(currList);
   window.addEventListener("JavDB.scroll", ({ detail }) => obList(detail));
+  CHANNEL.onmessage = ({ data }) => obList(document.querySelectorAll(`.${parseCodeClass(data)}`));
+
+  const matchPrefix = (target) => {
+    const node = target.closest(SELECTOR);
+    const code = node.querySelector(".video-title strong")?.textContent.trim();
+    const { prefix } = Util.codeParse(code);
+    GM_deleteValues([code, prefix]);
+    obList([node]);
+    CHANNEL.postMessage(code);
+  };
+
+  listenClick(matchPrefix);
+  unsafeWindow["reMatch"] = matchPrefix;
 })();
