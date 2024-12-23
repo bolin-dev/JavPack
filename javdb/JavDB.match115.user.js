@@ -131,7 +131,7 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
   const waitingList = {};
   const TAG_HTML = `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`;
 
-  const parseCodeClass = (code) => ["x", ...code.split(" ")].filter(Boolean).join("-");
+  const parseCodeClass = (code) => ["x", ...code.split(/\s|\./)].filter(Boolean).join("-");
 
   const setTarget = ({ code, regex, node }, result) => {
     const sources = result.filter((item) => regex.test(item.n));
