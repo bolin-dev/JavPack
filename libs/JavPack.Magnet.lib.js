@@ -1,5 +1,5 @@
 class Magnet {
-  static zhReg = /中文|中字|字幕|.+\bu?ch?\b|\[[a-z]+c[a-z]?\]/i;
+  static zhReg = /中文|中字|字幕|.+\b(uc|c|ch)\b|\[f?hdcj?\]/i;
   static crackReg = /无码|無碼|流出|破解|uncensored|破[一-鿆]版|.+\buc?\b/i;
 
   static useTransByte() {
