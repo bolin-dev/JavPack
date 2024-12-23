@@ -1,6 +1,6 @@
 class Magnet {
-  static crackReg = /破解|-uc?(?![a-z])|uncensored|無碼|流出/i;
-  static zhReg = /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i;
+  static zhReg = /中文|中字|字幕|.+\bu?ch?\b|\[[a-z]+c[a-z]?\]/i;
+  static crackReg = /无码|無碼|流出|破解|uncensored|破[一-鿆]版|.+\buc?\b/i;
 
   static useTransByte() {
     const rules = [
