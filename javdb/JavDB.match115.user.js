@@ -15,6 +15,7 @@
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           GM_deleteValues
+// @grant           GM_deleteValue
 // @grant           GM_listValues
 // @grant           unsafeWindow
 // @grant           GM_openInTab
@@ -54,6 +55,8 @@ const listenClick = (onclose) => {
   document.addEventListener("contextmenu", onclick);
 };
 
+const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+
 (function () {
   const infoNode = document.querySelector(".movie-panel-info");
   if (!infoNode) return;
@@ -65,16 +68,16 @@ const listenClick = (onclose) => {
   const matchCode = async ({ code, codes, regex }, cont) => {
     try {
       const { data = [] } = await Req115.filesSearchAllVideos(codes.join(" "));
-      const sources = data.filter((item) => regex.test(item.n));
-      cont.innerHTML = sources.map(render).join("") || "暂未匹配";
+      const sources = extractSearchResult(data.filter(({ n }) => regex.test(n)));
       GM_setValue(code, sources);
+      cont.innerHTML = sources.map(render).join("") || "暂未匹配";
     } catch (err) {
       cont.innerHTML = "匹配失败";
       console.warn(err?.message);
     }
   };
 
-  const code = infoNode.querySelector(".first-block .value")?.textContent.trim();
+  const code = infoNode.querySelector(".first-block .value").textContent.trim();
   const codeDetails = Util.codeParse(code);
 
   const insertHTML = "<div class='panel-block'><strong>115:</strong>&nbsp;<span class='value'>匹配中...</span></div>";
@@ -109,7 +112,6 @@ const listenClick = (onclose) => {
 
     processQueue() {
       if (this.isProcessing || this.queue.length === 0) return;
-
       const nextRequest = this.queue.shift();
       this.isProcessing = true;
 
@@ -124,12 +126,12 @@ const listenClick = (onclose) => {
     }
   }
 
-  const insertHTML = `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`;
-  const requestQueue = new RequestQueue();
   const inProgressRequests = new Set();
+  const requestQueue = new RequestQueue();
   const waitingList = {};
+  const TAG_HTML = `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`;
 
-  const parseCodeClass = (code) => `x-${code}`;
+  const parseCodeClass = (code) => ["x", ...code.split(" ")].filter(Boolean).join("-");
 
   const setTarget = ({ code, regex, node }, result) => {
     const sources = result.filter((item) => regex.test(item.n));
@@ -163,7 +165,7 @@ const listenClick = (onclose) => {
   };
 
   const onfinally = (prefix, data) => {
-    waitingList[prefix].forEach((item) => setTarget(item, data));
+    waitingList[prefix].forEach((details) => setTarget(details, data));
     inProgressRequests.delete(prefix);
     delete waitingList[prefix];
   };
@@ -177,11 +179,10 @@ const listenClick = (onclose) => {
     const code = titleNode.querySelector("strong")?.textContent.trim();
     if (!code) return;
 
-    if (!titleNode.querySelector(`.${TAG_CLASS}`)) titleNode.insertAdjacentHTML("afterbegin", insertHTML);
+    if (!titleNode.querySelector(`.${TAG_CLASS}`)) titleNode.insertAdjacentHTML("afterbegin", TAG_HTML);
 
-    const codeDetails = Util.codeParse(code);
+    const { prefix, ...codeDetails } = Util.codeParse(code);
     const nodeDetails = { ...codeDetails, node };
-    const { prefix } = codeDetails;
 
     const cachedResult = GM_getValue(code) ?? GM_getValue(prefix);
     if (cachedResult) return setTarget(nodeDetails, cachedResult);
@@ -195,8 +196,9 @@ const listenClick = (onclose) => {
     requestQueue
       .add(() => Req115.filesSearchAllVideos(prefix))
       .then(({ data = [] }) => {
-        GM_setValue(prefix, data);
-        onfinally(prefix, data);
+        const sources = extractSearchResult(data);
+        GM_setValue(prefix, sources);
+        onfinally(prefix, sources);
       })
       .catch((err) => {
         console.warn(err?.message);
@@ -204,7 +206,7 @@ const listenClick = (onclose) => {
       });
   };
 
-  const callback = (entries, obs) => {
+  const intersectionCallback = (entries, obs) => {
     entries.forEach(({ isIntersecting, target }) => {
       if (!isIntersecting) return;
       obs.unobserve(target);
@@ -212,20 +214,30 @@ const listenClick = (onclose) => {
     });
   };
 
-  const observer = new IntersectionObserver(callback, { threshold: 0.5 });
-  const obList = (list) => list.forEach((node) => observer.observe(node));
+  const intersectionOptions = { threshold: 0.5 };
+  const intersectionObserver = new IntersectionObserver(intersectionCallback, intersectionOptions);
+  const observeNodeList = (nodeList) => nodeList.forEach((node) => intersectionObserver.observe(node));
 
-  obList(currList);
-  window.addEventListener("JavDB.scroll", ({ detail }) => obList(detail));
-  CHANNEL.onmessage = ({ data }) => obList(document.querySelectorAll(`.${parseCodeClass(data)}`));
+  observeNodeList(currList);
+  window.addEventListener("JavDB.scroll", ({ detail }) => observeNodeList(detail));
+  CHANNEL.onmessage = ({ data: code }) => observeNodeList(document.querySelectorAll(`.${parseCodeClass(code)}`));
 
   const matchPrefix = (target) => {
-    const node = target.closest(SELECTOR);
-    const code = node.querySelector(".video-title strong")?.textContent.trim();
+    const code = target.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
+    if (!code) return;
+
     const { prefix } = Util.codeParse(code);
-    GM_deleteValues([code, prefix]);
-    obList([node]);
-    CHANNEL.postMessage(code);
+
+    Req115.filesSearchAllVideos(prefix)
+      .then(({ data = [] }) => {
+        const sources = extractSearchResult(data);
+        GM_setValue(prefix, sources);
+        GM_deleteValue(code);
+
+        observeNodeList(document.querySelectorAll(`.${parseCodeClass(code)}`));
+        CHANNEL.postMessage(code);
+      })
+      .catch((err) => console.warn(err?.message));
   };
 
   listenClick(matchPrefix);
