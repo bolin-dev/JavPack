@@ -314,6 +314,8 @@ const useVideo = () => {
     video.muted = true;
     video.autoplay = true;
     video.currentTime = 4;
+    video.disablePictureInPicture = true;
+    video.setAttribute("controlslist", "nofullscreen nodownload noremoteplayback noplaybackrate");
 
     elem.append(video);
     requestAnimationFrame(() => video.classList.add(SHOW));

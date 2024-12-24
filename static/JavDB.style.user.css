@@ -248,7 +248,9 @@ nav.sub-header,
         opacity: 1;
       }
 
-      &::-webkit-media-controls-panel {
+      &::-webkit-media-controls-play-button,
+      &::-webkit-media-controls-fullscreen-button,
+      &::-webkit-media-controls-timeline {
         display: none;
       }
     }
