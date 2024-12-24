@@ -92,13 +92,10 @@ Util.upStore();
 
   const reduceMagnet = (acc, cur) => {
     const index = acc.findIndex((item) => item.url === cur.url);
-
-    if (index === -1) {
-      acc.push(cur);
-      return acc;
-    }
+    if (index === -1) return acc.concat(cur);
 
     const existed = acc[index];
+
     ["name", "size", "files", "zh", "crack", "date"].forEach((key) => {
       if (!existed[key] && cur[key]) acc[index][key] = cur[key];
     });
@@ -113,7 +110,7 @@ Util.upStore();
     return { ...item, url, name, zh, crack };
   };
 
-  const flatMagnets = ([key, sources]) => sources.map((item) => ({ ...item, from: key }));
+  const flatMagnets = ([from, sources]) => sources.map((item) => ({ ...item, from }));
 
   const setMagnets = (details) => {
     magnetsNode.innerHTML =
