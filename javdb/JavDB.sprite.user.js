@@ -72,7 +72,9 @@ Util.upStore();
   if (sprite) return setSprite(sprite);
 
   const code = document.querySelector(".first-block .value").textContent;
-  ReqSprite.getSprite(Util.codeParse(code))
+  const codeDetails = Util.codeParse(code);
+
+  ReqSprite.getSprite(codeDetails)
     .then((source) => {
       GM_setValue(mid, source);
       setSprite(source);
