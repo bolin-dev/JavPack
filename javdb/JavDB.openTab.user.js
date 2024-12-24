@@ -13,10 +13,8 @@
 // ==/UserScript==
 
 (function () {
-  const SELECTOR = ":is(.actors, .movie-list, .section-container) a:not(.button)";
-
   const handleOpen = (e) => {
-    const target = e.target.closest(SELECTOR);
+    const target = e.target.closest(":is(.actors, .movie-list, .section-container) a:not(.button)");
     if (!target) return;
 
     e.preventDefault();
