@@ -207,6 +207,22 @@ nav.sub-header,
   }
 
   .item {
+    &:has(.is-success.x-match) {
+      border: 0.375rem solid #34a873;
+    }
+
+    &:has(.is-info.x-match) {
+      border: 0.375rem solid #2b74b1;
+    }
+
+    &:has(.is-warning.x-match) {
+      border: 0.375rem solid #ffd257;
+    }
+
+    &:has(.is-danger.x-match) {
+      border: 0.375rem solid #ee1742;
+    }
+
     .cover img {
       object-fit: contain;
       width: 100%;
