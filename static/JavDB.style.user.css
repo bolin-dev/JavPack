@@ -689,6 +689,10 @@ br + .title {
       .button {
         margin-bottom: 0;
       }
+
+      &:has(.x-offline) a.button {
+        display: none;
+      }
     }
   }
 }
