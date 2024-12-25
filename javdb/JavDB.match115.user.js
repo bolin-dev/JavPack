@@ -3,7 +3,7 @@
 // @namespace       JavDB.match115@blc
 // @version         0.0.1
 // @author          blc
-// @description     115网盘匹配
+// @description     115 网盘匹配
 // @match           https://javdb.com/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
