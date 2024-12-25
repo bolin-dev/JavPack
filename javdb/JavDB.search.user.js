@@ -17,7 +17,7 @@
       const txt = await navigator.clipboard.readText();
       if (!txt) return;
 
-      const url = `${location.origin}/search?q=${txt}`;
+      const url = `${location.origin}/search?q=${txt.trim()}`;
       if (!location.pathname.startsWith("/search")) return Grant.openTab(url);
       location.href = url;
     }
