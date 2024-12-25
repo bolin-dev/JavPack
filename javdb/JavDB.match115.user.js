@@ -27,7 +27,7 @@ Util.upStore();
 
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel("JavDB.match115");
-const TAG_CLASS = "x-match";
+const TARGET_CLASS = "x-match";
 
 const listenClick = (onclose) => {
   const actions = {
@@ -36,7 +36,7 @@ const listenClick = (onclose) => {
   };
 
   const onclick = (e) => {
-    if (!e.target.classList.contains(TAG_CLASS)) return;
+    if (!e.target.classList.contains(TARGET_CLASS)) return;
     e.preventDefault();
     e.stopPropagation();
 
@@ -62,7 +62,7 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
   if (!infoNode) return;
 
   const render = ({ pc, cid, t, n }) => {
-    return `<a href="${VOID}" class="${TAG_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
+    return `<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
   };
 
   const matchCode = async ({ code, codes, regex }, cont) => {
@@ -129,7 +129,7 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
   const inProgressRequests = new Set();
   const requestQueue = new RequestQueue();
   const waitingList = {};
-  const TAG_HTML = `<a href="${VOID}" class="tag ${TAG_CLASS}">匹配中</a>&nbsp;`;
+  const TARGET_HTML = `<a href="${VOID}" class="tag ${TARGET_CLASS}">匹配中</a>&nbsp;`;
 
   const parseCodeClass = (code) => ["x", ...code.split(/\s|\./)].filter(Boolean).join("-");
 
@@ -156,12 +156,12 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
     }
 
     node.classList.add(parseCodeClass(code));
-    const tagNode = node.querySelector(`.${TAG_CLASS}`);
+    const tagNode = node.querySelector(`.${TARGET_CLASS}`);
     tagNode.title = title;
     tagNode.dataset.pc = pc;
     tagNode.dataset.cid = cid;
     tagNode.textContent = textContent;
-    tagNode.className = `tag ${className} ${TAG_CLASS}`;
+    tagNode.className = `tag ${className} ${TARGET_CLASS}`;
   };
 
   const onfinally = (prefix, data) => {
@@ -179,7 +179,7 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
     const code = titleNode.querySelector("strong")?.textContent.trim();
     if (!code) return;
 
-    if (!titleNode.querySelector(`.${TAG_CLASS}`)) titleNode.insertAdjacentHTML("afterbegin", TAG_HTML);
+    if (!titleNode.querySelector(`.${TARGET_CLASS}`)) titleNode.insertAdjacentHTML("afterbegin", TARGET_HTML);
 
     const { prefix, ...codeDetails } = Util.codeParse(code);
     const nodeDetails = { ...codeDetails, node };
