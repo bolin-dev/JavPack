@@ -64,7 +64,6 @@ Util.upStore();
 
     const tileItem = container.querySelector(".tile-item");
     if (tileItem) return tileItem.insertAdjacentHTML("beforebegin", insertHTML);
-
     container.insertAdjacentHTML("beforeend", insertHTML);
   };
 
@@ -79,5 +78,5 @@ Util.upStore();
       GM_setValue(mid, source);
       setSprite(source);
     })
-    .catch((err) => console.warn(err.message));
+    .catch((err) => console.warn(err?.message));
 })();
