@@ -134,16 +134,20 @@ const useVideo = () => {
   const mid = unsafeWindow.appData?.split("/").at(-1);
   if (!container || !mid) return;
 
+  const onstart = ({ target }) => {
+    target.style.zIndex = 11;
+  };
+
+  const onstop = ({ target }) => {
+    target.style.zIndex = "auto";
+  };
+
   const setTrailer = ({ sources, cover }) => {
     const video = useVideo()(sources, cover);
 
-    video.addEventListener("play", ({ target }) => {
-      target.style.zIndex = 11;
-    });
-
-    video.addEventListener("pause", ({ target }) => {
-      target.style.zIndex = "auto";
-    });
+    video.addEventListener("play", onstart);
+    video.addEventListener("pause", onstop);
+    video.addEventListener("ended", onstop);
 
     container.querySelector("a").insertAdjacentElement("beforeend", video);
 
@@ -175,7 +179,7 @@ const useVideo = () => {
       GM_setValue(mid, details);
       setTrailer(details);
     })
-    .catch((err) => console.warn(err.message));
+    .catch((err) => console.warn(err?.message));
 })();
 
 (function () {
@@ -186,8 +190,11 @@ const useVideo = () => {
   const SHOW = "x-show";
   const HIDE = "x-hide";
 
+  const audioContext = new AudioContext();
+  const isRunning = audioContext.state === "running";
+  audioContext.close();
+
   const createVideo = useVideo();
-  let audioContext = null;
 
   const handleHover = (selector, onEnter, onLeave) => {
     let currElem = null;
@@ -311,7 +318,7 @@ const useVideo = () => {
     const video = createVideo(sources.toReversed(), cover);
 
     video.loop = true;
-    video.muted = true;
+    video.muted = !isRunning;
     video.autoplay = true;
     video.currentTime = 4;
     video.disablePictureInPicture = true;
@@ -320,9 +327,6 @@ const useVideo = () => {
     elem.append(video);
     requestAnimationFrame(() => video.classList.add(SHOW));
     video.focus();
-
-    if (!audioContext) audioContext = new AudioContext();
-    if (audioContext.state === "running") video.muted = false;
   };
 
   const onEnter = async (elem) => {
@@ -337,7 +341,7 @@ const useVideo = () => {
         details = await Req.tasks(url, [getDetails]);
         GM_setValue(mid, details);
       } catch (err) {
-        return console.warn(err.message);
+        return console.warn(err?.message);
       }
     }
 
@@ -349,7 +353,7 @@ const useVideo = () => {
         GM_setValue(mid, details);
         setTrailer(elem, details);
       })
-      .catch((err) => console.warn(err.message));
+      .catch((err) => console.warn(err?.message));
   };
 
   const onLeave = (elem) => {
