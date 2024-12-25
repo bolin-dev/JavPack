@@ -44,10 +44,10 @@ class Offline {
   static getActions(config, params) {
     return config
       .flatMap(({ type = "plain", match = [], exclude = [], ...item }, index) => {
-        let { name, dir = "云下载", rename = this.defaultRename } = item;
+        let { name, dir = "云下载", rename } = item;
         if (!name) return null;
 
-        rename = rename.toString().trim() || this.defaultRename;
+        rename = rename?.toString().trim() ?? this.defaultRename;
         rename = rename.replaceAll("${zh}", "$zh");
         rename = rename.replaceAll("${crack}", "$crack");
         if (!rename.includes("${code}")) rename = "${code} " + rename;
@@ -78,7 +78,7 @@ class Offline {
         });
       })
       .filter((item) => Boolean(item) && item.dir.every(Boolean))
-      .map(({ color = "is-info", inMagnets = true, desc, ...options }) => {
+      .map(({ color = "is-info", inMagnets = false, desc, ...options }) => {
         return { ...options, color, inMagnets, desc: desc ? desc.toString() : options.dir.join("/") };
       });
   }
