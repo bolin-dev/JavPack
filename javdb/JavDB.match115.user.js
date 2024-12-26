@@ -129,7 +129,7 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
   const inProgressRequests = new Set();
   const requestQueue = new RequestQueue();
   const waitingList = {};
-  const TARGET_HTML = `<a href="${VOID}" class="tag ${TARGET_CLASS}">匹配中</a>&nbsp;`;
+  const TARGET_HTML = `<a href="${VOID}" class="tag is-normal ${TARGET_CLASS}">匹配中</a>&nbsp;`;
 
   const parseCodeClass = (code) => ["x", ...code.split(/\s|\./)].filter(Boolean).join("-");
 
