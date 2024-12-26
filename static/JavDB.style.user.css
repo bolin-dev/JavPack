@@ -284,8 +284,8 @@ nav.sub-header,
 
       .x-match {
         height: calc(var(--x-size-md) * 1.5);
-        padding-inline: 0.375rem;
-        border-radius: var(--x-radius);
+        margin-left: -1px;
+        border-radius: calc(var(--x-size-md) * 1.5);
 
         &:not(.is-normal) {
           font-weight: bold;
