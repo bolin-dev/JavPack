@@ -287,6 +287,10 @@ nav.sub-header,
         margin-left: -1px;
         border-radius: calc(var(--x-size-md) * 1.5);
 
+        &.is-normal {
+          text-decoration: none;
+        }
+
         &:not(.is-normal) {
           font-weight: bold;
           color: #fff;
