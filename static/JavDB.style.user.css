@@ -35,10 +35,6 @@ html {
   &.has-navbar-fixed-bottom {
     padding-bottom: 0;
   }
-
-  &:has(.fancybox-slide--current #x-sprite) {
-    overflow: hidden;
-  }
 }
 
 body {
@@ -683,6 +679,11 @@ br + .title {
     padding-bottom: 0;
     border-bottom: none !important;
   }
+}
+
+.fancybox-slide {
+  overflow-y: overlay;
+  overscroll-behavior: contain;
 }
 
 .video-panel {
