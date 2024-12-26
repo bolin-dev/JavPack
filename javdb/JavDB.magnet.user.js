@@ -36,6 +36,24 @@ Util.upStore();
   const codeDetails = Util.codeParse(code);
   magnetsNode.classList.add("x-magnet");
 
+  magnetsNode.insertAdjacentHTML(
+    "beforebegin",
+    `<div class="tags mb-1">
+      <a class="tag is-success" href="https://btdig.com/search?order=0&q=${code}" target="_blank">
+        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>BTDigg</span>
+      </a>
+      <a class="tag is-success" href="https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}" target="_blank">
+        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>Sukebei</span>
+      </a>
+      <span class="tag is-success">
+        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>自动去重</span>
+      </span>
+      <span class="tag is-success">
+        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>综合排序</span>
+      </span>
+    </div>`,
+  );
+
   const getMagnets = () => {
     return [...magnetsNode.querySelectorAll(".item.columns")]
       .map((node) => {
