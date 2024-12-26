@@ -781,7 +781,7 @@ br + .title {
 }
 
 #magnets-content.x-magnet {
-  max-height: calc(54px * 10);
+  max-height: calc(54px * 9);
   overflow-y: overlay;
 }
 
