@@ -128,12 +128,10 @@ Util.upStore();
     return { ...item, url, name, zh, crack };
   };
 
-  const flatMagnets = ([from, sources]) => sources.map((item) => ({ ...item, from }));
-
   const setMagnets = (details) => {
     magnetsNode.innerHTML =
-      Object.entries(details)
-        .flatMap(flatMagnets)
+      Object.values(details)
+        .flat()
         .map(parseName)
         .reduce(reduceMagnet, [])
         .map(parseSize)
