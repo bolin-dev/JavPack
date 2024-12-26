@@ -216,7 +216,6 @@ nav.sub-header,
       content: "";
       border: 6px solid transparent;
       border-radius: 5px;
-      transition: var(--x-trans);
     }
 
     &:has(.x-match.is-success)::after {
