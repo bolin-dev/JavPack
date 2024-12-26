@@ -239,35 +239,47 @@ nav.sub-header,
       border-color: var(--x-danger);
     }
 
-    .cover img {
-      object-fit: contain;
-      width: 100%;
-    }
-
-    .cover:hover img {
-      z-index: 0;
-      transform: none;
-    }
-
-    .cover video {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
-      object-fit: contain;
-      opacity: 0;
+    .cover {
       transition: var(--x-trans);
 
-      &.x-show {
-        opacity: 1;
+      &.x-hovered {
+        filter: blur(2px);
+
+        &:has(video) {
+          filter: none;
+        }
       }
 
-      &::-webkit-media-controls-play-button,
-      &::-webkit-media-controls-fullscreen-button,
-      &::-webkit-media-controls-timeline {
-        display: none;
+      img {
+        object-fit: contain;
+        width: 100%;
+      }
+
+      &:hover img {
+        z-index: 0;
+        transform: none;
+      }
+
+      video {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        object-fit: contain;
+        opacity: 0;
+        transition: var(--x-trans);
+
+        &.x-show {
+          opacity: 1;
+        }
+
+        &::-webkit-media-controls-play-button,
+        &::-webkit-media-controls-fullscreen-button,
+        &::-webkit-media-controls-timeline {
+          display: none;
+        }
       }
     }
 
