@@ -62,7 +62,7 @@ Util.upStore();
           url: node.querySelector(".magnet-name a")?.href,
           name: node.querySelector(".name")?.textContent.trim() ?? "",
           size: meta[0].replace(/\s/g, ""),
-          files: meta?.[1]?.replace("個文件", "").trim(),
+          files: meta?.[1]?.replace("個文件", "").trim() ?? "",
           zh: !!node.querySelector(".tags .is-warning"),
           date: node.querySelector(".time")?.textContent.trim() ?? "",
         };
