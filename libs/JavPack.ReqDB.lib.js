@@ -1,6 +1,4 @@
 class ReqDB extends Req {
-  static limit = 24;
-
   static signature() {
     const TS_KEY = "TS";
     const SIGN_KEY = "SIGN";
@@ -19,25 +17,12 @@ class ReqDB extends Req {
     return sign;
   }
 
-  static req(details) {
-    if (typeof details === "string") details = { url: details };
-    details.url = `https://api.hechuangxinxi.xyz/api/${details.url}`;
-
+  static related(movie_id) {
     return this.request({
-      ...details,
-      responseType: "json",
+      url: "https://api.hechuangxinxi.xyz/api/v1/lists/related",
+      params: { movie_id, page: 1, limit: 24 },
       headers: { jdSignature: this.signature() },
-    });
-  }
-
-  static related(movie_id, page = 1) {
-    return this.req({
-      url: "v1/lists/related",
-      params: {
-        page,
-        movie_id,
-        limit: this.limit,
-      },
+      responseType: "json",
     });
   }
 }
