@@ -24,9 +24,7 @@ class Util {
   }
 
   static setFavicon(icon) {
-    const favicon = GM_getResourceURL(icon);
-    if (!favicon) return;
-
-    document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", favicon));
+    const favicon = GM_getResourceURL(icon?.status ? icon.status : icon);
+    if (favicon) document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", favicon));
   }
 }
