@@ -305,7 +305,6 @@ nav.sub-header,
 
         &:not(.is-normal) {
           font-weight: bold;
-          color: #fff;
         }
 
         &.is-success {
