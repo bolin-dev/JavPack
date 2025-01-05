@@ -19,8 +19,8 @@
 // @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
 // @connect         jdbstatic.com
 // @connect         aliyuncs.com
+// @connect         javdb.com
 // @connect         115.com
-// @connect         self
 // @run-at          document-end
 // @grant           GM_removeValueChangeListener
 // @grant           GM_addValueChangeListener
@@ -39,11 +39,13 @@ const config = [
   {
     name: "云下载",
     color: "is-primary",
+    inMagnets: true,
   },
   {
     name: "番号",
     dir: "番号/${prefix}",
     color: "is-link",
+    inMagnets: true,
   },
   {
     name: "片商",
@@ -70,8 +72,7 @@ const config = [
 ];
 
 const TARGET_CLASS = "x-offline";
-const { host: HOST, pathname: PATHNAME } = location;
-const IS_DETAIL = PATHNAME.startsWith("/v/");
+const LOAD_CLASS = "is-loading";
 
 const VERIFY_HOST = "captchaapi.115.com";
 const VERIFY_URL = `https://${VERIFY_HOST}/?ac=security_code&type=web&cb=Close911`;
@@ -80,26 +81,29 @@ const VERIFY_PENDING = "PENDING";
 const VERIFY_VERIFIED = "VERIFIED";
 const VERIFY_FAILED = "FAILED";
 
+const transToByte = Magnet.useTransByte();
+
 const getDetails = (dom = document) => {
   const infoNode = dom.querySelector(".movie-panel-info");
   if (!infoNode) return;
 
+  const info = {};
+  info.cover = dom.querySelector(".video-cover")?.src;
+
   const codeNode = infoNode.querySelector(".first-block .value");
-  const prefix = codeNode.querySelector("a")?.textContent;
-  const code = codeNode.textContent;
+  const prefix = codeNode.querySelector("a")?.textContent.trim();
+  const code = codeNode.textContent.trim();
+  if (prefix) info.prefix = prefix;
 
   const titleNode = dom.querySelector(".title.is-4");
-  let title = titleNode.querySelector("strong").textContent;
-  title += (titleNode.querySelector(".origin-title") ?? titleNode.querySelector(".current-title")).textContent;
-  title = title.replace(code, "").trim();
+  const label = titleNode.querySelector("strong").textContent;
+  const origin = titleNode.querySelector(".origin-title");
+  const current = titleNode.querySelector(".current-title");
+  info.title = `${label}${(origin ?? current).textContent}`.replace(code, "").trim();
 
-  let cover = dom.querySelector(".video-cover")?.src;
-  if (!cover) cover = dom.querySelector(".column-video-cover video")?.poster;
-
-  const info = {};
   infoNode.querySelectorAll(".movie-panel-info > .panel-block").forEach((item) => {
-    const label = item.querySelector("strong")?.textContent;
-    const value = item.querySelector(".value")?.textContent;
+    const label = item.querySelector("strong")?.textContent.trim();
+    const value = item.querySelector(".value")?.textContent.trim();
     if (!label || !value || value.includes("N/A")) return;
 
     switch (label) {
@@ -130,14 +134,17 @@ const getDetails = (dom = document) => {
     }
   });
 
-  if (prefix) info.prefix = prefix;
-  if (cover) info.cover = cover;
+  if (info.date) {
+    const [year, month, day] = info.date.split("-");
+    info.year = year;
+    info.month = month;
+    info.day = day;
+  }
 
-  const { codes, regex } = Util.codeParse(code);
-  return { codes, regex, code, title, ...info };
+  return { ...Util.codeParse(code), ...info };
 };
 
-const createAction = ({ color, index, idx, desc, name }) => {
+const renderAction = ({ color, index, idx, desc, name }) => {
   return `
   <button
     class="${TARGET_CLASS} button is-small ${color}"
@@ -154,16 +161,14 @@ const findAction = ({ index, idx }, actions) => {
   return actions.find((act) => act.index === Number(index) && act.idx === Number(idx));
 };
 
-const transToByte = Magnet.useTransByte();
-
 const parseMagnet = (node) => {
   const name = node.querySelector(".name")?.textContent.trim() ?? "";
   const meta = node.querySelector(".meta")?.textContent.trim() ?? "";
   return {
-    url: node.querySelector(".magnet-name a").href.split("&")[0].toLowerCase(),
+    url: node.querySelector(".magnet-name a")?.href?.split("&")[0].toLowerCase(),
     zh: !!node.querySelector(".tag.is-warning") || Magnet.zhReg.test(name),
     size: transToByte(meta.split(",")[0]),
-    crack: Magnet.crackReg.test(name),
+    crack: !!node.querySelector(".tag.is-info") || Magnet.crackReg.test(name),
     meta,
     name,
   };
@@ -185,15 +190,10 @@ const openVerify = () => {
 
 const offline = async ({ options, magnets, onstart, onprogress, onfinally }, currIdx = 0) => {
   onstart?.();
-  const res = await Req115.handleSmartOffline(options, magnets.slice(currIdx));
+  const res = await Req115.handleOffline(options, magnets.slice(currIdx));
 
   if (res.status !== "warn") return onfinally?.(res);
   onprogress?.(res);
-
-  if (GM_getValue(VERIFY_KEY) !== VERIFY_PENDING) {
-    Grant.notify(res);
-    openVerify();
-  }
 
   const listener = GM_addValueChangeListener(VERIFY_KEY, (_name, _old_value, new_value) => {
     if (![VERIFY_FAILED, VERIFY_VERIFIED].includes(new_value)) return;
@@ -201,15 +201,17 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     if (new_value === VERIFY_FAILED) return onfinally?.();
     offline({ options, magnets, onstart, onprogress, onfinally }, res.currIdx);
   });
+
+  if (GM_getValue(VERIFY_KEY) === VERIFY_PENDING) return;
+  Grant.notify(res);
+  openVerify();
 };
 
 (function () {
-  if (HOST === VERIFY_HOST) Offline.verifyAccount(VERIFY_KEY, VERIFY_VERIFIED);
+  if (location.host === VERIFY_HOST) Offline.verifyAccount(VERIFY_KEY, VERIFY_VERIFIED);
 })();
 
 (function () {
-  if (!IS_DETAIL) return;
-
   const details = getDetails();
   if (!details) return;
 
@@ -219,21 +221,15 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   const insertActions = (actions) => {
     document.querySelector(".movie-panel-info").insertAdjacentHTML(
       "beforeend",
-      `<div class="panel-block">
-        <div class="columns">
-          <div class="column">
-            <div class="buttons">
-              ${actions.map(createAction).join("")}
-            </div>
-          </div>
-        </div>
-      </div>`,
+      `<div class="panel-block"><div class="columns"><div class="column"><div class="buttons">
+        ${actions.map(renderAction).join("")}
+      </div></div></div></div>`,
     );
 
-    const inMagnets = actions.find(({ inMagnets }) => Boolean(inMagnets));
-    if (!inMagnets) return;
+    const inMagnets = actions.filter(({ inMagnets }) => Boolean(inMagnets));
+    if (!inMagnets.length) return;
 
-    const inMagnetsTxt = createAction(inMagnets);
+    const inMagnetsTxt = inMagnets.map(renderAction).join("");
     const magnetsNode = document.querySelector("#magnets-content");
 
     const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsTxt);
@@ -252,24 +248,17 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
   const onstart = (target) => {
     Util.setFavicon("pend");
-    target.classList.add("is-loading");
-
-    document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => {
-      item.disabled = true;
-    });
+    target.classList.add(LOAD_CLASS);
+    document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.setAttribute("disabled", ""));
   };
 
-  const onprogress = (res) => Util.setFavicon(res.status);
-
-  const onfinally = (res) => {
-    document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => {
-      item.disabled = false;
-      item.classList.remove("is-loading");
-    });
-
+  const onfinally = (target, res) => {
+    document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.removeAttribute("disabled"));
+    target.classList.remove(LOAD_CLASS);
     if (!res) return;
+
     Grant.notify(res);
-    Util.setFavicon(res.status);
+    Util.setFavicon(res);
     Req115.sleep(0.5).then(() => unsafeWindow["reMatch"]?.());
   };
 
@@ -291,8 +280,8 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       options,
       magnets,
       onstart: () => onstart(target),
-      onprogress,
-      onfinally,
+      onprogress: Util.setFavicon,
+      onfinally: (res) => onfinally(target, res),
     });
   };
 
@@ -301,13 +290,12 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 })();
 
 (function () {
-  if (IS_DETAIL) return;
-
-  const MOVIE_SELECTOR = ".movie-list .item";
-  const movieNodeList = document.querySelectorAll(MOVIE_SELECTOR);
-  if (!movieNodeList.length) return;
+  const SELECTOR = ".movie-list .item";
+  const movieList = document.querySelectorAll(SELECTOR);
+  if (!movieList.length) return;
 
   const getParams = () => {
+    const { pathname: PATHNAME } = location;
     if (PATHNAME.startsWith("/tags")) {
       const categoryNodeList = document.querySelectorAll("#tags .tag-category");
       const genreNodeList = [...categoryNodeList].filter((item) => Number(item.dataset.cid) !== 10);
@@ -336,38 +324,31 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   if (!actions.length) return;
 
   const insertActions = (actions) => {
-    const actionsTxt = `
-    <div class="px-2 pt-2 buttons" style="position:absolute;z-index:2">
-      ${actions.map(createAction).join("")}
-    </div>
-    `;
+    const actionsTxt = `<div class="px-2 pt-2 buttons">${actions.map(renderAction).join("")}</div>`;
 
     const insert = (node) => node.querySelector(".cover").insertAdjacentHTML("beforeend", actionsTxt);
     const insertList = (nodeList) => nodeList.forEach(insert);
 
-    insertList(movieNodeList);
+    insertList(movieList);
     window.addEventListener("JavDB.scroll", ({ detail }) => insertList(detail));
   };
 
   const onstart = (target) => {
-    target.classList.add("is-loading");
+    target.classList.add(LOAD_CLASS);
 
     target
-      .closest(MOVIE_SELECTOR)
+      .closest(SELECTOR)
       .querySelectorAll(`.${TARGET_CLASS}`)
-      .forEach((item) => {
-        item.disabled = true;
-      });
+      .forEach((item) => item.setAttribute("disabled", ""));
   };
 
   const onfinally = (target, res) => {
     target
-      .closest(MOVIE_SELECTOR)
+      .closest(SELECTOR)
       .querySelectorAll(`.${TARGET_CLASS}`)
-      .forEach((item) => {
-        item.disabled = false;
-        item.classList.remove("is-loading");
-      });
+      .forEach((item) => item.removeAttribute("disabled"));
+
+    target.classList.remove(LOAD_CLASS);
 
     if (res) Req115.sleep(0.5).then(() => unsafeWindow["reMatch"]?.(target));
   };
@@ -397,7 +378,8 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
         magnets,
         onfinally: (res) => onfinally(target, res),
       });
-    } catch (_) {
+    } catch (err) {
+      console.warn(err?.message);
       return onfinally(target);
     }
   };
