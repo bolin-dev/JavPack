@@ -4,7 +4,6 @@ class Offline {
   static defaultOptions = {
     tags: ["genres", "actors"],
     clean: true,
-    cleanPwd: "",
     cover: true,
   };
 
@@ -47,7 +46,7 @@ class Offline {
         let { name, dir = "云下载", rename } = item;
         if (!name) return null;
 
-        rename = rename?.toString().trim() ?? this.defaultRename;
+        rename = rename?.toString().trim() || this.defaultRename;
         rename = rename.replaceAll("${zh}", "$zh");
         rename = rename.replaceAll("${crack}", "$crack");
         if (!rename.includes("${code}")) rename = "${code} " + rename;
@@ -58,8 +57,6 @@ class Offline {
         if (!Array.isArray(classes) || !classes.length) return null;
 
         if (match.length) classes = classes.filter((item) => match.some((key) => item.includes(key)));
-        if (!classes.length) return null;
-
         if (exclude.length) classes = classes.filter((item) => !exclude.some((key) => item.includes(key)));
         if (!classes.length) return null;
 
@@ -84,14 +81,13 @@ class Offline {
   }
 
   static getOptions(
-    { magnetOptions = {}, verifyOptions = {}, renameTxt = {}, ...options },
-    { codes, regex, ...details },
+    { magnetOptions = {}, verifyOptions = {}, renameTxt = {}, rename, ...options },
+    { codes, regex, cover, ...details },
   ) {
     options = { ...this.defaultOptions, ...options };
     magnetOptions = { ...this.defaultMagnetOptions, ...magnetOptions };
     verifyOptions = { ...this.defaultVerifyOptions, ...verifyOptions };
     renameTxt = { ...this.defaultRenameTxt, ...renameTxt };
-    const { cover, rename, tags } = options;
 
     return {
       ...options,
@@ -101,9 +97,9 @@ class Offline {
       codes,
       regex,
       code: details.code,
-      cover: cover ? details.cover : cover,
+      cover: options.cover ? cover : "",
       rename: this.parseVar(rename, details),
-      tags: tags.flatMap((key) => details[key]).filter(Boolean),
+      tags: options.tags.flatMap((key) => details[key]).filter(Boolean),
     };
   }
 
