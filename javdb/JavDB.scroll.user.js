@@ -11,6 +11,7 @@
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
+// @require         https://github.com/Tampermonkey/utils/raw/d8a4543a5f828dfa8eefb0a3360859b6fe9c3c34/requires/gh_2215_make_GM_xhr_more_parallel_again.js
 // ==/UserScript==
 
 (function () {
