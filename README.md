@@ -6,39 +6,43 @@
 
 ## 脚本
 
-| 115          | 描述           | 安装                                                                           |
-| :----------- | :------------- | :----------------------------------------------------------------------------- |
-| 115.playlist | 播放列表       | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.playlist.user.js) |
-| 115.delDir   | 播放页删除目录 | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.delDir.user.js)   |
+### 115
 
-| JavDB                           | 描述         | 安装                                                                                 |
-| :------------------------------ | :----------- | :----------------------------------------------------------------------------------- |
-| JavDB.style                     | 样式调整     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)      |
-| [JavDB.search](#search)         | 快捷搜索     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.search.user.js)     |
-| [JavDB.openTab](#opentab)       | 新标签页打开 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.openTab.user.js)    |
-| JavDB.scroll                    | 滚动加载     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.scroll.user.js)     |
-| [JavDB.trailer](#trailer)       | 预告片       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.trailer.user.js)    |
-| JavDB.sprite                    | 雪碧图       | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.sprite.user.js)     |
-| JavDB.magnet                    | 磁链扩展     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.magnet.user.js)     |
-| JavDB.lists                     | 相关清单     | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.lists.user.js)      |
-| JavDB.match115                  | 115 网盘匹配 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.match115.user.js)   |
-| [JavDB.offline115](#offline115) | 115 网盘离线 | [安装](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.offline115.user.js) |
+| 名称         | 描述           | 安装                               |
+| :----------- | :------------- | :--------------------------------- |
+| 115.playlist | 播放列表       | [安装](./115/115.playlist.user.js) |
+| 115.delDir   | 播放页删除目录 | [安装](./115/115.delDir.user.js)   |
+
+### JavDB
+
+脚本依赖: `JavDB.style`
+
+| 名称                            | 描述        | 安装                                     |
+| :------------------------------ | :---------- | :--------------------------------------- |
+| JavDB.style                     | 样式调整    | [安装](./javdb/JavDB.style.user.js)      |
+| [JavDB.search](#search)         | 快捷搜索    | [安装](./javdb/JavDB.search.user.js)     |
+| [JavDB.openTab](#opentab)       | 标签页打开  | [安装](./javdb/JavDB.openTab.user.js)    |
+| JavDB.scroll                    | 滚动加载    | [安装](./javdb/JavDB.scroll.user.js)     |
+| [JavDB.trailer](#trailer)       | 预告片      | [安装](./javdb/JavDB.trailer.user.js)    |
+| JavDB.sprite                    | 雪碧图      | [安装](./javdb/JavDB.sprite.user.js)     |
+| JavDB.magnet                    | 磁链扩展    | [安装](./javdb/JavDB.magnet.user.js)     |
+| JavDB.lists                     | 相关清单    | [安装](./javdb/JavDB.lists.user.js)      |
+| JavDB.match115                  | 115网盘匹配 | [安装](./javdb/JavDB.match115.user.js)   |
+| [JavDB.offline115](#offline115) | 115网盘离线 | [安装](./javdb/JavDB.offline115.user.js) |
 
 ## 使用
 
 ### search
 
-- 按键 `/` 选取搜索框
+- 按键 `/` 聚焦选取搜索框
 
-- 按键 `Ctrl` + `/` 搜索粘贴板首项
+- 按键 `Ctrl` + `/` 快速搜索粘贴板首项
 
 ### openTab
 
 - 鼠标左键新标签页前台打开，右键后台打开
 
 ### trailer
-
-- [jav.land](https://jav.land) 需分流代理至 `非日节点`
 
 - 方向键或 `W` `A` `S` `D` 控制播放进度及音量
 
@@ -53,7 +57,7 @@
 | `config[]` 选项        | 类型                              | 说明                                                                                                                                        | 默认                                         |
 | :--------------------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------- |
 | `name`                 | `string`                          | 按钮名称                                                                                                                                    | 必填                                         |
-| `inMagnets`            | `boolean`                         | 磁力列表显示                                                                                                                                | `true`                                       |
+| `inMagnets`            | `boolean`                         | 磁力列表显示                                                                                                                                | `false`                                      |
 | `color`                | `string`                          | 按钮样式，参考 [bulma](https://bulma.io/documentation/elements/button/#colors)                                                              | `"is-info"`                                  |
 | `desc`                 | `string`                          | 按钮描述                                                                                                                                    | `离线路径`                                   |
 | `type`                 | `"plain" \| "genres" \| "actors"` | 按钮类型                                                                                                                                    | `"plain"`                                    |
@@ -72,7 +76,7 @@
 | `renameTxt.crack`      | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
 | `tags`                 | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
 | `clean`                | `boolean`                         | 清理不相关文件                                                                                                                              | `true`                                       |
-| `cleanPwd`             | `string`                          | 从回收站删除对应文件                                                                                                                        | `""`                                         |
+| `cleanPwd`             | `string`                          | 清空回收站                                                                                                                                  | `""`                                         |
 | `cover`                | `boolean`                         | 上传封面                                                                                                                                    | `true`                                       |
 
 <details><summary>动态参数及示例</summary>
@@ -82,6 +86,9 @@
 // prefix      前缀
 // title       标题
 // date        日期
+// year        年
+// month       月
+// day         日
 // director    导演
 // maker       片商
 // publisher   发行
@@ -129,8 +136,8 @@ const config = [
     rename: "${zh}${crack} ${code} ${title}",
     renameTxt: {
       no: "-${no}",
-      zh: "[中字]", // 应匹配正则 /中文|中字|字幕|-u?c(?![a-z])|.+(?<![a-z])ch(?![a-z])|\dc(?![a-z])/i
-      crack: "[破解]", // 应匹配正则 /破解|-uc?(?![a-z])|uncensored/i
+      zh: "[中字]", // 应匹配正则: /中文|中字|字幕|\[[a-z]?hdc[a-z]?\]|[-_\s]+(uc|c|ch|cu|zh)(?![a-z])/i
+      crack: "[破解]", // 应匹配正则: /无码|無碼|流出|破解|解密版|uncensored|破[一-鿆]版|[-_\s]+(cu|u|uc)(?![a-z])/i
     },
     tags: ["actors"],
     clean: true,

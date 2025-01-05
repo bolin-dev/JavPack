@@ -1,41 +1,45 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "never",
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.stylelint": "explicit",
-    "source.organizeImports": "never"
-  },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": { "source.fixAll": "explicit" },
   "editor.detectIndentation": false,
-  "editor.tabSize": 2,
-  "editor.wordWrap": "wordWrapColumn",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.renderWhitespace": "boundary",
   "editor.wordWrapColumn": 120,
   "editor.formatOnSave": true,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.tabSize": 2,
+
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
   "files.eol": "\n",
-  "files.exclude": {
-    "**/node_modules": true
-  },
-  "cSpell.ignoreWords": [
-    "lpw6vgqzsp",
+
+  "prettier.printWidth": 120,
+  "prettier.quoteProps": "consistent",
+  "less.validate": false,
+  "scss.validate": false,
+  "css.validate": false,
+  "cSpell.words": [
     "accessid",
     "aliyuncs",
     "btdig",
-    "btih",
-    "bulma",
     "Digg",
-    "EBWH",
+    "dmmplayer",
+    "hechuangxinxi",
+    "heydouga",
     "heyzo",
     "javdb",
-    "javspyl",
     "jdbstatic",
     "muramura",
     "musume",
+    "nofullscreen",
+    "noplaybackrate",
+    "nyaa",
     "pacopacomama",
     "pondo",
     "proid",
     "scid",
-    "SPYL",
-    "vcode"
-  ],
-  "cSpell.words": ["dmmplayer", "hechuangxinxi", "heydouga"]
+    "Sukebei",
+    "vcode",
+    "vgqzsp"
+  ]
 }
