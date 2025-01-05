@@ -187,7 +187,7 @@ const useVideo = () => {
   const SELECTOR = ".movie-list .cover";
   if (!document.querySelector(SELECTOR)) return;
 
-  const TAG = "x-hovered";
+  const HOVER = "x-hovered";
   const SHOW = "x-show";
   const HIDE = "x-hide";
 
@@ -315,7 +315,7 @@ const useVideo = () => {
   };
 
   const setTrailer = (elem, { sources, cover }) => {
-    if (!elem.classList.contains(TAG)) return;
+    if (!elem.classList.contains(HOVER)) return;
     const video = createVideo(sources.toReversed(), cover);
 
     video.loop = true;
@@ -331,7 +331,7 @@ const useVideo = () => {
   };
 
   const onEnter = async (elem) => {
-    elem.classList.add(TAG);
+    elem.classList.add(HOVER);
 
     const url = elem.closest("a").href;
     const mid = url.split("/").at(-1);
@@ -358,7 +358,7 @@ const useVideo = () => {
   };
 
   const onLeave = (elem) => {
-    elem.classList.remove(TAG);
+    elem.classList.remove(HOVER);
     const video = elem.querySelector("video");
     if (!video) return;
 
