@@ -236,24 +236,28 @@ nav.sub-header,
     }
 
     .cover {
-      transition: var(--x-trans);
-
-      &.x-hovered {
-        filter: blur(2px);
-
-        &:has(video) {
-          filter: none;
-        }
-      }
+      position: relative;
+      overflow: hidden;
 
       img {
         object-fit: contain;
         width: 100%;
+        transition: var(--x-trans);
       }
 
       &:hover img {
         z-index: 0;
         transform: none;
+      }
+
+      &.x-hovered img {
+        filter: blur(2px);
+      }
+
+      .buttons:has(.x-offline) {
+        position: absolute;
+        top: 0;
+        z-index: 2;
       }
 
       video {
