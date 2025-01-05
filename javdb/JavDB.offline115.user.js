@@ -385,5 +385,5 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   };
 
   insertActions(actions);
-  document.addEventListener("click", onclick);
+  document.addEventListener("click", onclick, true);
 })();
