@@ -13,6 +13,7 @@
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           window.close
+// @grant           GM_addStyle
 // ==/UserScript==
 
 (function () {
@@ -40,6 +41,7 @@
     nearby.querySelector("a").click();
   };
 
+  GM_addStyle(".vt-headline .btn-opendir + div {display:none}");
   const delNode = document.createElement("a");
   delNode.textContent = "删除";
   delNode.className = "btn-opendir";
