@@ -46,19 +46,18 @@ Util.upStore();
     listsNode.innerHTML = renderCont(domStr);
   };
 
-  const showLists = () => {
+  const showLists = ({ dataset }) => {
     magnetsNode.style.display = "none";
     reviewsNode.style.display = "none";
     listsNode.style.display = "block";
 
-    const { dataset } = tabsNode.querySelector(".is-active");
     if (dataset.loaded === "true") return;
     dataset.loaded = "true";
 
     const lists = GM_getValue(mid, []);
     if (lists.length) return setLists(lists);
-
     loadNode.style.display = "block";
+
     ReqDB.related(mid)
       .then(({ data }) => {
         const sources = data?.lists ?? [];
@@ -66,6 +65,7 @@ Util.upStore();
         setLists(sources);
       })
       .catch(() => {
+        dataset.loaded = "false";
         listsNode.innerHTML = renderCont("读取失败");
       })
       .finally(() => {
@@ -86,7 +86,7 @@ Util.upStore();
 
     tabsNode.querySelector(".is-active").classList.remove("is-active");
     classList.add("is-active");
-    showLists();
+    showLists(target);
   };
 
   tabsNode.addEventListener("click", onclick, true);
