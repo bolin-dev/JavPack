@@ -27,4 +27,8 @@ class Util {
     const favicon = GM_getResourceURL(icon?.status ? icon.status : icon);
     if (favicon) document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", favicon));
   }
+
+  static dispatchEvent(detail = null) {
+    return window.dispatchEvent(new CustomEvent(GM_info.script.name, { detail }));
+  }
 }
