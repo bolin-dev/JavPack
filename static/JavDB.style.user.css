@@ -77,7 +77,7 @@ nav.sub-header,
 
   .navbar-brand > .navbar-item svg {
     width: auto;
-    height: 2.25rem;
+    height: 2rem;
   }
 }
 
@@ -86,8 +86,12 @@ nav.sub-header,
     background-color: var(--x-hv) !important;
   }
 
+  .navbar-dropdown.is-boxed {
+    top: 100%;
+  }
+
   .navbar-dropdown.is-right {
-    top: calc(100% - 4px);
+    top: 100%;
     display: block;
     pointer-events: none;
     border-top: none;
@@ -118,6 +122,7 @@ nav.sub-header,
 
 .search-bar-wrap {
   padding: 0.75rem;
+  border-radius: var(--x-radius);
 
   .search-recent-keywords {
     margin: 0 -0.375rem;
