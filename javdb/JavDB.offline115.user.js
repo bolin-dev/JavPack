@@ -235,11 +235,8 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
     const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsTxt);
     const insertMagnets = () => magnetsNode.querySelectorAll(".item.columns").forEach(insert);
+    window.addEventListener("JavDB.magnet", insertMagnets);
     insertMagnets();
-
-    const callback = (mutations) => mutations.forEach(({ type }) => type === "childList" && insertMagnets());
-    const observer = new MutationObserver(callback);
-    observer.observe(magnetsNode, { childList: true, attributes: false, characterData: false });
   };
 
   const findMagnets = (target, options) => {
