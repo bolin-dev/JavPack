@@ -183,6 +183,11 @@ nav.sub-header,
 
   &.v {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+
+    .item .cover {
+      aspect-ratio: 147 / 200;
+      padding-top: 0;
+    }
   }
 
   .box {
@@ -242,6 +247,7 @@ nav.sub-header,
 
     .cover {
       position: relative;
+      padding-top: 67.25%;
       overflow: hidden;
 
       img {
