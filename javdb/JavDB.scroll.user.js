@@ -8,9 +8,11 @@
 // @exclude         https://javdb.com/v/*
 // @icon            https://javdb.com/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
+// @grant           GM_info
 // @require         https://github.com/Tampermonkey/utils/raw/d8a4543a5f828dfa8eefb0a3360859b6fe9c3c34/requires/gh_2215_make_GM_xhr_more_parallel_again.js
 // ==/UserScript==
 
@@ -75,7 +77,7 @@
 
         if (detail.length) {
           contNode.append(...detail);
-          window.dispatchEvent(new CustomEvent("JavDB.scroll", { detail }));
+          Util.dispatchEvent(detail);
         }
 
         if (!url || !detail.length) {
