@@ -56,6 +56,8 @@ Util.upStore();
 
     const lists = GM_getValue(mid, []);
     if (lists.length) return setLists(lists);
+
+    listsNode.innerHTML = "";
     loadNode.style.display = "block";
 
     ReqDB.related(mid)
