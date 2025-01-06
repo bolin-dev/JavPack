@@ -25,16 +25,11 @@
 Util.upStore();
 
 (function () {
+  const code = document.querySelector(".first-block .value")?.textContent.trim();
   const mid = unsafeWindow.appData?.split("/").at(-1);
-  if (!mid) return;
+  if (!code || !mid) return;
 
-  const transByte = Magnet.useTransByte();
-  const hdSize = parseFloat(transByte("2GB"));
-  const minSize = parseFloat(transByte("250MB"));
-
-  const code = document.querySelector(".first-block .value").textContent;
   const magnetsNode = document.querySelector("#magnets-content");
-  const codeDetails = Util.codeParse(code);
   magnetsNode.classList.add("x-magnet");
 
   magnetsNode.insertAdjacentHTML(
@@ -54,6 +49,10 @@ Util.upStore();
       </span>
     </div>`,
   );
+
+  const transByte = Magnet.useTransByte();
+  const hdSize = parseFloat(transByte("2GB"));
+  const minSize = parseFloat(transByte("250MB"));
 
   const getMagnets = () => {
     return [...magnetsNode.querySelectorAll(".item.columns")]
@@ -151,6 +150,7 @@ Util.upStore();
     setMagnets(details);
   };
 
+  const codeDetails = Util.codeParse(code);
   if (!details.origin) setDetails(getMagnets(), "origin");
   if (!details.btdig) ReqMagnet.btdig(codeDetails).then((sources) => setDetails(sources, "btdig"));
   if (!details.nyaa) ReqMagnet.nyaa(codeDetails).then((sources) => setDetails(sources, "nyaa"));
