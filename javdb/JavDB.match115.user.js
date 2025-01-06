@@ -21,13 +21,14 @@
 // @grant           GM_openInTab
 // @grant           GM_getValue
 // @grant           GM_setValue
+// @grant           GM_info
 // @require         https://github.com/Tampermonkey/utils/raw/d8a4543a5f828dfa8eefb0a3360859b6fe9c3c34/requires/gh_2215_make_GM_xhr_more_parallel_again.js
 // ==/UserScript==
 
 Util.upStore();
 
 const VOID = "javascript:void(0);";
-const CHANNEL = new BroadcastChannel("JavDB.match115");
+const CHANNEL = new BroadcastChannel(GM_info.script.name);
 const TARGET_CLASS = "x-match";
 
 const listenClick = (onclose) => {
