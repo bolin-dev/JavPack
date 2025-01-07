@@ -272,8 +272,8 @@ body:has(.x-load) #footer,
       overflow: hidden;
 
       img {
-        object-fit: contain;
         width: 100%;
+        object-fit: contain;
         transition: var(--x-trans);
       }
 
@@ -329,7 +329,7 @@ body:has(.x-load) #footer,
       .x-match {
         margin-right: calc(0.375rem - 1px);
         border-radius: 99px;
-        transform: translate(-1px, -1.5px);
+        transform: translate(-1px, -1px);
 
         &.is-normal {
           text-decoration: none;
