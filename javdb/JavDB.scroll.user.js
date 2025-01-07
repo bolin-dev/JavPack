@@ -81,14 +81,14 @@
         _list = list;
       } catch (err) {
         INDICATOR.removeAttribute("disabled");
-        console.warn(err?.message);
+        Util.print(err?.message);
       }
     };
   };
 
   const callback = useCallback(nextUrl, currList, { nextSelector, listSelector });
-  const observer = new IntersectionObserver(callback, { rootMargin: "500px" });
+  const OBSERVER = new IntersectionObserver(callback, { rootMargin: "500px" });
 
-  observer.observe(INDICATOR);
-  INDICATOR.addEventListener("click", () => callback([{ isIntersecting: true }], observer));
+  OBSERVER.observe(INDICATOR);
+  INDICATOR.addEventListener("click", () => callback([{ isIntersecting: true }], OBSERVER));
 })();

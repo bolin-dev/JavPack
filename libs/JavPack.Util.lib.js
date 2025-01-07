@@ -31,4 +31,8 @@ class Util {
   static dispatchEvent(detail = null) {
     return window.dispatchEvent(new CustomEvent(GM_info.script.name, { detail }));
   }
+
+  static print(data) {
+    console.warn(`[${GM_info.script.name}]`, data);
+  }
 }
