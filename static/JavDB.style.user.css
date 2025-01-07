@@ -66,6 +66,7 @@ nav.sub-header,
 #magnets .top-meta,
 .app-desktop-banner,
 .x-load + nav.pagination,
+body:has(.x-load) #footer,
 #magnets-content .magnet-name br,
 #navbar-menu-hero .navbar-start > a.navbar-item,
 .section:has(.video-detail) #search-bar-container,
@@ -383,6 +384,7 @@ nav.sub-header,
 
 .x-load {
   font-size: var(--x-size-md);
+  border-radius: 99px !important;
 }
 
 nav.pagination {

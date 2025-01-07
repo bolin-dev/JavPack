@@ -23,84 +23,72 @@
     img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
   };
 
-  const selector = {
-    cont: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)",
-    list: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination) > :is(div, a)",
-    next: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination) + nav.pagination .pagination-next",
-  };
+  const IMGS = document.querySelectorAll(":is(.actors, .movie-list) img");
+  IMGS.forEach(fadeIn);
 
-  document.querySelectorAll(":is(.actors, .movie-list) img").forEach(fadeIn);
-  const contNode = document.querySelector(selector.cont);
-  const currList = document.querySelectorAll(selector.list);
-  const nextUrl = document.querySelector(selector.next)?.href;
-  if (!contNode || !currList.length || !nextUrl) return;
+  const contSelector = ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)";
+  const nextSelector = `${contSelector} + nav.pagination .pagination-next`;
+  const listSelector = `${contSelector} > :is(div, a)`;
 
-  const loadNode = document.createElement("div");
-  loadNode.classList.add("has-text-grey", "pt-4", "has-text-centered", "x-load");
-  contNode.insertAdjacentElement("afterend", loadNode);
+  const CONTAINER = document.querySelector(contSelector);
+  const nextUrl = document.querySelector(nextSelector)?.href;
+  const currList = document.querySelectorAll(listSelector);
+  if (!CONTAINER || !nextUrl || !currList.length) return;
 
-  const useCallback = () => {
-    let load = false;
-    let next = nextUrl;
-    let curr = currList;
+  const LOAD_CLASS = "is-loading";
+  const INDICATOR = document.createElement("button");
+  INDICATOR.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
+  INDICATOR.textContent = "重新加载";
+  CONTAINER.insertAdjacentElement("afterend", INDICATOR);
+
+  const useCallback = (next, list, { nextSelector, listSelector }) => {
+    let _next = next;
+    let _list = list;
 
     const parse = (dom) => {
-      const list = dom.querySelectorAll(selector.list);
-      const url = dom.querySelector(selector.next)?.href;
-      return { list, url };
-    };
-
-    const onfinally = () => {
-      load = false;
-    };
-
-    const onerror = () => {
-      loadNode.textContent = "加载失败，滚动以重试";
-    };
-
-    const serialize = (node) => {
-      return node.outerHTML || new XMLSerializer().serializeToString(node);
+      const next = dom?.querySelector(nextSelector)?.href;
+      const list = dom?.querySelectorAll(listSelector);
+      return { next, list };
     };
 
     const filter = (list) => {
-      const arrCurr = Array.from(curr);
-      const arrList = Array.from(list);
-
-      const setCurr = new Set(arrCurr.map(serialize));
-      return arrList.filter((node) => !setCurr.has(serialize(node)));
+      const setList = new Set([..._list].map((node) => node.outerHTML));
+      return [...list].filter((node) => !setList.has(node.outerHTML));
     };
 
     return async (entries, obs) => {
-      if (!entries[0].isIntersecting || load) return;
-
-      load = true;
-      loadNode.textContent = "加载中...";
+      if (!entries[0].isIntersecting || INDICATOR.classList.contains(LOAD_CLASS)) return;
+      INDICATOR.classList.add(LOAD_CLASS);
+      INDICATOR.setAttribute("disabled", "");
 
       try {
-        const { list, url } = await Req.tasks(next, [parse]).finally(onfinally);
-        if (!list.length) return onerror();
+        const { next, list } = await Req.tasks(_next, [parse]).finally(() => INDICATOR.classList.remove(LOAD_CLASS));
+        if (!list?.length) throw new Error("Not found list");
         const detail = filter(list);
 
         if (detail.length) {
-          contNode.append(...detail);
-          detail.forEach((item) => fadeIn(item.querySelector("img")));
+          CONTAINER.append(...detail);
           Util.dispatchEvent(detail);
+          if (IMGS.length) detail.forEach((item) => fadeIn(item.querySelector("img")));
         }
 
-        if (!url || !detail.length) {
-          loadNode.textContent = "暂无更多";
+        if (!next || !detail.length) {
+          INDICATOR.textContent = "暂无更多";
           return obs.disconnect();
         }
 
-        curr = list;
-        next = url;
-      } catch (_) {
-        onerror();
+        _next = next;
+        _list = list;
+      } catch (err) {
+        INDICATOR.removeAttribute("disabled");
+        console.warn(err?.message);
       }
     };
   };
 
-  const callback = useCallback();
+  const callback = useCallback(nextUrl, currList, { nextSelector, listSelector });
   const observer = new IntersectionObserver(callback, { rootMargin: "500px" });
-  observer.observe(loadNode);
+
+  observer.observe(INDICATOR);
+  INDICATOR.addEventListener("click", () => callback([{ isIntersecting: true }], observer));
 })();
