@@ -477,6 +477,7 @@ nav.pagination {
 
     .button {
       margin-top: 0 !important;
+      border-radius: 1px;
     }
   }
 }
@@ -568,6 +569,10 @@ br + .title {
 
     span {
       font-size: var(--x-size-sm);
+    }
+
+    .button {
+      border-radius: 1px;
     }
   }
 
