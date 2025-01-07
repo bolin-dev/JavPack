@@ -5,8 +5,21 @@
   --x-size-md: 0.875rem;
   --x-trans: all 0.3s cubic-bezier(0, 0, 0.5, 1);
   --x-shadow: 2px 4px 16px #00000029;
+  --x-success: #198754;
+  --x-info: #0d6efd;
+  --x-warning: #ffc107;
+  --x-danger: #dc3545;
+  --x-success-bd: #198754;
+  --x-info-bd: #0d6efd;
+  --x-warning-bd: #ffc107;
+  --x-danger-bd: #dc3545;
 
   &[data-theme="dark"] {
+    --x-success-bd: #0f5132;
+    --x-info-bd: #084298;
+    --x-warning-bd: #997404;
+    --x-danger-bd: #842029;
+
     background-color: transparent;
 
     .box:is(:focus, :hover, :active) {
@@ -226,11 +239,6 @@ nav.sub-header,
   }
 
   .item {
-    --x-success: #198754;
-    --x-info: #0d6efd;
-    --x-warning: #ffc107;
-    --x-danger: #dc3545;
-
     position: relative;
 
     &:has(.x-match)::after {
@@ -243,19 +251,19 @@ nav.sub-header,
     }
 
     &:has(.x-match.is-success)::after {
-      border-color: var(--x-success);
+      border-color: var(--x-success-bd);
     }
 
     &:has(.x-match.is-info)::after {
-      border-color: var(--x-info);
+      border-color: var(--x-info-bd);
     }
 
     &:has(.x-match.is-warning)::after {
-      border-color: var(--x-warning);
+      border-color: var(--x-warning-bd);
     }
 
     &:has(.x-match.is-danger)::after {
-      border-color: var(--x-danger);
+      border-color: var(--x-danger-bd);
     }
 
     .cover {
