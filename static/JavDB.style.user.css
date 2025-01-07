@@ -662,7 +662,7 @@ br + .title {
   a {
     position: relative;
     display: block;
-    aspect-ratio: 420 / 283;
+    aspect-ratio: 400 / 269;
     background-color: #aa9084;
 
     & > :is(img, video) {
