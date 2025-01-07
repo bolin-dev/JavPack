@@ -326,10 +326,6 @@ nav.sub-header,
           text-decoration: none;
         }
 
-        &:not(.is-normal) {
-          font-weight: bold;
-        }
-
         &.is-success {
           background-color: var(--x-success);
         }
