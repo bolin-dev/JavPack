@@ -17,12 +17,19 @@
 // ==/UserScript==
 
 (function () {
+  const fadeIn = (img) => {
+    if (!img || img.complete) return;
+    img.style.opacity = 0;
+    img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
+  };
+
   const selector = {
     cont: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)",
     list: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination) > :is(div, a)",
     next: ":is(.actors, .movie-list, .section-container):has(+ nav.pagination) + nav.pagination .pagination-next",
   };
 
+  document.querySelectorAll(":is(.actors, .movie-list) img").forEach(fadeIn);
   const contNode = document.querySelector(selector.cont);
   const currList = document.querySelectorAll(selector.list);
   const nextUrl = document.querySelector(selector.next)?.href;
@@ -72,11 +79,11 @@
       try {
         const { list, url } = await Req.tasks(next, [parse]).finally(onfinally);
         if (!list.length) return onerror();
-
         const detail = filter(list);
 
         if (detail.length) {
           contNode.append(...detail);
+          detail.forEach((item) => fadeIn(item.querySelector("img")));
           Util.dispatchEvent(detail);
         }
 
