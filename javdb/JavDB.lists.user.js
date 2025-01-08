@@ -70,9 +70,7 @@ Util.upStore();
         dataset.loaded = "false";
         listsNode.innerHTML = renderCont("读取失败");
       })
-      .finally(() => {
-        loadNode.style.display = "none";
-      });
+      .finally(() => loadNode.style.setProperty("display", "none"));
   };
 
   const onclick = (e) => {
