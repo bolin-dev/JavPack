@@ -41,7 +41,7 @@
   INDICATOR.textContent = "重新加载";
   CONTAINER.insertAdjacentElement("afterend", INDICATOR);
 
-  const useCallback = (next, list, { nextSelector, listSelector }) => {
+  const useLoadMore = (next, list, { nextSelector, listSelector }) => {
     let _next = next;
     let _list = list;
 
@@ -89,9 +89,9 @@
     };
   };
 
-  const callback = useCallback(nextUrl, currList, { nextSelector, listSelector });
-  const OBSERVER = new IntersectionObserver(callback, { rootMargin: "500px" });
+  const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
+  const OBSERVER = new IntersectionObserver(loadMore, { rootMargin: "500px" });
 
   OBSERVER.observe(INDICATOR);
-  INDICATOR.addEventListener("click", () => callback([{ isIntersecting: true }], OBSERVER));
+  INDICATOR.addEventListener("click", () => loadMore([{ isIntersecting: true }], OBSERVER));
 })();
