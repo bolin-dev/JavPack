@@ -43,7 +43,7 @@ class Req {
         ontimeout: () => reject(new Error(`Request timed out for ${details.url}`)),
         onerror: () => reject(new Error(`Request error for ${details.url}`)),
         onload: ({ status, finalUrl, response }) => {
-          if (status >= 400) reject(new Error(`Request failed with status ${status} for ${finalUrl}`));
+          if (status >= 400) reject(new Error(`Request failed with status ${status} for ${details.url}`));
           if (method === "HEAD") resolve(finalUrl);
           resolve(response);
         },
