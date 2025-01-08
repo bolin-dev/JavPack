@@ -317,30 +317,27 @@ const useVideo = () => {
 
   const onEnter = async (elem) => {
     elem.classList.add(HOVER);
-
     const url = elem.closest("a").href;
     const mid = url.split("/").at(-1);
     let details = GM_getValue(mid);
 
-    if (!details) {
-      try {
+    try {
+      if (!details) {
         details = await Req.tasks(url, [getDetails]);
         if (!details) throw new Error("Not found details");
         GM_setValue(mid, details);
-      } catch (err) {
-        return Util.print(err?.message);
       }
+
+      if (details.sources.length) return setTrailer(elem, details);
+
+      const sources = await ReqTrailer.getTrailer(details);
+      details.sources = sources;
+      GM_setValue(mid, details);
+      setTrailer(elem, details);
+    } catch (err) {
+      elem.classList.remove(HOVER);
+      Util.print(err?.message);
     }
-
-    if (details.sources.length) return setTrailer(elem, details);
-
-    ReqTrailer.getTrailer(details)
-      .then((sources) => {
-        details.sources = sources;
-        GM_setValue(mid, details);
-        setTrailer(elem, details);
-      })
-      .catch((err) => Util.print(err?.message));
   };
 
   const onLeave = (elem) => {
