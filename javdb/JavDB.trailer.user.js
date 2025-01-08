@@ -26,6 +26,7 @@
 // @grant           unsafeWindow
 // @grant           GM_getValue
 // @grant           GM_setValue
+// @grant           GM_info
 // @require         https://github.com/Tampermonkey/utils/raw/d8a4543a5f828dfa8eefb0a3360859b6fe9c3c34/requires/gh_2215_make_GM_xhr_more_parallel_again.js
 // ==/UserScript==
 
@@ -33,11 +34,11 @@ Util.upStore();
 
 const getDetails = (dom = document) => {
   const infoNode = dom.querySelector(".movie-panel-info");
-  if (!infoNode) throw new Error("Not found info");
+  if (!infoNode) return;
 
   const code = infoNode.querySelector(".first-block .value").textContent.trim();
-  const isFC2 = code.startsWith("FC2");
   const isWestern = /\.\d{2}\.\d{2}\.\d{2}$/.test(code);
+  const isFC2 = code.startsWith("FC2");
 
   const titleNode = dom.querySelector(".title.is-4");
   const isVR = titleNode.textContent.includes("【VR】");
@@ -50,16 +51,16 @@ const getDetails = (dom = document) => {
   const cover = dom.querySelector(".video-cover")?.src ?? "";
 
   const studio =
-    [...infoNode.querySelectorAll(".panel-block")]
+    [...infoNode.querySelectorAll(":scope > .panel-block")]
       .find((node) => node.querySelector("strong")?.textContent.startsWith("片商"))
-      ?.querySelector(".value")
-      .textContent.trim() ?? "";
+      ?.querySelector(".value a")
+      ?.textContent.trim() ?? "";
 
   const sources = [...dom.querySelectorAll("#preview-video source")]
     .map((node) => node.getAttribute("src")?.trim())
     .filter(Boolean);
 
-  return { isVR, isFC2, isWestern, isUncensored, code, title, studio, cover, sources };
+  return { code, isWestern, isFC2, isVR, isUncensored, title, cover, studio, sources };
 };
 
 const useVideo = () => {
@@ -79,7 +80,7 @@ const useVideo = () => {
     target.paused ? target.play() : target.pause();
   };
 
-  const changeVolume = (e, step) => {
+  const changeVolume = (e, step = 0.2) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -87,7 +88,7 @@ const useVideo = () => {
     target.volume = target.volume + step;
   };
 
-  const changeTime = (e, step) => {
+  const changeTime = (e, step = 4) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -100,10 +101,10 @@ const useVideo = () => {
 
     if (["KeyM"].includes(code)) return toggleMute(e);
     if (["Space"].includes(code)) return togglePlay(e);
-    if (["KeyW", "ArrowUp"].includes(code)) return changeVolume(e, 0.1);
+    if (["KeyW", "ArrowUp"].includes(code)) return changeVolume(e);
+    if (["KeyD", "ArrowRight"].includes(code)) return changeTime(e);
     if (["KeyS", "ArrowDown"].includes(code)) return changeVolume(e, -0.1);
     if (["KeyA", "ArrowLeft"].includes(code)) return changeTime(e, -2);
-    if (["KeyD", "ArrowRight"].includes(code)) return changeTime(e, 4);
   };
 
   const onVolumechange = ({ target }) => localStorage.setItem("volume", target.volume);
@@ -115,53 +116,41 @@ const useVideo = () => {
     video.poster = poster;
     video.controls = true;
     video.preload = "metadata";
-    video.volume = localStorage.getItem("volume") ?? 0.2;
+    video.volume = localStorage.getItem("volume") ?? 0.1;
+    video.innerHTML = sources.map((src) => `<source src="${src}" type="video/mp4" />`).join("");
 
-    sources.forEach((src) => {
-      const source = document.createElement("source");
-      source.src = src;
-      source.type = "video/mp4";
-      video.append(source);
-    });
-
-    video.addEventListener("keydown", onKeydown);
     video.addEventListener("volumechange", onVolumechange);
+    video.addEventListener("keydown", onKeydown);
     return video;
   };
 };
 
 (function () {
-  const container = document.querySelector(".column-video-cover");
   const mid = unsafeWindow.appData?.split("/").at(-1);
-  if (!container || !mid) return;
+  if (!mid || !location.pathname.startsWith("/v/")) return;
 
-  const onstart = ({ target }) => {
-    target.style.zIndex = 11;
-  };
+  const onstart = ({ target }) => target.style.setProperty("z-index", 11);
 
-  const onstop = ({ target }) => {
-    target.style.zIndex = "auto";
+  const onstop = ({ target }) => target.style.setProperty("z-index", "auto");
+
+  const onclick = (e, video) => {
+    if (e.target.closest(".play-button")) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    video.focus();
+    video.paused ? video.play() : video.pause();
   };
 
   const setTrailer = ({ sources, cover }) => {
     const video = useVideo()(sources, cover);
-
     video.addEventListener("play", onstart);
     video.addEventListener("pause", onstop);
     video.addEventListener("ended", onstop);
 
-    container.querySelector("a").insertAdjacentElement("beforeend", video);
-
-    container.addEventListener("click", (e) => {
-      if (e.target.closest(".play-button")) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      video.focus();
-      video.paused ? video.play() : video.pause();
-    });
-
+    const container = document.querySelector(".column-video-cover a");
+    container.insertAdjacentElement("beforeend", video);
+    container.addEventListener("click", (e) => onclick(e, video));
     video.focus();
   };
 
@@ -180,7 +169,7 @@ const useVideo = () => {
       GM_setValue(mid, details);
       setTrailer(details);
     })
-    .catch((err) => console.warn(err?.message));
+    .catch((err) => Util.print(err?.message));
 })();
 
 (function () {
@@ -321,7 +310,7 @@ const useVideo = () => {
     video.loop = true;
     video.muted = !isRunning;
     video.autoplay = true;
-    video.currentTime = 4;
+    video.currentTime = 2;
     video.disablePictureInPicture = true;
     video.setAttribute("controlslist", "nofullscreen nodownload noremoteplayback noplaybackrate");
 
