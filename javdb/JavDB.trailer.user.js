@@ -125,7 +125,7 @@ const useVideo = () => {
   };
 };
 
-(function () {
+(async function () {
   const mid = unsafeWindow.appData?.split("/").at(-1);
   if (!mid || !location.pathname.startsWith("/v/")) return;
 
@@ -163,13 +163,14 @@ const useVideo = () => {
 
   if (details.sources.length) return setTrailer(details);
 
-  ReqTrailer.getTrailer(details)
-    .then((sources) => {
-      details.sources = sources;
-      GM_setValue(mid, details);
-      setTrailer(details);
-    })
-    .catch((err) => Util.print(err?.message));
+  try {
+    const sources = await ReqTrailer.getTrailer(details);
+    details.sources = sources;
+    GM_setValue(mid, details);
+    setTrailer(details);
+  } catch (err) {
+    Util.print(err?.message);
+  }
 })();
 
 (function () {
