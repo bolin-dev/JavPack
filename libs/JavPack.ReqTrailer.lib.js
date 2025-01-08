@@ -1,15 +1,11 @@
 class ReqTrailer extends Req {
   static useDmm() {
-    const host = "https://www.dmm.co.jp";
-
-    const options = {
-      cookie: "age_check_done=1",
-      headers: { "accept-language": "ja-JP,ja;q=0.9" },
-    };
+    const origin = "https://www.dmm.co.jp";
+    const options = { cookie: "age_check_done=1", headers: { "accept-language": "ja-JP,ja;q=0.9" } };
 
     const rules = [
       {
-        path: "service/digitalapi/-/html5_player",
+        urlSep: "service/digitalapi/-/html5_player",
         selector: "#dmmplayer + script",
         parse: (text) => {
           const match = text.match(/const args = (.*);/);
@@ -18,14 +14,14 @@ class ReqTrailer extends Req {
           const { src, bitrates } = JSON.parse(match[1]);
           if (!src && !bitrates?.length) throw new Error("Not found res");
 
-          const samples = [src, ...bitrates.map(({ src }) => src)].filter((item) => item.endsWith(".mp4"));
+          const samples = [src, ...bitrates.map((it) => it.src)].filter((item) => item.endsWith(".mp4"));
           if (!samples.length) throw new Error("Not found mp4");
 
           return [...new Set(samples)];
         },
       },
       {
-        path: "digital/-/vr-sample-player",
+        urlSep: "digital/-/vr-sample-player",
         selector: "#player + script + script",
         parse: (text) => {
           const match = text.match(/var sampleUrl = "(.*)";/);
@@ -54,18 +50,14 @@ class ReqTrailer extends Req {
             .find((item) => item.startsWith("cid="))
             ?.replace("cid=", "");
           break;
-        default:
-          break;
       }
 
       return cid;
     };
 
     const getCid = async (searchstr) => {
-      const res = await this.request({
-        ...options,
-        url: `${host}/search/?redirect=1&enc=UTF-8&category=&searchstr=${searchstr}`,
-      });
+      const urlSep = "/search/?redirect=1&enc=UTF-8&category=&searchstr=";
+      const res = await this.request({ ...options, url: `${origin}${urlSep}${searchstr}` });
 
       const target = res?.querySelector("#list .tmb a")?.href;
       if (!target) throw new Error("Not found target");
@@ -76,8 +68,8 @@ class ReqTrailer extends Req {
       return cid;
     };
 
-    const getDmm = async (cid, { path, selector, parse }) => {
-      const res = await this.request({ ...options, url: `${host}/${path}/=/cid=${cid}` });
+    const getDmm = async (cid, { urlSep, selector, parse }) => {
+      const res = await this.request({ ...options, url: `${origin}/${urlSep}/=/cid=${cid}` });
 
       const target = res?.querySelector(selector)?.textContent;
       if (!target) throw new Error("Not found target");
