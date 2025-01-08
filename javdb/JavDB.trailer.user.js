@@ -33,7 +33,7 @@
 Util.upStore();
 
 const getDetails = (dom = document) => {
-  const infoNode = dom.querySelector(".movie-panel-info");
+  const infoNode = dom?.querySelector(".movie-panel-info");
   if (!infoNode) return;
 
   const code = infoNode.querySelector(".first-block .value").textContent.trim();
@@ -173,8 +173,8 @@ const useVideo = () => {
 })();
 
 (function () {
-  const SELECTOR = ".movie-list .cover";
-  if (!document.querySelector(SELECTOR)) return;
+  const selector = ".movie-list .cover";
+  if (!document.querySelector(selector)) return;
 
   const HOVER = "x-hovered";
   const SHOW = "x-show";
@@ -198,12 +198,8 @@ const useVideo = () => {
     let lastTime = null;
 
     let trackSpeedInterval = null;
-    const interval = 200;
-    const sensitivity = 0.02;
-
     let isScrolling = false;
     let scrollTimer = null;
-    const scrollEndDelay = 500;
 
     const onMousemove = (e) => {
       lastX = e.pageX;
@@ -236,7 +232,7 @@ const useVideo = () => {
         speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
       }
 
-      if (speed <= sensitivity && isInViewport(currElem) && !isScrolling) {
+      if (speed <= 0.02 && isInViewport(currElem) && !isScrolling) {
         clearTrack(currElem);
         onEnter?.(currElem);
       } else {
@@ -258,7 +254,7 @@ const useVideo = () => {
 
       currElem = target;
       currElem.addEventListener("mousemove", onMousemove);
-      trackSpeedInterval = setInterval(trackSpeed, interval);
+      trackSpeedInterval = setInterval(trackSpeed, 200);
     };
 
     const destroy = () => {
@@ -293,7 +289,7 @@ const useVideo = () => {
 
       scrollTimer = setTimeout(() => {
         isScrolling = false;
-      }, scrollEndDelay);
+      }, 500);
     };
 
     document.addEventListener("mouseover", onMouseover);
@@ -329,9 +325,10 @@ const useVideo = () => {
     if (!details) {
       try {
         details = await Req.tasks(url, [getDetails]);
+        if (!details) throw new Error("Not found details");
         GM_setValue(mid, details);
       } catch (err) {
-        return console.warn(err?.message);
+        return Util.print(err?.message);
       }
     }
 
@@ -343,7 +340,7 @@ const useVideo = () => {
         GM_setValue(mid, details);
         setTrailer(elem, details);
       })
-      .catch((err) => console.warn(err?.message));
+      .catch((err) => Util.print(err?.message));
   };
 
   const onLeave = (elem) => {
@@ -355,5 +352,5 @@ const useVideo = () => {
     video.classList.replace(SHOW, HIDE);
   };
 
-  handleHover(SELECTOR, onEnter, onLeave);
+  handleHover(selector, onEnter, onLeave);
 })();
