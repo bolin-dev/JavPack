@@ -3,8 +3,8 @@
   --x-radius: 2px;
   --x-size-sm: 0.75rem;
   --x-size-md: 0.875rem;
-  --x-trans: all 0.3s cubic-bezier(0, 0, 0.5, 1);
-  --x-shadow: 2px 4px 16px #00000029;
+  --x-trans: all 0.25s;
+  --x-shadow: 2px 4px 12px #00000014;
   --x-success: #198754;
   --x-info: #0d6efd;
   --x-warning: #ffc107;
