@@ -288,9 +288,9 @@ const useVideo = () => {
       }, 500);
     };
 
+    document.addEventListener("visibilitychange", onVisibilitychange);
     document.addEventListener("mouseover", onMouseover);
     document.addEventListener("mouseout", onMouseout);
-    document.addEventListener("visibilitychange", onVisibilitychange);
 
     const optimizedOnScroll = () => requestAnimationFrame(onScroll);
     window.addEventListener("scroll", optimizedOnScroll);
