@@ -181,7 +181,7 @@ const useVideo = () => {
   const HIDE = "x-hide";
 
   const audioContext = new AudioContext();
-  const isRunning = audioContext.state === "running";
+  const RUNNING = audioContext.state === "running";
   audioContext.close();
 
   const createVideo = useVideo();
@@ -207,14 +207,11 @@ const useVideo = () => {
       lastTime = Date.now();
     };
 
-    const isInViewport = (elem) => {
-      const rect = elem.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-      );
+    const inViewport = (elem) => {
+      const { top, left, bottom, right } = elem.getBoundingClientRect();
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      return top >= 0 && left >= 0 && bottom <= viewportHeight && right <= viewportWidth;
     };
 
     const clearTrack = (elem) => {
@@ -225,21 +222,19 @@ const useVideo = () => {
       trackSpeedInterval = null;
     };
 
+    const calcSpeed = () => Math.sqrt((prevX - lastX) ** 2 + (prevY - lastY) ** 2) / (lastTime - prevTime);
+
     const trackSpeed = () => {
-      let speed = 0;
+      const speed = lastTime && lastTime !== prevTime ? calcSpeed() : 0;
 
-      if (lastTime && lastTime !== prevTime) {
-        speed = Math.sqrt(Math.pow(prevX - lastX, 2) + Math.pow(prevY - lastY, 2)) / (lastTime - prevTime);
-      }
-
-      if (speed <= 0.02 && isInViewport(currElem) && !isScrolling) {
+      if (speed <= 0.02 && inViewport(currElem) && !isScrolling) {
         clearTrack(currElem);
-        onEnter?.(currElem);
-      } else {
-        prevX = lastX;
-        prevY = lastY;
-        prevTime = Date.now();
+        return onEnter?.(currElem);
       }
+
+      prevX = lastX;
+      prevY = lastY;
+      prevTime = Date.now();
     };
 
     const onMouseover = (e) => {
@@ -289,13 +284,16 @@ const useVideo = () => {
 
       scrollTimer = setTimeout(() => {
         isScrolling = false;
+        scrollTimer = null;
       }, 500);
     };
 
     document.addEventListener("mouseover", onMouseover);
     document.addEventListener("mouseout", onMouseout);
     document.addEventListener("visibilitychange", onVisibilitychange);
-    window.addEventListener("scroll", onScroll);
+
+    const optimizedOnScroll = () => requestAnimationFrame(onScroll);
+    window.addEventListener("scroll", optimizedOnScroll);
     window.addEventListener("blur", onBlur);
   };
 
@@ -304,7 +302,7 @@ const useVideo = () => {
     const video = createVideo(sources.toReversed(), cover);
 
     video.loop = true;
-    video.muted = !isRunning;
+    video.muted = !RUNNING;
     video.autoplay = true;
     video.currentTime = 2;
     video.disablePictureInPicture = true;
