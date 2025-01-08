@@ -92,10 +92,12 @@ class ReqTrailer extends Req {
   }
 
   static useStudio() {
-    const parse = (code, domain) => {
-      const bitrates = ["1080p", "720p", "480p", "360p", "240p"];
-      const sample = `https://smovie.${domain}/sample/movies/${code}/%s.mp4`;
-      return bitrates.map((item) => sample.replace("%s", item));
+    const sampleUrl = "https://smovie.$host/sample/movies/$code/%s.mp4";
+    const resolutions = ["1080p", "720p", "480p", "360p", "240p"];
+
+    const getSamples = (code, host) => {
+      const sample = sampleUrl.replace("$host", host).replace("$code", code);
+      return resolutions.map((r) => sample.replace("%s", r));
     };
 
     const rules = [
@@ -127,23 +129,23 @@ class ReqTrailer extends Req {
       },
       {
         studios: ["一本道"],
-        samples: (code) => parse(code, "1pondo.tv"),
+        samples: (code) => getSamples(code, "1pondo.tv"),
       },
       {
         studios: ["pacopacomama,パコパコママ"],
-        samples: (code) => parse(code, "pacopacomama.com"),
+        samples: (code) => getSamples(code, "pacopacomama.com"),
       },
       {
         studios: ["muramura"],
-        samples: (code) => parse(code, "muramura.tv"),
+        samples: (code) => getSamples(code, "muramura.tv"),
       },
       {
         studios: ["10musume", "天然むすめ"],
-        samples: (code) => parse(code, "10musume.com"),
+        samples: (code) => getSamples(code, "10musume.com"),
       },
       {
         studios: ["Caribbeancom", "加勒比", "カリビアンコム"],
-        samples: (code) => parse(code, "caribbeancom.com"),
+        samples: (code) => getSamples(code, "caribbeancom.com"),
       },
     ];
 
@@ -162,7 +164,7 @@ class ReqTrailer extends Req {
     };
   }
 
-  static async getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
+  static getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
     if (isFC2) {
       throw new Error("Not Supported FC2");
     } else if (isWestern) {
