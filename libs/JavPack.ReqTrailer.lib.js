@@ -1,5 +1,5 @@
 class ReqTrailer extends Req {
-  static useDmm() {
+  static useDMM() {
     const origin = "https://www.dmm.co.jp";
     const options = { cookie: "age_check_done=1", headers: { "accept-language": "ja-JP,ja;q=0.9" } };
 
@@ -68,7 +68,7 @@ class ReqTrailer extends Req {
       return cid;
     };
 
-    const getDmm = async (cid, { urlSep, selector, parse }) => {
+    const getSamples = async (cid, { urlSep, selector, parse }) => {
       const res = await this.request({ ...options, url: `${origin}/${urlSep}/=/cid=${cid}` });
 
       const target = res?.querySelector(selector)?.textContent;
@@ -79,7 +79,7 @@ class ReqTrailer extends Req {
 
     return async (searchstr, isVR) => {
       const cid = await getCid(searchstr);
-      return isVR ? Promise.any(rules.map((item) => getDmm(cid, item))) : getDmm(cid, rules[0]);
+      return isVR ? Promise.any(rules.map((item) => getSamples(cid, item))) : getSamples(cid, rules[0]);
     };
   }
 
@@ -165,8 +165,8 @@ class ReqTrailer extends Req {
       const guessStudio = this.useStudio();
       return guessStudio(code, studio);
     } else {
-      const getDmm = this.useDmm();
-      return isVR ? getDmm(title, isVR) : getDmm(code, isVR).catch(() => getDmm(title, isVR));
+      const getDMM = this.useDMM();
+      return isVR ? getDMM(title, isVR) : getDMM(code, isVR).catch(() => getDMM(title, isVR));
     }
   }
 }
