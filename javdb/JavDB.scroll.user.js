@@ -45,6 +45,9 @@
     let _next = next;
     let _list = list;
 
+    const getUrl = (node) => node?.href;
+    const getLabel = getUrl(list[0]) ? getUrl : (node) => getUrl(node.querySelector("a"));
+
     const parse = (dom) => {
       const next = dom?.querySelector(nextSelector)?.href;
       const list = dom?.querySelectorAll(listSelector);
@@ -52,8 +55,8 @@
     };
 
     const filter = (list) => {
-      const setList = new Set([..._list].map((node) => node.outerHTML));
-      return [...list].filter((node) => !setList.has(node.outerHTML));
+      const setList = new Set([..._list].map(getLabel));
+      return [...list].filter((node) => !setList.has(getLabel(node)));
     };
 
     return async (entries, obs) => {
