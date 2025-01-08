@@ -5,13 +5,13 @@ class ReqSprite extends Req {
     const list = res?.querySelectorAll(".content-main .card-content:has(.images-description a)");
     if (!list?.length) throw new Error("Not found list");
 
-    const match = [...list].find((node) => regex.test(node.querySelector(".title a")?.textContent ?? ""));
-    if (!match) throw new Error("Not found match");
+    const match = [...list].filter((node) => regex.test(node.querySelector(".title a")?.textContent ?? ""));
+    if (!match.length) throw new Error("Not found match");
 
-    const url = match.querySelector(".images-description a").href;
-    if (!url) throw new Error("Not found target");
+    const urls = match.map((node) => node.querySelector(".images-description a").textContent?.trim()).filter(Boolean);
+    if (!urls.length) throw new Error("Not found target");
 
-    const target = await this.request(url);
+    const target = await this.request(urls[0]);
     const sprite = target?.querySelector(".fileviewer-file img")?.src;
     if (!sprite) throw new Error("Not found sprite");
 
