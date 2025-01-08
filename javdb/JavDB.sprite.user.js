@@ -19,6 +19,7 @@
 // @grant           unsafeWindow
 // @grant           GM_getValue
 // @grant           GM_setValue
+// @grant           GM_info
 // @require         https://github.com/Tampermonkey/utils/raw/d8a4543a5f828dfa8eefb0a3360859b6fe9c3c34/requires/gh_2215_make_GM_xhr_more_parallel_again.js
 // ==/UserScript==
 
@@ -29,21 +30,20 @@ Util.upStore();
   if (!mid) return;
 
   const setSprite = (source) => {
-    const TARGET = "x-sprite";
-    const ALT = "雪碧图";
+    const target = "x-sprite";
 
-    const imgHTML = `<img src="${source}" alt="${ALT}" loading="lazy" referrerpolicy="no-referrer">`;
-    document.body.insertAdjacentHTML("beforeend", `<div style="display: none;" id="${TARGET}">${imgHTML}</div>`);
+    const imgStr = `<img src="${source}" loading="lazy" referrerpolicy="no-referrer">`;
+    document.body.insertAdjacentHTML("beforeend", `<div style="display: none;" id="${target}">${imgStr}</div>`);
 
-    const insertHTML = `
+    const itemStr = `
     <a
       class="tile-item"
       href="javascript:void(0);"
       data-fancybox="gallery"
-      data-caption="${ALT}"
-      data-src="#${TARGET}"
+      data-caption="雪碧图"
+      data-src="#${target}"
     >
-      ${imgHTML}
+      ${imgStr}
     </a>
     `;
 
@@ -51,21 +51,15 @@ Util.upStore();
     if (!container) {
       return document.querySelector(".video-meta-panel").insertAdjacentHTML(
         "afterend",
-        `<div class="columns">
-          <div class="column">
-            <article class="message video-panel">
-              <div class="message-body">
-                <div class="tile-images preview-images">${insertHTML}</div>
-              </div>
-            </article>
-          </div>
-        </div>`,
+        `<div class="columns"><div class="column"><article class="message video-panel">
+          <div class="message-body"><div class="tile-images preview-images">${itemStr}</div></div>
+        </article></div></div>`,
       );
     }
 
     const tileItem = container.querySelector(".tile-item");
-    if (tileItem) return tileItem.insertAdjacentHTML("beforebegin", insertHTML);
-    container.insertAdjacentHTML("beforeend", insertHTML);
+    if (tileItem) return tileItem.insertAdjacentHTML("beforebegin", itemStr);
+    container.insertAdjacentHTML("beforeend", itemStr);
   };
 
   const sprite = GM_getValue(mid);
@@ -79,5 +73,5 @@ Util.upStore();
       GM_setValue(mid, source);
       setSprite(source);
     })
-    .catch((err) => console.warn(err?.message));
+    .catch((err) => Util.print(err?.message));
 })();
