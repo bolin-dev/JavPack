@@ -26,37 +26,16 @@
 Util.upStore();
 
 (function () {
-  const code = document.querySelector(".first-block .value")?.textContent.trim();
   const mid = unsafeWindow.appData?.split("/").at(-1);
-  if (!code || !mid) return;
-
-  const magnetsNode = document.querySelector("#magnets-content");
-  magnetsNode.classList.add("x-magnet");
-
-  magnetsNode.insertAdjacentHTML(
-    "beforebegin",
-    `<div class="tags mb-1">
-      <a class="tag is-success" href="https://btdig.com/search?order=0&q=${code}" target="_blank">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>BTDigg</span>
-      </a>
-      <a class="tag is-success" href="https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}" target="_blank">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>Sukebei</span>
-      </a>
-      <span class="tag is-success">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>自动去重</span>
-      </span>
-      <span class="tag is-success">
-        <span class="icon is-small"><i class="icon-check-circle"></i></span><span>综合排序</span>
-      </span>
-    </div>`,
-  );
+  if (!mid) return;
 
   const transByte = Magnet.useTransByte();
-  const hdSize = parseFloat(transByte("2GB"));
-  const minSize = parseFloat(transByte("250MB"));
+  const HD_SIZE = parseFloat(transByte("2GB"));
+  const MIN_SIZE = parseFloat(transByte("250MB"));
+  const CONTAINER = document.querySelector("#magnets-content");
 
   const getMagnets = () => {
-    return [...magnetsNode.querySelectorAll(".item.columns")]
+    return [...CONTAINER.querySelectorAll(".item.columns")]
       .map((node) => {
         const meta = (node.querySelector(".meta")?.textContent.trim() ?? "").split(",");
         return {
@@ -96,21 +75,23 @@ Util.upStore();
     `;
   };
 
-  const filterMagnet = ({ size }) => parseFloat(size) > minSize;
+  const filterMagnet = ({ size }) => {
+    const magnetSize = parseFloat(size);
+    return magnetSize >= MIN_SIZE || magnetSize < 1;
+  };
 
   const parseSize = ({ size, files, ...item }) => {
-    let meta = [];
+    const meta = [];
     if (size) meta.push(size);
     if (files) meta.push(`${files}个文件`);
-    meta = meta.join(", ");
 
     size = transByte(size);
-    const hd = parseFloat(size) >= hdSize;
-    return { ...item, meta, size, hd };
+    const hd = parseFloat(size) >= HD_SIZE;
+    return { ...item, meta: meta.join(", "), size, hd };
   };
 
   const reduceMagnet = (acc, cur) => {
-    const index = acc.findIndex((item) => item.url === cur.url);
+    const index = acc.findIndex(({ url }) => url === cur.url);
     if (index === -1) return acc.concat(cur);
 
     const existed = acc[index];
@@ -130,7 +111,7 @@ Util.upStore();
   };
 
   const setMagnets = (details) => {
-    magnetsNode.innerHTML =
+    CONTAINER.innerHTML =
       Object.values(details)
         .flat()
         .map(parseName)
@@ -144,8 +125,37 @@ Util.upStore();
     Util.dispatchEvent();
   };
 
-  let details = GM_getValue(mid);
-  details ? setMagnets(details) : (details = {});
+  const setHeader = (code) => {
+    const target = "x-magnet";
+
+    const btdig = `https://btdig.com/search?order=0&q=${code}`;
+    const nyaa = `https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}`;
+    const iconStr = '<span class="icon is-small"><i class="icon-check-circle"></i></span>';
+
+    CONTAINER.insertAdjacentHTML(
+      "beforebegin",
+      `<div class="tags mb-1">
+        <a class="tag" href="${btdig}" target="_blank">${iconStr}<span>BTDigg</span></a>
+        <a class="tag" href="${nyaa}" target="_blank">${iconStr}<span>Sukebei</span></a>
+        <span class="tag">${iconStr}<span>筛选过滤</span></span>
+        <span class="tag">${iconStr}<span>综合排序</span></span>
+        <span class="tag is-flex-grow-1 is-justify-content-end">总数&nbsp;<span class="${target}"></span></span>
+      </div>`,
+    );
+
+    const countNode = CONTAINER.previousElementSibling.querySelector(`.${target}`);
+
+    window.addEventListener(GM_info.script.name, () => {
+      countNode.textContent = CONTAINER.childElementCount;
+    });
+  };
+
+  const code = document.querySelector(".first-block .value").textContent.trim();
+  const codeDetails = Util.codeParse(code);
+  setHeader(code);
+
+  const details = GM_getValue(mid, {});
+  if (Object.keys(details).length) setMagnets(details);
 
   const setDetails = (sources, key) => {
     details[key] = sources;
@@ -153,7 +163,6 @@ Util.upStore();
     setMagnets(details);
   };
 
-  const codeDetails = Util.codeParse(code);
   if (!details.origin) setDetails(getMagnets(), "origin");
   if (!details.btdig) ReqMagnet.btdig(codeDetails).then((sources) => setDetails(sources, "btdig"));
   if (!details.nyaa) ReqMagnet.nyaa(codeDetails).then((sources) => setDetails(sources, "nyaa"));
