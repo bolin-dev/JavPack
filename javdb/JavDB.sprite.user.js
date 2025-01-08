@@ -10,6 +10,7 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.ReqSprite.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @connect         javstore.net
+// @connect         javfree.me
 // @connect         javbee.me
 // @connect         *
 // @run-at          document-end
