@@ -8,14 +8,15 @@
 
 ### 115
 
-| 名称         | 描述           | 安装                                                                           |
-| :----------- | :------------- | :----------------------------------------------------------------------------- |
-| 115.playlist | 播放列表       | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.playlist.user.js) |
-| 115.delDir   | 播放页删除目录 | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.delDir.user.js)   |
+| 名称         | 描述       | 安装                                                                           |
+| :----------- | :--------- | :----------------------------------------------------------------------------- |
+| 115.delDir   | 播放页删除 | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.delDir.user.js)   |
+| 115.playlist | 播放页列表 | [安装](https://github.com/bolin-dev/JavPack/raw/main/115/115.playlist.user.js) |
 
 ### JavDB
 
-脚本依赖: `JavDB.style`
+> [!NOTE]
+> 样式依赖: [JavDB.style](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)
 
 | 名称                            | 描述         | 安装                                                                                 |
 | :------------------------------ | :----------- | :----------------------------------------------------------------------------------- |
@@ -44,40 +45,41 @@
 
 ### trailer
 
-- 方向键或 `W` `A` `S` `D` 控制播放进度及音量
+- 方向键 或 `W` `A` `S` `D` 控制播放进度及音量
+
+- 按键 `Space` 播放/暂停
 
 - 按键 `M` 切换静音
 
 ### offline115
 
-> [!TIP]
->
-> 避免标签数量超过 `11500`
+> [!WARNING]
+> 新离线任务应保持出现在任务记录首页（离线验证
 
-| `config[]` 选项        | 类型                              | 说明                                                                                                                                        | 默认                                         |
+| `config[]`             | 类型                              | 说明                                                                                                                                        | 默认                                         |
 | :--------------------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------- |
 | `name`                 | `string`                          | 按钮名称                                                                                                                                    | 必填                                         |
 | `inMagnets`            | `boolean`                         | 磁力列表显示                                                                                                                                | `false`                                      |
 | `color`                | `string`                          | 按钮样式，参考 [bulma](https://bulma.io/documentation/elements/button/#colors)                                                              | `"is-info"`                                  |
-| `desc`                 | `string`                          | 按钮描述                                                                                                                                    | `离线路径`                                   |
-| `type`                 | `"plain" \| "genres" \| "actors"` | 按钮类型                                                                                                                                    | `"plain"`                                    |
+| `desc`                 | `string`                          | 描述                                                                                                                                        | `离线路径`                                   |
+| `type`                 | `"plain" \| "genres" \| "actors"` | 类型                                                                                                                                        | `"plain"`                                    |
 | `match`                | `string[]`                        | 类型匹配，非 `"plain"` 类型时可用                                                                                                           | `[]`                                         |
-| `exclude`              | `string[]`                        | 类型排除，非 `"plain"` 类型时可用                                                                                                           | `[]`                                         |
-| `dir`                  | `string \| string[]`              | 离线路径，支持 `动态参数`                                                                                                                   | `"云下载"`                                   |
+| `exclude`              | `string[]`                        | 类型排除，同上                                                                                                                              | `[]`                                         |
+| `dir`                  | `string \| string[]`              | 离线目录，支持 `动态参数`                                                                                                                   | `"云下载"`                                   |
 | `magnetOptions.filter` | `function`                        | 磁链筛选，参考 [filterCallbackFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#callbackfn) | `magnet.size` > `300MB`                      |
 | `magnetOptions.sort`   | `function`                        | 磁链排序，参考 [sortCompareFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted#comparefn)   | `magnet.zh` → `magnet.crack` → `magnet.size` |
 | `magnetOptions.max`    | `number`                          | 最大磁链数                                                                                                                                  | `10`                                         |
 | `verifyOptions.filter` | `function`                        | 视频筛选，参考 [filterCallbackFn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#callbackfn) | `video.s` > `300MB`                          |
-| `verifyOptions.clean`  | `boolean`                         | 验证失败清理                                                                                                                                | `true`                                       |
-| `verifyOptions.max`    | `number`                          | 验证次数（1s / 次）                                                                                                                         | `10`                                         |
+| `verifyOptions.clean`  | `boolean`                         | 验证失败删除任务及文件                                                                                                                      | `true`                                       |
+| `verifyOptions.max`    | `number`                          | 验证次数（1s / 次                                                                                                                           | `10`                                         |
 | `rename`               | `string`                          | 重命名，支持 `动态参数`                                                                                                                     | `"${zh}${crack} ${code} ${title}"`           |
 | `renameTxt.no`         | `string`                          | 重命名多文件分号格式                                                                                                                        | `".${no}"`                                   |
 | `renameTxt.zh`         | `string`                          | 重命名中字匹配格式                                                                                                                          | `"[中字]"`                                   |
 | `renameTxt.crack`      | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
 | `tags`                 | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
-| `clean`                | `boolean`                         | 清理不相关文件                                                                                                                              | `true`                                       |
-| `cleanPwd`             | `string`                          | 清空回收站                                                                                                                                  |                                              |
-| `cover`                | `boolean`                         | 上传封面                                                                                                                                    | `true`                                       |
+| `clean`                | `boolean`                         | 验证成功删除不相关文件                                                                                                                      | `true`                                       |
+| `cleanPwd`             | `string`                          | 删除文件后清空回收站                                                                                                                        |                                              |
+| `cover`                | `boolean`                         | 上传设置封面                                                                                                                                | `true`                                       |
 
 <details><summary>动态参数及示例</summary>
 
@@ -103,18 +105,18 @@
 // zh          字幕资源，仅 rename 内可用
 // crack       破解资源，仅 rename 内可用
 
-// config 示例如下
+// config 自定义配置示例:
 const config = [
   {
     name: "云下载",
   },
   {
-    name: "${genre}", // 仅 type = "genres" / "actors" 时支持 genre / actors 参数
+    name: "${genre}", // 仅 type = "genres" / "actors" 时支持 genre / actors 动态参数
     color: "is-warning is-medium",
     desc: "可自定义描述",
     type: "genres",
     match: [],
-    exclude: ["褲襪"], // "褲襪" 会同时命中 "xx褲襪xx"，如 "連褲襪"
+    exclude: ["褲襪"], // "褲襪" 会命中 "xx褲襪xx"，如 "連褲襪"
     magnetOptions: {
       filter: ({ size }) => {
         const magnetSize = parseFloat(size);
@@ -127,7 +129,7 @@ const config = [
       },
       max: 10,
     },
-    dir: ["类别", "${genre}", "${maker}${prefix}"], // 等价 "类别/${genre}/${maker}${prefix}"
+    dir: ["类别", "${genre}", "${maker}${prefix}"], // 等价: "类别/${genre}/${maker}${prefix}"
     verifyOptions: {
       filter: ({ s }) => s > 314572800,
       clean: true,
@@ -145,7 +147,7 @@ const config = [
   },
 ];
 
-// magnetOptions.filter, magnetOptions.sort 传入参数如下
+// magnetOptions.filter, magnetOptions.sort 接收参数示例:
 {
   zh: true,
   url: "magnet:?xt=urn:btih:9e84de75a5e7db566aa10ab6014d076041ff2f95",
