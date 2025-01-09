@@ -97,14 +97,14 @@
     };
   };
 
-  const target = document.createElement("button");
-  target.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
-  target.textContent = "重新加载";
-  CONT.insertAdjacentElement("afterend", target);
+  const load = document.createElement("button");
+  load.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
+  load.textContent = "重新加载";
+  CONT.insertAdjacentElement("afterend", load);
 
   const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
   const obs = new IntersectionObserver(loadMore, { rootMargin: "500px" });
 
-  target.addEventListener("click", () => loadMore([{ target }], obs));
-  obs.observe(target);
+  load.addEventListener("click", ({ target }) => loadMore([{ target }], obs));
+  obs.observe(load);
 })();
