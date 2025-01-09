@@ -833,9 +833,15 @@ br + .title {
   margin-bottom: 0;
 }
 
-.tags:has(.x-magnet) + #magnets-content {
-  max-height: calc(54px * 9);
-  overflow-y: overlay;
+.tags:has(.x-magnet) {
+  .tag {
+    background-color: transparent;
+  }
+
+  & + #magnets-content {
+    max-height: calc(54px * 9);
+    overflow-y: overlay;
+  }
 }
 
 .review-items .review-item {
