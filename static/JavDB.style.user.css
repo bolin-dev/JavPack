@@ -427,6 +427,7 @@ nav.pagination {
 
 #footer {
   background-color: transparent;
+  border-top: 1px solid var(--x-bd);
 
   .navbar-item {
     font-size: var(--x-size-md);
