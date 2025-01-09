@@ -425,8 +425,13 @@ nav.pagination {
   }
 }
 
-#footer .navbar-item {
-  font-size: var(--x-size-md);
+#footer {
+  background-color: transparent;
+
+  .navbar-item {
+    font-size: var(--x-size-md);
+    color: var(--x-color) !important;
+  }
 }
 
 .title {
