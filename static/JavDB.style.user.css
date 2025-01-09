@@ -24,6 +24,7 @@
 
     .navbar {
       --x-color: #b5b5b5;
+      --x-bd: rgb(238 238 235 / 6%);
       --x-bg: rgb(10 10 10 / 80%);
       --x-hv: rgb(10 10 10 / 50%);
     }
@@ -82,6 +83,7 @@ body:has(.x-load) #footer,
 
 .navbar {
   --x-color: #4a4a4a;
+  --x-bd: rgb(10 10 10 / 3%);
   --x-bg: rgb(238 238 235 / 80%);
   --x-hv: rgb(238 238 235 / 50%);
 
@@ -90,6 +92,7 @@ body:has(.x-load) #footer,
   &.is-black {
     background-color: var(--x-bg) !important;
     backdrop-filter: saturate(1.8) blur(20px);
+    border-bottom: 1px solid var(--x-bd);
 
     .navbar-brand > a.navbar-item:is(:focus, :hover, :focus-within) {
       background-color: var(--x-hv) !important;
