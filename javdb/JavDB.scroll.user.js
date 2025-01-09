@@ -35,18 +35,18 @@
   const currList = document.querySelectorAll(listSelector);
   if (!CONTAINER || !nextUrl || !currList.length) return;
 
-  const LOAD_CLASS = "is-loading";
   const INDICATOR = document.createElement("button");
   INDICATOR.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
   INDICATOR.textContent = "重新加载";
   CONTAINER.insertAdjacentElement("afterend", INDICATOR);
 
   const useLoadMore = (next, list, { nextSelector, listSelector }) => {
+    const loadCls = "is-loading";
     let _next = next;
     let _list = list;
 
     const getUrl = (node) => node?.href;
-    const getLabel = getUrl(list[0]) ? getUrl : (node) => getUrl(node.querySelector("a"));
+    const getLbl = getUrl(list[0]) ? getUrl : (node) => getUrl(node.querySelector("a"));
 
     const parse = (dom) => {
       const next = dom?.querySelector(nextSelector)?.href;
@@ -55,17 +55,19 @@
     };
 
     const filter = (list) => {
-      const setList = new Set([..._list].map(getLabel));
-      return [...list].filter((node) => !setList.has(getLabel(node)));
+      const setList = new Set([..._list].map(getLbl));
+      return [...list].filter((node) => !setList.has(getLbl(node)));
     };
 
     return async (entries, obs) => {
-      if (!entries[0].isIntersecting || INDICATOR.classList.contains(LOAD_CLASS)) return;
-      INDICATOR.classList.add(LOAD_CLASS);
-      INDICATOR.setAttribute("disabled", "");
+      const { isIntersecting, target } = entries[0];
+      if (!isIntersecting || target.classList.contains(loadCls)) return;
+
+      target.classList.add(loadCls);
+      target.setAttribute("disabled", "");
 
       try {
-        const { next, list } = await Req.tasks(_next, [parse]).finally(() => INDICATOR.classList.remove(LOAD_CLASS));
+        const { next, list } = await Req.tasks(_next, [parse]).finally(() => target.classList.remove(loadCls));
         if (!list?.length) throw new Error("Not found list");
         const detail = filter(list);
 
@@ -76,14 +78,14 @@
         }
 
         if (!next || !detail.length) {
-          INDICATOR.textContent = "暂无更多";
+          target.textContent = "暂无更多";
           return obs.disconnect();
         }
 
         _next = next;
         _list = list;
       } catch (err) {
-        INDICATOR.removeAttribute("disabled");
+        target.removeAttribute("disabled");
         Util.print(err?.message);
       }
     };
