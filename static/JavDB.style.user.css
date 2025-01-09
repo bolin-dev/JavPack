@@ -23,10 +23,8 @@
     background-color: transparent;
 
     .navbar {
-      --x-color: #b5b5b5;
-      --x-bd: rgb(238 238 235 / 6%);
-      --x-bg: rgb(10 10 10 / 80%);
-      --x-hv: rgb(10 10 10 / 50%);
+      --x-rgb: 181 181 181;
+      --x-bg-rgb: 10 10 10;
     }
 
     #tags dt:last-child {
@@ -82,12 +80,15 @@ body:has(.x-load) #footer,
 }
 
 .navbar {
-  --x-color: #4a4a4a;
-  --x-bd: rgb(10 10 10 / 3%);
-  --x-bg: rgb(238 238 235 / 80%);
-  --x-hv: rgb(238 238 235 / 50%);
+  --x-rgb: 74 74 74;
+  --x-bg-rgb: 238 238 235;
 
   padding: 0 max(calc((100% - 1344px) / 2), 1rem);
+
+  --x-cl: rgb(var(--x-rgb));
+  --x-bd: rgb(var(--x-rgb) / 5%);
+  --x-bg: rgb(var(--x-bg-rgb) / 80%);
+  --x-hv: rgb(var(--x-bg-rgb) / 50%);
 
   &.is-black {
     background-color: var(--x-bg) !important;
@@ -115,11 +116,11 @@ body:has(.x-load) #footer,
 
 @media screen and (width >= 1024px) {
   .navbar.is-black :is(.navbar-start, .navbar-end) :is(> .navbar-item, .navbar-link) {
-    color: var(--x-color) !important;
+    color: var(--x-cl) !important;
   }
 
   .navbar.is-black :is(.navbar-start, .navbar-end) .navbar-link::after {
-    border-color: var(--x-color) !important;
+    border-color: var(--x-cl) !important;
   }
 
   .navbar.is-black .navbar-item.has-dropdown:is(:focus, :hover, :focus-within) .navbar-link {
@@ -431,7 +432,7 @@ nav.pagination {
 
   .navbar-item {
     font-size: var(--x-size-md);
-    color: var(--x-color) !important;
+    color: var(--x-cl) !important;
   }
 }
 
