@@ -17,28 +17,26 @@
 // ==/UserScript==
 
 (function () {
-  const fadeIn = (img) => {
-    if (!img || img.complete) return;
-    img.style.opacity = 0;
-    img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
-  };
-
-  const IMGS = document.querySelectorAll(":is(.actors, .movie-list) img");
-  IMGS.forEach(fadeIn);
-
   const contSelector = ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)";
   const nextSelector = `${contSelector} + nav.pagination .pagination-next`;
   const listSelector = `${contSelector} > :is(div, a)`;
 
-  const CONTAINER = document.querySelector(contSelector);
+  const CONT = document.querySelector(contSelector);
   const nextUrl = document.querySelector(nextSelector)?.href;
   const currList = document.querySelectorAll(listSelector);
-  if (!CONTAINER || !nextUrl || !currList.length) return;
+  if (!CONT || !nextUrl || !currList.length) return;
 
-  const INDICATOR = document.createElement("button");
-  INDICATOR.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
-  INDICATOR.textContent = "重新加载";
-  CONTAINER.insertAdjacentElement("afterend", INDICATOR);
+  const fadeIn = (node) => {
+    const img = node.querySelector("img");
+    if (!img || img.complete) return;
+
+    img.style.opacity = 0;
+    img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
+  };
+
+  const delTitle = (node) => {
+    node.querySelector("a:has(img)")?.removeAttribute("title");
+  };
 
   const useLoadMore = (next, list, { nextSelector, listSelector }) => {
     const loadCls = "is-loading";
@@ -48,7 +46,7 @@
     const getUrl = (node) => node?.href;
     const getLbl = getUrl(list[0]) ? getUrl : (node) => getUrl(node.querySelector("a"));
 
-    const parse = (dom) => {
+    const parser = (dom) => {
       const next = dom?.querySelector(nextSelector)?.href;
       const list = dom?.querySelectorAll(listSelector);
       return { next, list };
@@ -60,21 +58,21 @@
     };
 
     return async (entries, obs) => {
-      const { isIntersecting, target } = entries[0];
+      const { isIntersecting = true, target } = entries[0];
       if (!isIntersecting || target.classList.contains(loadCls)) return;
 
       target.classList.add(loadCls);
       target.setAttribute("disabled", "");
 
       try {
-        const { next, list } = await Req.tasks(_next, [parse]).finally(() => target.classList.remove(loadCls));
+        const { next, list } = await Req.tasks(_next, [parser]).finally(() => target.classList.remove(loadCls));
         if (!list?.length) throw new Error("Not found list");
         const detail = filter(list);
 
         if (detail.length) {
-          CONTAINER.append(...detail);
+          CONT.append(...detail);
           Util.dispatchEvent(detail);
-          if (IMGS.length) detail.forEach((item) => fadeIn(item.querySelector("img")));
+          detail.forEach((node) => fadeIn(node) || delTitle(node));
         }
 
         if (!next || !detail.length) {
@@ -91,9 +89,16 @@
     };
   };
 
-  const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
-  const OBSERVER = new IntersectionObserver(loadMore, { rootMargin: "500px" });
+  const target = document.createElement("button");
+  target.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
+  target.textContent = "重新加载";
 
-  OBSERVER.observe(INDICATOR);
-  INDICATOR.addEventListener("click", () => loadMore([{ isIntersecting: true }], OBSERVER));
+  currList.forEach((node) => fadeIn(node) || delTitle(node));
+  CONT.insertAdjacentElement("afterend", target);
+
+  const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
+  const obs = new IntersectionObserver(loadMore, { rootMargin: "500px" });
+
+  target.addEventListener("click", () => loadMore([{ target }], obs));
+  obs.observe(target);
 })();
