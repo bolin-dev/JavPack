@@ -17,15 +17,6 @@
 // ==/UserScript==
 
 (function () {
-  const contSelector = ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)";
-  const nextSelector = `${contSelector} + nav.pagination .pagination-next`;
-  const listSelector = `${contSelector} > :is(div, a)`;
-
-  const CONT = document.querySelector(contSelector);
-  const nextUrl = document.querySelector(nextSelector)?.href;
-  const currList = document.querySelectorAll(listSelector);
-  if (!CONT || !nextUrl || !currList.length) return;
-
   const fadeIn = (node) => {
     const img = node.querySelector("img");
     if (!img || img.complete) return;
@@ -37,6 +28,18 @@
   const delTitle = (node) => {
     node.querySelector("a:has(img)")?.removeAttribute("title");
   };
+
+  const nodeList = document.querySelectorAll(":is(.actors, .movie-list) > :is(div, a)");
+  nodeList.forEach((node) => fadeIn(node) || delTitle(node));
+
+  const contSelector = ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)";
+  const nextSelector = `${contSelector} + nav.pagination .pagination-next`;
+  const listSelector = `${contSelector} > :is(div, a)`;
+
+  const CONT = document.querySelector(contSelector);
+  const nextUrl = document.querySelector(nextSelector)?.href;
+  const currList = document.querySelectorAll(listSelector);
+  if (!CONT || !nextUrl || !currList.length) return;
 
   const useLoadMore = (next, list, { nextSelector, listSelector }) => {
     const loadCls = "is-loading";
@@ -92,8 +95,6 @@
   const target = document.createElement("button");
   target.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
   target.textContent = "重新加载";
-
-  currList.forEach((node) => fadeIn(node) || delTitle(node));
   CONT.insertAdjacentElement("afterend", target);
 
   const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
