@@ -17,21 +17,26 @@
 // ==/UserScript==
 
 (function () {
-  const fadeIn = (node) => {
-    const img = node.querySelector("img");
-    if (!img || img.complete) return;
+  const useEditCards = () => {
+    const cardList = document.querySelectorAll(":is(.actors, .movie-list) > :is(div, a)");
+    if (!cardList.length) return;
 
-    img.style.opacity = 0;
-    img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
+    const fadeIn = (node) => {
+      const img = node.querySelector("img");
+      if (!img || img.complete) return;
+
+      img.style.opacity = 0;
+      img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
+    };
+
+    const delTitle = (node) => node.querySelector("a:has(img)")?.removeAttribute("title");
+
+    const editCards = (nodeList) => nodeList.forEach((node) => fadeIn(node) || delTitle(node));
+    editCards(cardList);
+    return editCards;
   };
 
-  const delTitle = (node) => {
-    node.querySelector("a:has(img)")?.removeAttribute("title");
-  };
-
-  const nodeList = document.querySelectorAll(":is(.actors, .movie-list) > :is(div, a)");
-  nodeList.forEach((node) => fadeIn(node) || delTitle(node));
-
+  const editCards = useEditCards();
   const contSelector = ":is(.actors, .movie-list, .section-container):has(+ nav.pagination)";
   const nextSelector = `${contSelector} + nav.pagination .pagination-next`;
   const listSelector = `${contSelector} > :is(div, a)`;
@@ -75,7 +80,7 @@
         if (detail.length) {
           CONT.append(...detail);
           Util.dispatchEvent(detail);
-          detail.forEach((node) => fadeIn(node) || delTitle(node));
+          editCards?.(detail);
         }
 
         if (!next || !detail.length) {
