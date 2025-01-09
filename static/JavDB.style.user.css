@@ -22,16 +22,22 @@
 
     background-color: transparent;
 
+    .navbar {
+      --x-color: #b5b5b5;
+      --x-bg: rgb(10 10 10 / 80%);
+      --x-hv: rgb(10 10 10 / 50%);
+    }
+
+    #tags dt:last-child {
+      border-bottom: none !important;
+    }
+
     .box:is(:focus, :hover, :active) {
       box-shadow: none !important;
     }
 
     nav.pagination {
       border-top: none !important;
-    }
-
-    #tags dt:last-child {
-      border-bottom: none !important;
     }
 
     .preview-images a,
@@ -75,8 +81,9 @@ body:has(.x-load) #footer,
 }
 
 .navbar {
-  --x-bg: rgb(22 22 23 / 80%);
-  --x-hv: rgb(22 22 23 / 50%);
+  --x-color: #4a4a4a;
+  --x-bg: rgb(238 238 235 / 80%);
+  --x-hv: rgb(238 238 235 / 50%);
 
   padding: 0 max(calc((100% - 1344px) / 2), 1rem);
 
@@ -93,9 +100,25 @@ body:has(.x-load) #footer,
     width: auto;
     height: 2rem;
   }
+
+  .navbar-link {
+    font-size: var(--x-size-md);
+
+    &:not(.is-arrowless)::after {
+      margin-top: -0.42em;
+    }
+  }
 }
 
 @media screen and (width >= 1024px) {
+  .navbar.is-black :is(.navbar-start, .navbar-end) :is(> .navbar-item, .navbar-link) {
+    color: var(--x-color) !important;
+  }
+
+  .navbar.is-black :is(.navbar-start, .navbar-end) .navbar-link::after {
+    border-color: var(--x-color) !important;
+  }
+
   .navbar.is-black .navbar-item.has-dropdown:is(:focus, :hover, :focus-within) .navbar-link {
     background-color: var(--x-hv) !important;
   }
@@ -391,6 +414,12 @@ nav.pagination {
   padding-top: 1rem;
   margin: 0 -0.25rem !important;
   border-top: none;
+
+  .pagination-previous,
+  .pagination-next,
+  .pagination-link {
+    border-radius: var(--x-radius);
+  }
 }
 
 #footer .navbar-item {
