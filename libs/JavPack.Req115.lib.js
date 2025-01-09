@@ -248,7 +248,7 @@ class Drive115 extends Req {
 }
 
 class Req115 extends Drive115 {
-  static async filesSearchAllVideos(search_value) {
+  static async filesSearchVideosAll(search_value) {
     const params = { type: 4 };
     const res = await this.filesSearch(search_value, params);
 

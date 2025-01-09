@@ -27,9 +27,9 @@
 
 Util.upStore();
 
+const TARGET_CLASS = "x-match";
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel(GM_info.script.name);
-const TARGET_CLASS = "x-match";
 
 const listenClick = (onclose) => {
   const actions = {
@@ -50,48 +50,89 @@ const listenClick = (onclose) => {
     if (!val) return;
 
     const tab = Grant.openTab(action.url.replaceAll("%s", val));
-    tab.onclose = () => onclose?.(target);
+    tab.onclose = () => setTimeout(() => onclose?.(target), 1000);
   };
 
   document.addEventListener("click", onclick);
   document.addEventListener("contextmenu", onclick);
 };
 
-const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ pc, cid, t, n }));
+const formatBytes = (bytes, k = 1024) => {
+  if (bytes < k) return "0KB";
+  const units = ["KB", "MB", "GB", "TB"];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)) - 1, units.length - 1);
+  const size = (bytes / Math.pow(k, i + 1)).toFixed(2);
+  return `${size}${units[i]}`;
+};
+
+const extractData = (data, keys = ["pc", "cid", "n", "s", "t"]) => {
+  return data.map((obj) => Object.assign({}, ...keys.map((key) => ({ [key]: obj[key] }))));
+};
 
 (function () {
-  const infoNode = document.querySelector(".movie-panel-info");
-  if (!infoNode) return;
+  const CONT = document.querySelector(".movie-panel-info");
+  if (!CONT) return;
 
-  const render = ({ pc, cid, t, n }) => {
-    return `<a href="${VOID}" class="${TARGET_CLASS}" data-pc="${pc}" data-cid="${cid}" title="[${t}] ${n}">${n}</a>`;
+  const render = ({ pc, cid, n, s, t }) => {
+    return `
+    <a
+      href="${VOID}"
+      class="${TARGET_CLASS}"
+      data-pc="${pc}"
+      data-cid="${cid}"
+      title="${n} - ${formatBytes(s)} / ${t}"
+    >
+      ${n}
+    </a>`;
   };
 
-  const matchCode = async ({ code, codes, regex }, cont) => {
+  const matchCode = async ({ code, codes, regex }, { load, cont }) => {
+    const loadTxt = load.dataset.loadTxt;
+    const currTxt = load.textContent;
+    if (currTxt === loadTxt) return;
+    load.textContent = loadTxt;
+
     try {
-      const { data = [] } = await Req115.filesSearchAllVideos(codes.join(" "));
-      const sources = extractSearchResult(data.filter(({ n }) => regex.test(n)));
+      const { data = [] } = await Req115.filesSearchVideosAll(codes.join(" "));
+      const sources = extractData(data.filter((it) => regex.test(it.n)));
+      cont.innerHTML = sources.map(render).join("") || "暂无匹配";
       GM_setValue(code, sources);
-      cont.innerHTML = sources.map(render).join("") || "暂未匹配";
     } catch (err) {
       cont.innerHTML = "匹配失败";
-      console.warn(err?.message);
+      Util.print(err?.message);
     }
+
+    load.textContent = currTxt;
   };
 
-  const code = infoNode.querySelector(".first-block .value").textContent.trim();
+  const addBlock = () => {
+    const load = `${TARGET_CLASS}-load`;
+    const cont = `${TARGET_CLASS}-cont`;
+
+    CONT.querySelector(".review-buttons + .panel-block").insertAdjacentHTML(
+      "afterend",
+      `<div class="panel-block">
+        <strong><a href="${VOID}" class="${load}" data-load-txt="加载中">115</a>:</strong>
+        &nbsp;<span class="value ${cont}">匹配中...</span>
+      </div>`,
+    );
+
+    return {
+      load: CONT.querySelector(`.${load}`),
+      cont: CONT.querySelector(`.${cont}`),
+    };
+  };
+
+  const code = CONT.querySelector(".first-block .value").textContent.trim();
   const codeDetails = Util.codeParse(code);
+  const block = addBlock();
 
-  const insertHTML = "<div class='panel-block'><strong>115:</strong>&nbsp;<span class='value'>匹配中...</span></div>";
-  const positionNode = infoNode.querySelector(".review-buttons + .panel-block");
-  positionNode.insertAdjacentHTML("afterend", insertHTML);
-  const container = positionNode.nextElementSibling.querySelector(".value");
-
-  matchCode(codeDetails, container);
-  listenClick(() => matchCode(codeDetails, container));
-
-  unsafeWindow["reMatch"] = () => matchCode(codeDetails, container);
   window.addEventListener("beforeunload", () => CHANNEL.postMessage(code));
+  const matcher = () => matchCode(codeDetails, block);
+  block.load.addEventListener("click", matcher);
+  unsafeWindow["reMatch"] = matcher;
+  listenClick(matcher);
+  matcher();
 })();
 
 (function () {
@@ -196,9 +237,9 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
     inProgressRequests.add(prefix);
 
     requestQueue
-      .add(() => Req115.filesSearchAllVideos(prefix))
+      .add(() => Req115.filesSearchVideosAll(prefix))
       .then(({ data = [] }) => {
-        const sources = extractSearchResult(data);
+        const sources = extractData(data);
         GM_setValue(prefix, sources);
         onfinally(prefix, sources);
       })
@@ -230,9 +271,9 @@ const extractSearchResult = (sources) => sources.map(({ pc, cid, t, n }) => ({ p
 
     const { prefix } = Util.codeParse(code);
 
-    Req115.filesSearchAllVideos(prefix)
+    Req115.filesSearchVideosAll(prefix)
       .then(({ data = [] }) => {
-        const sources = extractSearchResult(data);
+        const sources = extractData(data);
         GM_setValue(prefix, sources);
         GM_deleteValue(code);
 
