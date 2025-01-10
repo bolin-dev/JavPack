@@ -152,6 +152,54 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
 
   const parseCodeCls = (code) => ["x", ...code.split(/\s|\.|-|_/)].filter(Boolean).join("-");
 
+  const matchAfter = ({ code, regex, target }, data) => {
+    target.closest(SELECTOR).classList.add(parseCodeCls(code));
+    const sources = data.filter((it) => regex.test(it.n));
+    const length = sources.length;
+
+    let pc = "";
+    let cid = "";
+    let title = "";
+    let className = "is-normal";
+    let textContent = "未匹配";
+
+    if (length) {
+      const zhs = sources.filter((it) => Magnet.zhReg.test(it.n));
+      const crack = sources.find((it) => Magnet.crackReg.test(it.n));
+
+      const zh = zhs[0];
+      const both = zhs.find((it) => Magnet.crackReg.test(it.n));
+      const active = both ?? zh ?? crack ?? sources[0];
+
+      pc = active.pc;
+      cid = active.cid;
+      title = sources.map(({ n, s, t }) => `${n} - ${s} / ${t}`).join("\n");
+      className = both ? "is-danger" : zh ? "is-warning" : crack ? "is-info" : "is-success";
+      textContent = "已匹配";
+      if (length > 1) textContent += ` ${length}`;
+    }
+
+    const node = target.querySelector(`.${TARGET_CLASS}`);
+    node.title = title;
+    node.className = `tag ${className} ${TARGET_CLASS}`;
+    node.dataset.pc = pc;
+    node.dataset.cid = cid;
+    node.textContent = textContent;
+  };
+
+  const matchBefore = (node) => {
+    if (node.classList.contains("is-hidden")) return;
+
+    const title = node.querySelector(".video-title");
+    if (!title) return;
+
+    const code = title.querySelector("strong")?.textContent.trim();
+    if (!code) return;
+
+    if (!title.querySelector(`.${TARGET_CLASS}`)) title.insertAdjacentHTML("afterbegin", TARGET_HTML);
+    return { ...Util.codeParse(code), target: title };
+  };
+
   const useMatchQueue = (before, after) => {
     const wait = {};
     const queue = [];
@@ -208,74 +256,29 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
     return (nodeList) => nodeList.forEach((node) => obs.observe(node));
   };
 
-  const matchBefore = (node) => {
-    if (node.classList.contains("is-hidden")) return;
-
-    const title = node.querySelector(".video-title");
-    if (!title) return;
-
-    const code = title.querySelector("strong")?.textContent.trim();
-    if (!code) return;
-
-    if (!title.querySelector(`.${TARGET_CLASS}`)) title.insertAdjacentHTML("afterbegin", TARGET_HTML);
-    return { ...Util.codeParse(code), target: title };
-  };
-
-  const matchAfter = ({ code, regex, target }, data) => {
-    target.closest(SELECTOR).classList.add(parseCodeCls(code));
-    const sources = data.filter((it) => regex.test(it.n));
-    const length = sources.length;
-
-    let pc = "";
-    let cid = "";
-    let title = "";
-    let className = "is-normal";
-    let textContent = "未匹配";
-
-    if (length) {
-      const zhs = sources.filter((it) => Magnet.zhReg.test(it.n));
-      const crack = sources.find((it) => Magnet.crackReg.test(it.n));
-
-      const zh = zhs[0];
-      const both = zhs.find((it) => Magnet.crackReg.test(it.n));
-      const active = both ?? zh ?? crack ?? sources[0];
-
-      pc = active.pc;
-      cid = active.cid;
-      title = sources.map(({ n, s, t }) => `${n} - ${s} / ${t}`).join("\n");
-      className = both ? "is-danger" : zh ? "is-warning" : crack ? "is-info" : "is-success";
-      textContent = "已匹配";
-      if (length > 1) textContent += ` ${length}`;
-    }
-
-    const node = target.querySelector(`.${TARGET_CLASS}`);
-    node.title = title;
-    node.className = `tag ${className} ${TARGET_CLASS}`;
-    node.dataset.pc = pc;
-    node.dataset.cid = cid;
-    node.textContent = textContent;
-  };
-
   const matchQueue = useMatchQueue(matchBefore, matchAfter);
   matchQueue(currList);
 
   window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
   CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
-  const matchPrefix = (target) => {
+  const matchPrefix = async (target) => {
     const code = target.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
     if (!code) return;
-    const { prefix } = Util.codeParse(code);
 
-    Req115.filesSearchVideosAll(prefix)
-      .then(({ data = [] }) => {
-        const sources = extractData(data);
-        GM_setValue(prefix, sources);
-        GM_deleteValue(code);
-        matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
-        CHANNEL.postMessage(code);
-      })
-      .catch((err) => Util.print(err?.message));
+    try {
+      const { prefix } = Util.codeParse(code);
+      const { data = [] } = await Req115.filesSearchVideosAll(prefix);
+      const sources = extractData(data);
+
+      GM_setValue(prefix, sources);
+      GM_deleteValue(code);
+
+      matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
+      CHANNEL.postMessage(code);
+    } catch (err) {
+      Util.print(err?.message);
+    }
   };
 
   unsafeWindow["reMatch"] = matchPrefix;
