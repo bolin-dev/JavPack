@@ -115,22 +115,23 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
   };
 
   const matchCode = async ({ code, codes, regex }, { load, cont }) => {
-    const loadTxt = load.dataset.loadTxt;
-    const currTxt = load.textContent;
-    if (currTxt === loadTxt) return;
-    load.textContent = loadTxt;
+    const UUID = crypto.randomUUID();
+    load.dataset.uid = UUID;
 
     try {
       const { data = [] } = await Req115.filesSearchVideosAll(codes.join(" "));
+      if (load.dataset.uid !== UUID) return;
+
       const sources = extractData(data.filter((it) => regex.test(it.n)));
       cont.innerHTML = sources.map(render).join("") || "暂无匹配";
       GM_setValue(code, sources);
     } catch (err) {
+      if (load.dataset.uid !== UUID) return;
       cont.innerHTML = "匹配失败";
       Util.print(err?.message);
     }
 
-    load.textContent = currTxt;
+    load.textContent = "115";
   };
 
   const addBlock = () => {
@@ -140,8 +141,8 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     CONT.querySelector(".review-buttons + .panel-block").insertAdjacentHTML(
       "afterend",
       `<div class="panel-block">
-        <strong><a href="${VOID}" class="${load}" data-load-txt="${TARGET_TXT}">115</a>:</strong>
-        &nbsp;<span class="value ${cont}">${TARGET_TXT}...</span>
+        <strong><a href="${VOID}" class="${load}">${TARGET_TXT}</a>:</strong>
+        &nbsp;<span class="value ${cont}">...</span>
       </div>`,
     );
 
@@ -154,13 +155,20 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
   const code = CONT.querySelector(".first-block .value").textContent.trim();
   const codeDetails = Util.codeParse(code);
   const block = addBlock();
-
-  window.addEventListener("beforeunload", () => CHANNEL.postMessage(code));
   const matcher = () => matchCode(codeDetails, block);
-  block.load.addEventListener("click", matcher);
-  unsafeWindow[API_NAME] = matcher;
-  listenClick(matcher);
+
   matcher();
+  listenClick(matcher);
+  unsafeWindow[API_NAME] = matcher;
+
+  const refresh = ({ target }) => {
+    if (target.textContent === TARGET_TXT) return;
+    target.textContent = TARGET_TXT;
+    matcher();
+  };
+
+  block.load.addEventListener("click", refresh);
+  window.addEventListener("beforeunload", () => CHANNEL.postMessage(code));
 })();
 
 (function () {
@@ -308,6 +316,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
       const sources = extractData(data.filter((it) => regex.test(it.n)));
       GM_setValue(code, sources);
     } catch (err) {
+      if (target.dataset.uid !== UUID) return;
       Util.print(err?.message);
     }
 
