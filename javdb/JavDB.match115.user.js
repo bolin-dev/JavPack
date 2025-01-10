@@ -45,11 +45,11 @@ const listenClick = (onclose) => {
   };
 
   const onclick = (e) => {
-    if (!e.target.classList.contains(TARGET_CLASS)) return;
+    const { target, type } = e;
+    if (!target.classList.contains(TARGET_CLASS)) return;
     e.preventDefault();
     e.stopPropagation();
 
-    const { type, target } = e;
     const action = actions[type];
     if (!action) return;
 
@@ -257,8 +257,8 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
   };
 
   const matchQueue = useMatchQueue(matchBefore, matchAfter);
-
   matchQueue(currList);
+
   window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
   CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
@@ -278,6 +278,6 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
       .catch((err) => Util.print(err?.message));
   };
 
-  listenClick(matchPrefix);
   unsafeWindow["reMatch"] = matchPrefix;
+  listenClick(matchPrefix);
 })();
