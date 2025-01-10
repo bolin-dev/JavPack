@@ -360,10 +360,6 @@ body:has(.x-load) #footer,
         border-radius: 99px;
         transform: translate(-1px, -1px);
 
-        &.is-normal {
-          text-decoration: none;
-        }
-
         &.is-success {
           background-color: var(--x-success);
         }

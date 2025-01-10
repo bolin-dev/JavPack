@@ -32,7 +32,7 @@ const TARGET_CLASS = "x-match";
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel(GM_info.script.name);
 
-const listenClick = (onclose) => {
+const listenClick = (onclose, defaultAction) => {
   const actions = {
     click: {
       val: "pc",
@@ -47,6 +47,7 @@ const listenClick = (onclose) => {
   const onclick = (e) => {
     const { target, type } = e;
     if (!target.classList.contains(TARGET_CLASS)) return;
+
     e.preventDefault();
     e.stopPropagation();
 
@@ -54,7 +55,7 @@ const listenClick = (onclose) => {
     if (!action) return;
 
     const val = target.dataset[action.val];
-    if (!val) return;
+    if (!val) return defaultAction?.(e);
 
     const tab = Grant.openTab(action.url.replaceAll("%s", val));
     tab.onclose = () => setTimeout(() => onclose?.(target), 750);
@@ -262,25 +263,43 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
   window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
   CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
+  const getCode = (node) => node.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
+
+  const publish = (code) => {
+    if (!code) return;
+    matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
+    CHANNEL.postMessage(code);
+  };
+
   const matchPrefix = async (target) => {
-    const code = target.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
+    const code = getCode(target);
     if (!code) return;
 
+    const rematch = "x-rematch";
+    if (target.classList.contains(rematch)) return;
+
+    target.classList.add(rematch);
+    const { prefix } = Util.codeParse(code);
+
     try {
-      const { prefix } = Util.codeParse(code);
       const { data = [] } = await Req115.filesSearchVideosAll(prefix);
       const sources = extractData(data);
 
       GM_setValue(prefix, sources);
       GM_deleteValue(code);
-
-      matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
-      CHANNEL.postMessage(code);
+      publish(code);
     } catch (err) {
       Util.print(err?.message);
     }
+
+    target.classList.remove(rematch);
+  };
+
+  const refresh = ({ type, target }) => {
+    if (type === "contextmenu") return matchPrefix(target);
+    if (type === "click") publish(getCode(target));
   };
 
   unsafeWindow["reMatch"] = matchPrefix;
-  listenClick(matchPrefix);
+  listenClick(matchPrefix, refresh);
 })();
