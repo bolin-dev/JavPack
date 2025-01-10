@@ -28,8 +28,10 @@ Util.upStore();
 
 const TARGET_TXT = "匹配中";
 const TARGET_CLASS = "x-match";
+
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel(GM_info.script.name);
+const API_NAME = "reMatch";
 
 const listenClick = (onclose, defaultAction) => {
   const actions = {
@@ -156,7 +158,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
   window.addEventListener("beforeunload", () => CHANNEL.postMessage(code));
   const matcher = () => matchCode(codeDetails, block);
   block.load.addEventListener("click", matcher);
-  unsafeWindow["reMatch"] = matcher;
+  unsafeWindow[API_NAME] = matcher;
   listenClick(matcher);
   matcher();
 })();
@@ -322,6 +324,6 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     if (code) publish(code);
   };
 
-  unsafeWindow["reMatch"] = matchCode;
+  unsafeWindow[API_NAME] = matchCode;
   listenClick(matchCode, refresh);
 })();
