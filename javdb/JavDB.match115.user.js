@@ -77,20 +77,22 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
   return data.map((item) => ({ ...JSON.parse(JSON.stringify(item, keys)), [format]: formatBytes(item[format]) }));
 };
 
+const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
+
 (function () {
   const CONT = document.querySelector(".movie-panel-info");
   if (!CONT) return;
 
-  const render = ({ pc, cid, n, s, t }) => {
+  const render = ({ pc, cid, ...data }) => {
     return `
     <a
       href="${VOID}"
       class="${TARGET_CLASS}"
-      title="${n} - ${s} / ${t}"
+      title="${formatTip(data)}"
       data-pc="${pc}"
       data-cid="${cid}"
     >
-      ${n}
+      ${data.n}
     </a>
     `;
   };
@@ -175,7 +177,7 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
 
       pc = active.pc;
       cid = active.cid;
-      title = sources.map(({ n, s, t }) => `${n} - ${s} / ${t}`).join("\n");
+      title = sources.map(formatTip).join("\n");
       className = both ? "is-danger" : zh ? "is-warning" : crack ? "is-info" : "is-success";
       textContent = "已匹配";
       if (len > 1) textContent += ` ${len}`;
