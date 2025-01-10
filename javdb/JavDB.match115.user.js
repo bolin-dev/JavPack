@@ -263,10 +263,11 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
   window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
   CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
-  const getCode = (node) => node.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
+  const getCode = (node) => {
+    return node.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
+  };
 
   const publish = (code) => {
-    if (!code) return;
     matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
     CHANNEL.postMessage(code);
   };
@@ -297,7 +298,9 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
 
   const refresh = ({ type, target }) => {
     if (type === "contextmenu") return matchPrefix(target);
-    if (type === "click") publish(getCode(target));
+    if (type !== "click") return;
+    const code = getCode(target);
+    if (code) publish(code);
   };
 
   unsafeWindow["reMatch"] = matchPrefix;
