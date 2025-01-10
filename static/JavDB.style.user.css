@@ -166,12 +166,14 @@ body:has(.x-load) #footer,
 
   .search-panel .control:first-child {
     overflow: hidden;
-    border-radius: 1px 0 0 1px;
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
   }
 
   .search-panel .control:last-child {
     overflow: hidden;
-    border-radius: 0 1px 1px 0;
+    border-top-right-radius: 1px;
+    border-bottom-right-radius: 1px;
   }
 
   .search-recent-keywords {
@@ -393,11 +395,13 @@ body:has(.x-load) #footer,
       min-height: 2em;
 
       .tag:first-child {
-        border-radius: 1px 0 0 1px;
+        border-top-left-radius: 1px;
+        border-bottom-left-radius: 1px;
       }
 
       .tag:last-child {
-        border-radius: 0 1px 1px 0;
+        border-top-right-radius: 1px;
+        border-bottom-right-radius: 1px;
       }
     }
   }
