@@ -298,20 +298,20 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     if (!code || !target) return;
 
     const { codes, regex } = Util.codeParse(code);
-    const uid = crypto.randomUUID();
-    target.dataset.uid = uid;
+    const UUID = crypto.randomUUID();
+    target.dataset.uid = UUID;
 
     try {
       const { data = [] } = await Req115.filesSearchVideosAll(codes.join(" "));
-      if (target.dataset.uid !== uid) return;
+      if (target.dataset.uid !== UUID) return;
 
       const sources = extractData(data.filter((it) => regex.test(it.n)));
       GM_setValue(code, sources);
     } catch (err) {
       Util.print(err?.message);
-    } finally {
-      publish(code);
     }
+
+    publish(code);
   };
 
   const refresh = ({ type, target }) => {
