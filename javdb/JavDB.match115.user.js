@@ -27,14 +27,21 @@
 
 Util.upStore();
 
+const TARGET_TXT = "匹配中";
 const TARGET_CLASS = "x-match";
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel(GM_info.script.name);
 
 const listenClick = (onclose) => {
   const actions = {
-    click: { key: "pc", url: "https://v.anxia.com/?pickcode=%s" },
-    contextmenu: { key: "cid", url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan" },
+    click: {
+      val: "pc",
+      url: "https://v.anxia.com/?pickcode=%s",
+    },
+    contextmenu: {
+      val: "cid",
+      url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
+    },
   };
 
   const onclick = (e) => {
@@ -46,11 +53,11 @@ const listenClick = (onclose) => {
     const action = actions[type];
     if (!action) return;
 
-    const val = target.dataset[action.key];
+    const val = target.dataset[action.val];
     if (!val) return;
 
     const tab = Grant.openTab(action.url.replaceAll("%s", val));
-    tab.onclose = () => setTimeout(() => onclose?.(target), 1000);
+    tab.onclose = () => setTimeout(() => onclose?.(target), 750);
   };
 
   document.addEventListener("click", onclick);
@@ -65,8 +72,8 @@ const formatBytes = (bytes, k = 1024) => {
   return `${size}${units[i]}`;
 };
 
-const extractData = (data, keys = ["pc", "cid", "n", "s", "t"]) => {
-  return data.map((obj) => Object.assign({}, ...keys.map((key) => ({ [key]: obj[key] }))));
+const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") => {
+  return data.map((item) => ({ ...JSON.parse(JSON.stringify(item, keys)), [format]: formatBytes(item[format]) }));
 };
 
 (function () {
@@ -78,12 +85,13 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"]) => {
     <a
       href="${VOID}"
       class="${TARGET_CLASS}"
+      title="${n} - ${s} / ${t}"
       data-pc="${pc}"
       data-cid="${cid}"
-      title="${n} - ${formatBytes(s)} / ${t}"
     >
       ${n}
-    </a>`;
+    </a>
+    `;
   };
 
   const matchCode = async ({ code, codes, regex }, { load, cont }) => {
@@ -112,8 +120,8 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"]) => {
     CONT.querySelector(".review-buttons + .panel-block").insertAdjacentHTML(
       "afterend",
       `<div class="panel-block">
-        <strong><a href="${VOID}" class="${load}" data-load-txt="加载中">115</a>:</strong>
-        &nbsp;<span class="value ${cont}">匹配中...</span>
+        <strong><a href="${VOID}" class="${load}" data-load-txt="${TARGET_TXT}">115</a>:</strong>
+        &nbsp;<span class="value ${cont}">${TARGET_TXT}...</span>
       </div>`,
     );
 
@@ -137,138 +145,126 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"]) => {
 
 (function () {
   const SELECTOR = ".movie-list .item";
+  const TARGET_HTML = `<a href="${VOID}" class="tag is-normal ${TARGET_CLASS}">${TARGET_TXT}</a>`;
+
   const currList = document.querySelectorAll(SELECTOR);
   if (!currList.length) return;
 
-  class RequestQueue {
-    constructor() {
-      this.queue = [];
-      this.isProcessing = false;
-    }
+  const parseCodeCls = (code) => ["x", ...code.split(/\s|\.|-|_/)].filter(Boolean).join("-");
 
-    add(requestFn) {
-      return new Promise((resolve, reject) => {
-        this.queue.push({ requestFn, resolve, reject });
-        this.processQueue();
+  const useMatchQueue = (before, after) => {
+    const wait = {};
+    const queue = [];
+    let loading = false;
+
+    const over = (pre, data = []) => {
+      wait[pre].forEach((it) => after?.(it, data));
+      delete wait[pre];
+    };
+
+    const match = async () => {
+      if (loading || !queue.length) return;
+      const prefix = queue[0];
+      loading = true;
+
+      try {
+        const { data = [] } = await Req115.filesSearchVideosAll(prefix);
+        const sources = extractData(data);
+        GM_setValue(prefix, sources);
+        over(prefix, sources);
+      } catch (err) {
+        over(prefix);
+        Util.print(err?.message);
+      }
+
+      loading = false;
+      queue.shift();
+      match();
+    };
+
+    const dispatch = (node) => {
+      const details = before?.(node);
+      if (!details) return;
+
+      const { code, prefix } = details;
+      const cache = GM_getValue(code) ?? GM_getValue(prefix);
+      if (cache) return after?.(details, cache);
+
+      if (!wait[prefix]) wait[prefix] = [];
+      wait[prefix].push(details);
+
+      if (queue.includes(prefix)) return;
+      queue.push(prefix);
+      match();
+    };
+
+    const callback = (entries, obs) => {
+      entries.forEach(({ isIntersecting, target }) => {
+        if (isIntersecting) obs.unobserve(target) || requestAnimationFrame(() => dispatch(target));
       });
-    }
+    };
 
-    processQueue() {
-      if (this.isProcessing || this.queue.length === 0) return;
-      const nextRequest = this.queue.shift();
-      this.isProcessing = true;
+    const obs = new IntersectionObserver(callback, { threshold: 0.25 });
+    return (nodeList) => nodeList.forEach((node) => obs.observe(node));
+  };
 
-      nextRequest
-        .requestFn()
-        .then(nextRequest.resolve)
-        .catch(nextRequest.reject)
-        .finally(() => {
-          this.isProcessing = false;
-          this.processQueue();
-        });
-    }
-  }
+  const matchBefore = (node) => {
+    if (node.classList.contains("is-hidden")) return;
 
-  const inProgressRequests = new Set();
-  const requestQueue = new RequestQueue();
-  const waitingList = {};
-  const TARGET_HTML = `<a href="${VOID}" class="tag is-normal ${TARGET_CLASS}">匹配中</a>`;
+    const title = node.querySelector(".video-title");
+    if (!title) return;
 
-  const parseCodeClass = (code) => ["x", ...code.split(/\s|\./)].filter(Boolean).join("-");
+    const code = title.querySelector("strong")?.textContent.trim();
+    if (!code) return;
 
-  const setTarget = ({ code, regex, node }, result) => {
-    const sources = result.filter((item) => regex.test(item.n));
+    if (!title.querySelector(`.${TARGET_CLASS}`)) title.insertAdjacentHTML("afterbegin", TARGET_HTML);
+    return { ...Util.codeParse(code), target: title };
+  };
+
+  const matchAfter = ({ code, regex, target }, data) => {
+    target.closest(SELECTOR).classList.add(parseCodeCls(code));
+    const sources = data.filter((it) => regex.test(it.n));
+    const length = sources.length;
 
     let pc = "";
     let cid = "";
     let title = "";
-    let textContent = "未匹配";
     let className = "is-normal";
+    let textContent = "未匹配";
 
-    if (sources.length) {
-      const bothItem = sources.find(({ n }) => Magnet.zhReg.test(n) && Magnet.crackReg.test(n));
-      const zhItem = sources.find(({ n }) => Magnet.zhReg.test(n));
-      const crackItem = sources.find(({ n }) => Magnet.crackReg.test(n));
-      const currItem = bothItem ?? zhItem ?? crackItem ?? sources[0];
+    if (length) {
+      const zhs = sources.filter((it) => Magnet.zhReg.test(it.n));
+      const crack = sources.find((it) => Magnet.crackReg.test(it.n));
 
-      pc = currItem.pc;
-      cid = currItem.cid;
+      const zh = zhs[0];
+      const both = zhs.find((it) => Magnet.crackReg.test(it.n));
+      const active = both ?? zh ?? crack ?? sources[0];
+
+      pc = active.pc;
+      cid = active.cid;
+      title = sources.map(({ n, s, t }) => `${n} - ${s} / ${t}`).join("\n");
+      className = both ? "is-danger" : zh ? "is-warning" : crack ? "is-info" : "is-success";
       textContent = "已匹配";
-      title = `[${currItem.t}] ${currItem.n}`;
-      className = bothItem ? "is-danger" : zhItem ? "is-warning" : crackItem ? "is-info" : "is-success";
+      if (length > 1) textContent += ` ${length}`;
     }
 
-    node.classList.add(parseCodeClass(code));
-    const tagNode = node.querySelector(`.${TARGET_CLASS}`);
-    tagNode.title = title;
-    tagNode.dataset.pc = pc;
-    tagNode.dataset.cid = cid;
-    tagNode.textContent = textContent;
-    tagNode.className = `tag ${className} ${TARGET_CLASS}`;
+    const node = target.querySelector(`.${TARGET_CLASS}`);
+    node.title = title;
+    node.className = `tag ${className} ${TARGET_CLASS}`;
+    node.dataset.pc = pc;
+    node.dataset.cid = cid;
+    node.textContent = textContent;
   };
 
-  const onfinally = (prefix, data) => {
-    waitingList[prefix].forEach((details) => setTarget(details, data));
-    inProgressRequests.delete(prefix);
-    delete waitingList[prefix];
-  };
+  const matchQueue = useMatchQueue(matchBefore, matchAfter);
 
-  const handleTarget = (node) => {
-    if (node.classList.contains("is-hidden")) return;
-
-    const titleNode = node.querySelector(".video-title");
-    if (!titleNode) return;
-
-    const code = titleNode.querySelector("strong")?.textContent.trim();
-    if (!code) return;
-
-    if (!titleNode.querySelector(`.${TARGET_CLASS}`)) titleNode.insertAdjacentHTML("afterbegin", TARGET_HTML);
-
-    const { prefix, ...codeDetails } = Util.codeParse(code);
-    const nodeDetails = { ...codeDetails, node };
-
-    const cachedResult = GM_getValue(code) ?? GM_getValue(prefix);
-    if (cachedResult) return setTarget(nodeDetails, cachedResult);
-
-    if (!waitingList[prefix]) waitingList[prefix] = [];
-    waitingList[prefix].push(nodeDetails);
-
-    if (inProgressRequests.has(prefix)) return;
-    inProgressRequests.add(prefix);
-
-    requestQueue
-      .add(() => Req115.filesSearchVideosAll(prefix))
-      .then(({ data = [] }) => {
-        const sources = extractData(data);
-        GM_setValue(prefix, sources);
-        onfinally(prefix, sources);
-      })
-      .catch((err) => {
-        console.warn(err?.message);
-        onfinally(prefix, []);
-      });
-  };
-
-  const intersectionCallback = (entries, obs) => {
-    entries.forEach(({ isIntersecting, target }) => {
-      if (!isIntersecting) return;
-      obs.unobserve(target);
-      handleTarget(target);
-    });
-  };
-
-  const intersectionOptions = { threshold: 0.5 };
-  const intersectionObserver = new IntersectionObserver(intersectionCallback, intersectionOptions);
-  const observeNodeList = (nodeList) => nodeList.forEach((node) => intersectionObserver.observe(node));
-
-  observeNodeList(currList);
-  window.addEventListener("JavDB.scroll", ({ detail }) => observeNodeList(detail));
-  CHANNEL.onmessage = ({ data: code }) => observeNodeList(document.querySelectorAll(`.${parseCodeClass(code)}`));
+  matchQueue(currList);
+  window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
+  CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
   const matchPrefix = (target) => {
     const code = target.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
     if (!code) return;
-
     const { prefix } = Util.codeParse(code);
 
     Req115.filesSearchVideosAll(prefix)
@@ -276,11 +272,10 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"]) => {
         const sources = extractData(data);
         GM_setValue(prefix, sources);
         GM_deleteValue(code);
-
-        observeNodeList(document.querySelectorAll(`.${parseCodeClass(code)}`));
+        matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
         CHANNEL.postMessage(code);
       })
-      .catch((err) => console.warn(err?.message));
+      .catch((err) => Util.print(err?.message));
   };
 
   listenClick(matchPrefix);
