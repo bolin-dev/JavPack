@@ -145,18 +145,19 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
 })();
 
 (function () {
-  const SELECTOR = ".movie-list .item";
+  const MOVIE_SELECTOR = ".movie-list .item";
+  const CODE_SELECTORS = [".video-title", "strong"];
   const TARGET_HTML = `<a href="${VOID}" class="tag is-normal ${TARGET_CLASS}">${TARGET_TXT}</a>`;
 
-  const currList = document.querySelectorAll(SELECTOR);
-  if (!currList.length) return;
+  const movieList = document.querySelectorAll(MOVIE_SELECTOR);
+  if (!movieList.length) return;
 
   const parseCodeCls = (code) => ["x", ...code.split(/\s|\.|-|_/)].filter(Boolean).join("-");
 
   const matchAfter = ({ code, regex, target }, data) => {
-    target.closest(SELECTOR).classList.add(parseCodeCls(code));
+    target.closest(MOVIE_SELECTOR).classList.add(parseCodeCls(code));
     const sources = data.filter((it) => regex.test(it.n));
-    const length = sources.length;
+    const len = sources.length;
 
     let pc = "";
     let cid = "";
@@ -164,7 +165,7 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
     let className = "is-normal";
     let textContent = "未匹配";
 
-    if (length) {
+    if (len) {
       const zhs = sources.filter((it) => Magnet.zhReg.test(it.n));
       const crack = sources.find((it) => Magnet.crackReg.test(it.n));
 
@@ -177,7 +178,7 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
       title = sources.map(({ n, s, t }) => `${n} - ${s} / ${t}`).join("\n");
       className = both ? "is-danger" : zh ? "is-warning" : crack ? "is-info" : "is-success";
       textContent = "已匹配";
-      if (length > 1) textContent += ` ${length}`;
+      if (len > 1) textContent += ` ${len}`;
     }
 
     const node = target.querySelector(`.${TARGET_CLASS}`);
@@ -191,14 +192,14 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
   const matchBefore = (node) => {
     if (node.classList.contains("is-hidden")) return;
 
-    const title = node.querySelector(".video-title");
-    if (!title) return;
+    const target = node.querySelector(CODE_SELECTORS[0]);
+    if (!target) return;
 
-    const code = title.querySelector("strong")?.textContent.trim();
+    const code = target.querySelector(CODE_SELECTORS[1])?.textContent.trim();
     if (!code) return;
 
-    if (!title.querySelector(`.${TARGET_CLASS}`)) title.insertAdjacentHTML("afterbegin", TARGET_HTML);
-    return { ...Util.codeParse(code), target: title };
+    if (!target.querySelector(`.${TARGET_CLASS}`)) target.insertAdjacentHTML("afterbegin", TARGET_HTML);
+    return { ...Util.codeParse(code), target };
   };
 
   const useMatchQueue = (before, after) => {
@@ -258,14 +259,12 @@ const extractData = (data, keys = ["pc", "cid", "n", "s", "t"], format = "s") =>
   };
 
   const matchQueue = useMatchQueue(matchBefore, matchAfter);
-  matchQueue(currList);
+  matchQueue(movieList);
 
   window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
   CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
-  const getCode = (node) => {
-    return node.closest(SELECTOR)?.querySelector(".video-title strong")?.textContent.trim();
-  };
+  const getCode = (node) => node.closest(MOVIE_SELECTOR)?.querySelector(CODE_SELECTORS.join(" "))?.textContent.trim();
 
   const publish = (code) => {
     matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
