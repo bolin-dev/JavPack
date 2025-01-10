@@ -15,7 +15,6 @@
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
 // @grant           GM_deleteValues
-// @grant           GM_deleteValue
 // @grant           GM_listValues
 // @grant           unsafeWindow
 // @grant           GM_openInTab
@@ -44,6 +43,22 @@ const listenClick = (onclose, defaultAction) => {
     },
   };
 
+  const timer = {};
+  const getHref = (node) => node.closest(`a:not(.${TARGET_CLASS})`)?.href;
+  const getTimerKey = location.pathname.startsWith("/v/") ? () => location.href : getHref;
+
+  const debounce = (target) => {
+    const key = getTimerKey(target);
+    if (!key) return;
+
+    if (timer[key]) clearTimeout(timer[key]);
+
+    timer[key] = setTimeout(() => {
+      onclose?.(target);
+      delete timer[key];
+    }, 750);
+  };
+
   const onclick = (e) => {
     const { target, type } = e;
     if (!target.classList.contains(TARGET_CLASS)) return;
@@ -58,7 +73,7 @@ const listenClick = (onclose, defaultAction) => {
     if (!val) return defaultAction?.(e);
 
     const tab = Grant.openTab(action.url.replaceAll("%s", val));
-    tab.onclose = () => setTimeout(() => onclose?.(target), 750);
+    tab.onclose = () => debounce(target);
   };
 
   document.addEventListener("click", onclick);
@@ -149,6 +164,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
 (function () {
   const MOVIE_SELECTOR = ".movie-list .item";
   const CODE_SELECTORS = [".video-title", "strong"];
+  const CODE_SELECTOR = CODE_SELECTORS.join(" ");
   const TARGET_HTML = `<a href="${VOID}" class="tag is-normal ${TARGET_CLASS}">${TARGET_TXT}</a>`;
 
   const movieList = document.querySelectorAll(MOVIE_SELECTOR);
@@ -266,44 +282,46 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
   window.addEventListener("JavDB.scroll", ({ detail }) => matchQueue(detail));
   CHANNEL.onmessage = ({ data }) => matchQueue(document.querySelectorAll(`.${parseCodeCls(data)}`));
 
-  const getCode = (node) => node.closest(MOVIE_SELECTOR)?.querySelector(CODE_SELECTORS.join(" "))?.textContent.trim();
-
   const publish = (code) => {
     matchQueue(document.querySelectorAll(`.${parseCodeCls(code)}`));
     CHANNEL.postMessage(code);
   };
 
-  const matchPrefix = async (target) => {
-    const code = getCode(target);
-    if (!code) return;
+  const matchCode = async (node) => {
+    const movie = node.closest(MOVIE_SELECTOR);
+    if (!movie) return;
 
-    const rematch = "x-rematch";
-    if (target.classList.contains(rematch)) return;
+    const code = movie.querySelector(CODE_SELECTOR)?.textContent.trim();
+    const target = movie.querySelector(`.${TARGET_CLASS}`);
+    if (!code || !target) return;
 
-    target.classList.add(rematch);
-    const { prefix } = Util.codeParse(code);
+    const { codes, regex } = Util.codeParse(code);
+    const uid = crypto.randomUUID();
+    target.dataset.uid = uid;
 
     try {
-      const { data = [] } = await Req115.filesSearchVideosAll(prefix);
-      const sources = extractData(data);
+      const { data = [] } = await Req115.filesSearchVideosAll(codes.join(" "));
+      if (target.dataset.uid !== uid) return;
 
-      GM_setValue(prefix, sources);
-      GM_deleteValue(code);
-      publish(code);
+      const sources = extractData(data.filter((it) => regex.test(it.n)));
+      GM_setValue(code, sources);
     } catch (err) {
       Util.print(err?.message);
+    } finally {
+      publish(code);
     }
-
-    target.classList.remove(rematch);
   };
 
   const refresh = ({ type, target }) => {
-    if (type === "contextmenu") return matchPrefix(target);
+    if (target.textContent === TARGET_TXT) return;
+    target.textContent = TARGET_TXT;
+
+    if (type === "contextmenu") return matchCode(target);
     if (type !== "click") return;
-    const code = getCode(target);
+    const code = target.closest(MOVIE_SELECTOR)?.querySelector(CODE_SELECTOR)?.textContent.trim();
     if (code) publish(code);
   };
 
-  unsafeWindow["reMatch"] = matchPrefix;
-  listenClick(matchPrefix, refresh);
+  unsafeWindow["reMatch"] = matchCode;
+  listenClick(matchCode, refresh);
 })();
