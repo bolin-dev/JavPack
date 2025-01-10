@@ -268,29 +268,31 @@ body:has(.x-load) #footer,
 
   .item {
     position: relative;
+    transition: border 0.2s;
 
-    &:has(.x-match)::after {
-      position: absolute;
-      inset: -0.375rem;
-      z-index: -1;
-      content: "";
-      border: calc(0.375rem + 1px) solid transparent;
+    &:has(.x-match:not(.is-normal)) {
+      border-style: solid;
+      border-width: 0.375rem;
       border-radius: calc(0.375rem - 1px);
     }
 
-    &:has(.x-match.is-success)::after {
+    &:has(.x-match.is-success) {
+      background-color: var(--x-success-bd);
       border-color: var(--x-success-bd);
     }
 
-    &:has(.x-match.is-info)::after {
+    &:has(.x-match.is-info) {
+      background-color: var(--x-info-bd);
       border-color: var(--x-info-bd);
     }
 
-    &:has(.x-match.is-warning)::after {
+    &:has(.x-match.is-warning) {
+      background-color: var(--x-warning-bd);
       border-color: var(--x-warning-bd);
     }
 
-    &:has(.x-match.is-danger)::after {
+    &:has(.x-match.is-danger) {
+      background-color: var(--x-danger-bd);
       border-color: var(--x-danger-bd);
     }
 
