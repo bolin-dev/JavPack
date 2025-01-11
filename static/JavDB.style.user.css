@@ -103,6 +103,14 @@ body:has(.x-load) #footer,
   .navbar-brand > .navbar-item svg {
     width: auto;
     height: 2rem;
+
+    path {
+      fill: rgb(var(--x-bg-rgb));
+
+      &:last-child {
+        fill: #2f80ed;
+      }
+    }
   }
 
   .navbar-link {
