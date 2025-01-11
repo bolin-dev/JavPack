@@ -32,6 +32,7 @@
     const delTitle = (node) => node.querySelector("a:has(img)")?.removeAttribute("title");
 
     const editCards = (nodeList) => nodeList.forEach((node) => fadeIn(node) || delTitle(node));
+
     editCards(cardList);
     return editCards;
   };
@@ -73,7 +74,7 @@
       target.setAttribute("disabled", "");
 
       try {
-        const { next, list } = await Req.tasks(_next, [parser]).finally(() => target.classList.remove(loadCls));
+        const { next, list } = await Req.tasks(_next, [parser]);
         if (!list?.length) throw new Error("Not found list");
         const detail = filter(list);
 
@@ -91,20 +92,22 @@
         _next = next;
         _list = list;
       } catch (err) {
-        target.removeAttribute("disabled");
         Util.print(err?.message);
+        target.removeAttribute("disabled");
+      } finally {
+        target.classList.remove(loadCls);
       }
     };
   };
 
-  const load = document.createElement("button");
-  load.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
-  load.textContent = "重新加载";
-  CONT.insertAdjacentElement("afterend", load);
-
   const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
   const obs = new IntersectionObserver(loadMore, { rootMargin: "500px" });
 
+  const load = document.createElement("button");
+  load.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
+  load.textContent = "重新加载";
+
+  CONT.insertAdjacentElement("afterend", load);
   load.addEventListener("click", ({ target }) => loadMore([{ target }], obs));
   obs.observe(load);
 })();
