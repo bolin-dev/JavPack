@@ -32,10 +32,12 @@ Util.upStore();
   const transByte = Magnet.useTransByte();
   const HD_SIZE = parseFloat(transByte("2GB"));
   const MIN_SIZE = parseFloat(transByte("250MB"));
-  const CONTAINER = document.querySelector("#magnets-content");
+
+  const UNC = document.querySelector(".title.is-4").textContent.includes("無碼");
+  const CONT = document.querySelector("#magnets-content");
 
   const getMagnets = () => {
-    return [...CONTAINER.querySelectorAll(".item.columns")]
+    return [...CONT.querySelectorAll(".item.columns")]
       .map((node) => {
         const meta = (node.querySelector(".meta")?.textContent.trim() ?? "").split(",");
         return {
@@ -75,10 +77,7 @@ Util.upStore();
     `;
   };
 
-  const filterMagnet = ({ size }) => {
-    const magnetSize = parseFloat(size);
-    return magnetSize >= MIN_SIZE || magnetSize < 1;
-  };
+  const filterMin = (item) => !item.min;
 
   const parseSize = ({ size, files, ...item }) => {
     const meta = [];
@@ -86,38 +85,39 @@ Util.upStore();
     if (files) meta.push(`${files}个文件`);
 
     size = transByte(size);
-    const hd = parseFloat(size) >= HD_SIZE;
-    return { ...item, meta: meta.join(", "), size, hd };
+    const magnetSize = parseFloat(size);
+    const hd = magnetSize >= HD_SIZE;
+    const min = hd ? false : magnetSize > 0 && magnetSize <= MIN_SIZE;
+    return { ...item, meta: meta.join(", "), size, hd, min };
+  };
+
+  const mergeMagnet = (target, source) => {
+    ["name", "size", "files", "zh", "crack", "date"].forEach((key) => {
+      if (!target[key] && source[key]) target[key] = source[key];
+    });
+    return target;
   };
 
   const reduceMagnet = (acc, cur) => {
     const index = acc.findIndex(({ url }) => url === cur.url);
-    if (index === -1) return acc.concat(cur);
-
-    const existed = acc[index];
-
-    ["name", "size", "files", "zh", "crack", "date"].forEach((key) => {
-      if (!existed[key] && cur[key]) acc[index][key] = cur[key];
-    });
-
-    return acc;
+    return index === -1 ? acc.concat(cur) : acc.toSpliced(index, 1, mergeMagnet(acc[index], cur));
   };
 
   const parseName = ({ url, name, zh, ...item }) => {
     url = url.split("&")[0].toLowerCase();
     if (!zh) zh = Magnet.zhReg.test(name);
-    const crack = Magnet.crackReg.test(name);
+    const crack = UNC ? false : Magnet.crackReg.test(name);
     return { ...item, url, name, zh, crack };
   };
 
   const setMagnets = (details) => {
-    CONTAINER.innerHTML =
+    CONT.innerHTML =
       Object.values(details)
         .flat()
         .map(parseName)
         .reduce(reduceMagnet, [])
         .map(parseSize)
-        .filter(filterMagnet)
+        .filter(filterMin)
         .toSorted(Magnet.magnetSort)
         .map(renderMagnet)
         .join("") || "暂无数据";
@@ -126,27 +126,29 @@ Util.upStore();
   };
 
   const setHeader = (code) => {
-    const target = "x-magnet";
+    const countCls = "x-magnet";
 
     const btdig = `https://btdig.com/search?order=0&q=${code}`;
     const nyaa = `https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}`;
     const iconStr = '<span class="icon is-small"><i class="icon-check-circle"></i></span>';
 
-    CONTAINER.insertAdjacentHTML(
+    CONT.insertAdjacentHTML(
       "beforebegin",
       `<div class="tags mb-1">
         <a class="tag" href="${btdig}" target="_blank">${iconStr}<span>BTDigg</span></a>
         <a class="tag" href="${nyaa}" target="_blank">${iconStr}<span>Sukebei</span></a>
         <span class="tag">${iconStr}<span>筛选过滤</span></span>
         <span class="tag">${iconStr}<span>综合排序</span></span>
-        <span class="tag is-flex-grow-1 is-justify-content-end">总数&nbsp;<span class="${target}"></span></span>
+        <span class="tag is-flex-grow-1 is-justify-content-end">总数&nbsp;<span class="${countCls}">
+          ${CONT.childElementCount}
+        </span></span>
       </div>`,
     );
 
-    const countNode = CONTAINER.previousElementSibling.querySelector(`.${target}`);
+    const countNode = CONT.previousElementSibling.querySelector(`.${countCls}`);
 
     window.addEventListener(GM_info.script.name, () => {
-      countNode.textContent = CONTAINER.childElementCount;
+      countNode.textContent = CONT.childElementCount;
     });
   };
 
