@@ -422,6 +422,15 @@ body:has(.x-load) #footer,
 .x-load {
   font-size: var(--x-size-md);
   border-radius: 99px !important;
+
+  &[disabled] {
+    background-color: transparent !important;
+    border-color: transparent !important;
+  }
+
+  &.is-loading::after {
+    border-color: transparent transparent #7a7a7a #7a7a7a;
+  }
 }
 
 nav.pagination {
