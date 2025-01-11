@@ -314,7 +314,7 @@ const useVideo = () => {
     video.focus();
   };
 
-  const onEnter = async (elem) => {
+  const getTrailer = async (elem) => {
     elem.classList.add(HOVER);
     const url = elem.closest("a").href;
     const mid = url.split("/").at(-1);
@@ -328,6 +328,7 @@ const useVideo = () => {
       }
 
       if (details.sources.length) return setTrailer(elem, details);
+      if (!elem.classList.contains(HOVER)) return;
 
       const sources = await ReqTrailer.getTrailer(details);
       details.sources = sources;
@@ -339,7 +340,7 @@ const useVideo = () => {
     }
   };
 
-  const onLeave = (elem) => {
+  const delTrailer = (elem) => {
     elem.classList.remove(HOVER);
     const video = elem.querySelector("video");
     if (!video) return;
@@ -348,5 +349,5 @@ const useVideo = () => {
     video.classList.replace(SHOW, HIDE);
   };
 
-  handleHover(selector, onEnter, onLeave);
+  handleHover(selector, getTrailer, delTrailer);
 })();
