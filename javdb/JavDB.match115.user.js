@@ -330,7 +330,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     if (type === "contextmenu") return matchCode(target);
     if (type !== "click") return;
     const code = target.closest(MOVIE_SELECTOR)?.querySelector(CODE_SELECTOR)?.textContent.trim();
-    if (code) publish(code);
+    if (code) setTimeout(() => publish(code), 750);
   };
 
   unsafeWindow[API_NAME] = matchCode;
