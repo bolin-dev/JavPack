@@ -27,6 +27,10 @@
       --x-bg-rgb: 10 10 10;
     }
 
+    .navbar-dropdown:hover {
+      background-color: #0a0a0a !important;
+    }
+
     #tags dt:last-child {
       border-bottom: none !important;
     }
