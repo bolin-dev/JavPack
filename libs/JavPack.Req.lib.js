@@ -1,4 +1,7 @@
 class Req {
+  static defaultGetResponseType = "document";
+  static defaultPostResponseType = "json";
+
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
   static request(details) {
@@ -18,7 +21,7 @@ class Req {
     }
 
     if (method === "POST") {
-      details.responseType ??= "json";
+      details.responseType ??= this.defaultPostResponseType;
 
       if (this.isPlainObj(data)) {
         const formData = new FormData();
@@ -36,7 +39,7 @@ class Req {
 
         details.data = formData;
       }
-    } else if (method === "GET") details.responseType ??= "document";
+    } else if (method === "GET") details.responseType ??= this.defaultGetResponseType;
 
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
