@@ -348,6 +348,12 @@ body:has(.x-load) #footer,
         z-index: 2;
       }
 
+      .x-offline {
+        height: 2em;
+        padding: 0 0.75em;
+        border: none;
+      }
+
       &:hover img {
         z-index: 0;
         transform: none;
@@ -415,6 +421,10 @@ body:has(.x-load) #footer,
         border-top-right-radius: 1px;
         border-bottom-right-radius: 1px;
       }
+    }
+
+    &:has(.x-match, .x-offline) .tags.has-addons .tag {
+      opacity: 0.75;
     }
   }
 
