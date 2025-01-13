@@ -61,6 +61,11 @@ const defaultConfig = [
     inMagnets: true,
   },
   {
+    name: "清单",
+    dir: "清单/${list}",
+    color: "is-danger is-light",
+  },
+  {
     type: "genres",
     name: "${genre}",
     dir: "类别/${genre}",
@@ -332,6 +337,11 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       return { publisher: getLastName(sectionName) };
     };
 
+    const getOnUsersList = () => {
+      const list = document.querySelector(".title.is-4 .is-active a")?.textContent.trim() ?? "";
+      return { list };
+    };
+
     const { pathname: PATHNAME } = location;
     if (PATHNAME.startsWith("/tags")) return getOnTags();
     if (PATHNAME.startsWith("/actors")) return getOnActors();
@@ -341,6 +351,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     if (PATHNAME.startsWith("/video_codes")) return getOnVideoCodes();
     if (PATHNAME.startsWith("/lists")) return getOnLists();
     if (PATHNAME.startsWith("/publishers")) return getOnPublishers();
+    if (PATHNAME.startsWith("/users/list_detail")) return getOnUsersList();
     return {};
   };
 
