@@ -83,7 +83,9 @@ const defaultConfig = [
 
 const TARGET_CLASS = "x-offline";
 const LOAD_CLASS = "is-loading";
+
 const MATCH_API = "reMatch";
+const MATCH_DELAY = 750;
 
 const { HOST, STATUS_KEY, STATUS_VAL } = Verify115;
 const { PENDING, VERIFIED, FAILED } = STATUS_VAL;
@@ -258,7 +260,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
     Grant.notify(res);
     Util.setFavicon(res);
-    setTimeout(() => unsafeWindow[MATCH_API]?.(), 750);
+    setTimeout(() => unsafeWindow[MATCH_API]?.(), MATCH_DELAY);
   };
 
   const onclick = (e) => {
@@ -377,7 +379,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   const onfinally = (target, res) => {
     target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.removeAttribute("disabled"));
     target.classList.remove(LOAD_CLASS);
-    if (res) setTimeout(() => unsafeWindow[MATCH_API]?.(target), 750);
+    if (res) setTimeout(() => unsafeWindow[MATCH_API]?.(target), MATCH_DELAY);
   };
 
   const onclick = async (e) => {
