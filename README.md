@@ -14,7 +14,7 @@
 ### JavDB
 
 > [!NOTE]
-> 样式依赖: [JavDB.style](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)
+> 样式依赖 [JavDB.style](https://github.com/bolin-dev/JavPack/raw/main/javdb/JavDB.style.user.js)
 
 | 名称                            | 描述         | 安装                                                                                 |
 | :------------------------------ | :----------- | :----------------------------------------------------------------------------------- |
