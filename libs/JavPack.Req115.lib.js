@@ -1,4 +1,5 @@
 class Drive115 extends Req {
+  static defaultGetResponseType = "json";
   static limit = 1150;
 
   static filesSearch(search_value, params = {}) {
@@ -22,7 +23,6 @@ class Drive115 extends Req {
         suffix: "",
         ...params,
       },
-      responseType: "json",
     });
   }
 
@@ -47,7 +47,6 @@ class Drive115 extends Req {
     return this.request({
       url: "https://115.com/web/lixian/",
       params: { ct: "lixian", ac: "task_lists" },
-      responseType: "json",
     });
   }
 
@@ -79,7 +78,6 @@ class Drive115 extends Req {
         is_q: "",
         ...params,
       },
-      responseType: "json",
     });
   }
 
@@ -111,7 +109,6 @@ class Drive115 extends Req {
         is_q: "",
         ...params,
       },
-      responseType: "json",
     });
   }
 
@@ -153,7 +150,6 @@ class Drive115 extends Req {
     return this.request({
       url: "https://webapi.115.com/label/list",
       params: { keyword: "", limit: this.limit, ...params },
-      responseType: "json",
     });
   }
 
@@ -242,7 +238,6 @@ class Drive115 extends Req {
     return this.request({
       url: "https://v.anxia.com/webapi/files/video",
       params: { pickcode, local: 1 },
-      responseType: "json",
     });
   }
 }
