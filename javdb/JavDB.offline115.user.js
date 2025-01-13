@@ -28,6 +28,7 @@
 // @grant           GM_getResourceURL
 // @grant           GM_xmlhttpRequest
 // @grant           GM_notification
+// @grant           GM_addElement
 // @grant           unsafeWindow
 // @grant           GM_openInTab
 // @grant           window.close
@@ -80,6 +81,8 @@ const defaultConfig = [
     color: "is-danger",
   },
 ];
+
+const CONFIG = GM_getValue("config", defaultConfig);
 
 const TARGET_CLASS = "x-offline";
 const LOAD_CLASS = "is-loading";
@@ -215,13 +218,47 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   });
 };
 
-(() => location.host === HOST && Verify115.verify())();
+(function () {
+  if (location.host === HOST) return Verify115.verify();
+
+  const onChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      if (file.type !== "application/json") throw new Error("不支持文件类型");
+      if (file.size > 3145728) throw new Error("文件大小限制 3 MB");
+
+      const result = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("文件读取失败"));
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsText(file);
+      });
+
+      const config = JSON.parse(result);
+      if (!Array.isArray(config)) throw new Error("书写格式错误");
+      if (!config.length) throw new Error("配置为空");
+
+      GM_setValue("config", config);
+      Grant.notify({ icon: "success", msg: "导入成功，页面刷新后生效" });
+    } catch (err) {
+      Grant.notify({ icon: "warn", msg: err?.message });
+    }
+  };
+
+  const attributes = { type: "file", accept: ".json", class: "is-hidden" };
+  const inputFile = GM_addElement(document.body, "input", attributes);
+
+  inputFile.addEventListener("change", onChange);
+  document.addEventListener("keydown", (e) => e.altKey && e.code === "KeyU" && inputFile.click());
+})();
 
 (function () {
   const details = getDetails();
   if (!details) return;
 
-  const actions = Offline.getActions(defaultConfig, details);
+  const actions = Offline.getActions(CONFIG, details);
   if (!actions.length) return;
 
   const UNC = isUncensored();
@@ -358,7 +395,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   };
 
   const params = getParams();
-  const actions = Offline.getActions(defaultConfig, params);
+  const actions = Offline.getActions(CONFIG, params);
   if (!actions.length) return;
 
   const insertActions = (actions) => {
