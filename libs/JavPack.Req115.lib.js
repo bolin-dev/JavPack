@@ -2,6 +2,10 @@ class Drive115 extends Req {
   static defaultGetResponseType = "json";
   static limit = 1150;
 
+  static post(details) {
+    return this.request({ method: "POST", ...details });
+  }
+
   static filesSearch(search_value, params = {}) {
     return this.request({
       url: "https://webapi.115.com/files/search",
@@ -27,16 +31,14 @@ class Drive115 extends Req {
   }
 
   static filesAdd(cname, pid) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/files/add",
       data: { cname, pid },
     });
   }
 
   static lixianAddTaskUrl(url, wp_path_id) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://115.com/web/lixian/",
       params: { ct: "lixian", ac: "add_task_url" },
       data: { url, wp_path_id },
@@ -117,8 +119,7 @@ class Drive115 extends Req {
    * @param {string[]} hash Array of info_hashes
    */
   static lixianTaskDel(hash) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://115.com/web/lixian/",
       params: { ct: "lixian", ac: "task_del" },
       data: { hash, flag: 1 },
@@ -126,8 +127,7 @@ class Drive115 extends Req {
   }
 
   static rbClean(password) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/rb/clean",
       data: { password },
     });
@@ -139,8 +139,7 @@ class Drive115 extends Req {
    * @param {string} pid Parent folder ID
    */
   static rbDelete(fid, pid = "") {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/rb/delete",
       data: { fid, pid, ignore_warn: 1 },
     });
@@ -160,8 +159,7 @@ class Drive115 extends Req {
    * @returns
    */
   static filesBatchLabel(file_ids, file_label, action = "add") {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/files/batch_label",
       data: { file_ids, file_label, action },
     });
@@ -172,8 +170,7 @@ class Drive115 extends Req {
    * @param {object} files_new_name { [fid]: rename }
    */
   static filesBatchRename(files_new_name) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/files/batch_rename",
       data: { files_new_name },
     });
@@ -185,16 +182,14 @@ class Drive115 extends Req {
    * @param {string} pid Destination folder ID
    */
   static filesMove(fid, pid) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/files/move",
       data: { fid, pid, move_proid: "" },
     });
   }
 
   static sampleInitUpload({ filename, filesize, cid }) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://uplb.115.com/3.0/sampleinitupload.php",
       data: { filename, filesize, target: `U_1_${cid}` },
     });
@@ -210,8 +205,7 @@ class Drive115 extends Req {
     signature,
     file,
   }) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url,
       data: {
         name,
@@ -227,8 +221,7 @@ class Drive115 extends Req {
   }
 
   static filesEdit(fid, fid_cover) {
-    return this.request({
-      method: "POST",
+    return this.post({
       url: "https://webapi.115.com/files/edit",
       data: { fid, fid_cover },
     });
