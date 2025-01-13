@@ -265,7 +265,7 @@ const useVideo = () => {
       let node = relatedTarget;
       while (node) {
         if (node === currElem) return;
-        node = node.parentElement;
+        node = node.parentNode;
       }
 
       destroy();
