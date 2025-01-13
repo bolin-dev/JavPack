@@ -13,6 +13,7 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
+// @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Verify115.lib.js
 // @resource        pend https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
 // @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
@@ -36,7 +37,7 @@
 // @require         https://github.com/Tampermonkey/utils/raw/d8a4543a5f828dfa8eefb0a3360859b6fe9c3c34/requires/gh_2215_make_GM_xhr_more_parallel_again.js
 // ==/UserScript==
 
-const config = [
+const defaultConfig = [
   {
     name: "云下载",
     color: "is-primary",
@@ -51,11 +52,13 @@ const config = [
   {
     name: "片商",
     dir: "片商/${maker}",
+    inMagnets: true,
   },
   {
     name: "系列",
     dir: "系列/${series}",
     color: "is-success",
+    inMagnets: true,
   },
   {
     type: "genres",
@@ -68,19 +71,17 @@ const config = [
     type: "actors",
     name: "${actor}",
     dir: "演员/${actor}",
+    exclude: ["♂"],
     color: "is-danger",
   },
 ];
 
 const TARGET_CLASS = "x-offline";
 const LOAD_CLASS = "is-loading";
+const MATCH_API = "reMatch";
 
-const VERIFY_HOST = "captchaapi.115.com";
-const VERIFY_URL = `https://${VERIFY_HOST}/?ac=security_code&type=web&cb=Close911`;
-const VERIFY_KEY = "VERIFY_STATUS";
-const VERIFY_PENDING = "PENDING";
-const VERIFY_VERIFIED = "VERIFIED";
-const VERIFY_FAILED = "FAILED";
+const { HOST, STATUS_KEY, STATUS_VAL } = Verify115;
+const { PENDING, VERIFIED, FAILED } = STATUS_VAL;
 
 const transToByte = Magnet.useTransByte();
 
@@ -88,9 +89,7 @@ const getDetails = (dom = document) => {
   const infoNode = dom.querySelector(".movie-panel-info");
   if (!infoNode) return;
 
-  const info = {};
-  info.cover = dom.querySelector(".video-cover")?.src;
-
+  const info = { cover: dom.querySelector(".video-cover")?.src ?? "" };
   const codeNode = infoNode.querySelector(".first-block .value");
   const prefix = codeNode.querySelector("a")?.textContent.trim();
   const code = codeNode.textContent.trim();
@@ -102,7 +101,7 @@ const getDetails = (dom = document) => {
   const current = titleNode.querySelector(".current-title");
   info.title = `${label}${(origin ?? current).textContent}`.replace(code, "").trim();
 
-  infoNode.querySelectorAll(".movie-panel-info > .panel-block").forEach((item) => {
+  infoNode.querySelectorAll(":scope > .panel-block").forEach((item) => {
     const label = item.querySelector("strong")?.textContent.trim();
     const value = item.querySelector(".value")?.textContent.trim();
     if (!label || !value || value.includes("N/A")) return;
@@ -124,12 +123,15 @@ const getDetails = (dom = document) => {
         info.series = value;
         break;
       case "類別:":
-        info.genres = value.split(",").map((item) => item.trim());
+        info.genres = value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
         break;
       case "演員:":
         info.actors = value
           .split("\n")
-          .map((item) => item.replace(/♀|♂/, "").trim())
+          .map((item) => item.trim())
           .filter(Boolean);
         break;
     }
@@ -143,6 +145,10 @@ const getDetails = (dom = document) => {
   }
 
   return { ...Util.codeParse(code), ...info };
+};
+
+const isUncensored = (dom = document) => {
+  return dom.querySelector(".title.is-4").textContent.includes("無碼");
 };
 
 const renderAction = ({ color, index, idx, desc, name }) => {
@@ -167,9 +173,9 @@ const parseMagnet = (node) => {
   const meta = node.querySelector(".meta")?.textContent.trim() ?? "";
   return {
     url: node.querySelector(".magnet-name a")?.href?.split("&")[0].toLowerCase(),
+    crack: !!node.querySelector(".tag.is-info") || Magnet.crackReg.test(name),
     zh: !!node.querySelector(".tag.is-warning") || Magnet.zhReg.test(name),
     size: transToByte(meta.split(",")[0]),
-    crack: !!node.querySelector(".tag.is-info") || Magnet.crackReg.test(name),
     meta,
     name,
   };
@@ -179,45 +185,39 @@ const getMagnets = (dom = document) => {
   return [...dom.querySelectorAll("#magnets-content > .item")].map(parseMagnet).toSorted(Magnet.magnetSort);
 };
 
-const closeVerify = () => {
-  if (GM_getValue(VERIFY_KEY) !== VERIFY_VERIFIED) GM_setValue(VERIFY_KEY, VERIFY_FAILED);
-};
-
-const openVerify = () => {
-  GM_setValue(VERIFY_KEY, VERIFY_PENDING);
-  const verifyTab = Grant.openTab(`${VERIFY_URL}_${new Date().getTime()}`);
-  verifyTab.onclose = closeVerify;
+const checkCrack = (magnets, uncensored) => {
+  return uncensored ? magnets.map((item) => ({ ...item, crack: false })) : magnets;
 };
 
 const offline = async ({ options, magnets, onstart, onprogress, onfinally }, currIdx = 0) => {
   onstart?.();
   const res = await Req115.handleOffline(options, magnets.slice(currIdx));
-
   if (res.status !== "warn") return onfinally?.(res);
   onprogress?.(res);
 
-  const listener = GM_addValueChangeListener(VERIFY_KEY, (_name, _old_value, new_value) => {
-    if (![VERIFY_FAILED, VERIFY_VERIFIED].includes(new_value)) return;
+  if (GM_getValue(STATUS_KEY) !== PENDING) {
+    Verify115.start();
+    Grant.notify(res);
+  }
+
+  const listener = GM_addValueChangeListener(STATUS_KEY, (_name, _old_value, new_value) => {
+    if (![VERIFIED, FAILED].includes(new_value)) return;
     GM_removeValueChangeListener(listener);
-    if (new_value === VERIFY_FAILED) return onfinally?.();
+    if (new_value === FAILED) return onfinally?.();
     offline({ options, magnets, onstart, onprogress, onfinally }, res.currIdx);
   });
-
-  if (GM_getValue(VERIFY_KEY) === VERIFY_PENDING) return;
-  Grant.notify(res);
-  openVerify();
 };
 
-(function () {
-  if (location.host === VERIFY_HOST) Offline.verifyAccount(VERIFY_KEY, VERIFY_VERIFIED);
-})();
+(() => location.host === HOST && Verify115.verify())();
 
 (function () {
   const details = getDetails();
   if (!details) return;
 
-  const actions = Offline.getActions(config, details);
+  const actions = Offline.getActions(defaultConfig, details);
   if (!actions.length) return;
+
+  const UNC = isUncensored();
 
   const insertActions = (actions) => {
     document.querySelector(".movie-panel-info").insertAdjacentHTML(
@@ -227,21 +227,17 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       </div></div></div></div>`,
     );
 
-    const inMagnets = actions.filter(({ inMagnets }) => Boolean(inMagnets));
+    const inMagnets = actions.filter((item) => Boolean(item.inMagnets));
     if (!inMagnets.length) return;
 
-    const inMagnetsTxt = inMagnets.map(renderAction).join("");
+    const inMagnetsStr = inMagnets.map(renderAction).join("");
     const magnetsNode = document.querySelector("#magnets-content");
 
-    const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsTxt);
+    const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsStr);
     const insertMagnets = () => magnetsNode.querySelectorAll(".item.columns").forEach(insert);
+
     window.addEventListener("JavDB.magnet", insertMagnets);
     insertMagnets();
-  };
-
-  const findMagnets = (target, options) => {
-    if (!target.closest("#magnets-content")) return Offline.getMagnets(getMagnets(), options);
-    return [parseMagnet(target.closest(".item.columns"))];
   };
 
   const onstart = (target) => {
@@ -257,12 +253,12 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
     Grant.notify(res);
     Util.setFavicon(res);
-    Req115.sleep(0.5).then(() => unsafeWindow["reMatch"]?.());
+    setTimeout(() => unsafeWindow[MATCH_API]?.(), 750);
   };
 
   const onclick = (e) => {
-    const target = e.target.closest(`.${TARGET_CLASS}`);
-    if (!target) return;
+    const { target } = e;
+    if (!target.classList.contains(TARGET_CLASS)) return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -270,13 +266,15 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     const action = findAction(target.dataset, actions);
     if (!action) return;
 
+    const inMagnets = target.closest("#magnets-content > .item");
     const { magnetOptions, ...options } = Offline.getOptions(action, details);
-    const magnets = findMagnets(target, magnetOptions);
+
+    const magnets = inMagnets ? [parseMagnet(inMagnets)] : Offline.getMagnets(getMagnets(), magnetOptions);
     if (!magnets.length) return;
 
     offline({
       options,
-      magnets,
+      magnets: checkCrack(magnets, UNC),
       onstart: () => onstart(target),
       onprogress: Util.setFavicon,
       onfinally: (res) => onfinally(target, res),
@@ -293,38 +291,67 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   if (!movieList.length) return;
 
   const getParams = () => {
-    const { pathname: PATHNAME } = location;
-    if (PATHNAME.startsWith("/tags")) {
-      const categoryNodeList = document.querySelectorAll("#tags .tag-category");
-      const genreNodeList = [...categoryNodeList].filter((item) => Number(item.dataset.cid) !== 10);
-      const genres = [...genreNodeList].flatMap((item) => {
-        return [...item.querySelectorAll(".tag_labels .tag.is-info")].map((it) => it.textContent.trim());
-      });
-      return { genres };
-    }
+    const sectionName = document.querySelector(".section-name")?.textContent.trim() ?? "";
+    const actorSectionName = document.querySelector(".actor-section-name")?.textContent.trim() ?? "";
 
     const getLastName = (txt) => txt.split(", ").at(-1).trim();
-    const actorSectionName = document.querySelector(".actor-section-name")?.textContent ?? "";
-    const sectionName = document.querySelector(".section-name")?.textContent ?? "";
 
-    if (PATHNAME.startsWith("/actors")) return { actors: [getLastName(actorSectionName)] };
-    if (PATHNAME.startsWith("/series")) return { series: sectionName };
-    if (PATHNAME.startsWith("/makers")) return { maker: getLastName(sectionName) };
-    if (PATHNAME.startsWith("/directors")) return { director: getLastName(sectionName) };
-    if (PATHNAME.startsWith("/video_codes")) return { prefix: sectionName };
-    if (PATHNAME.startsWith("/lists")) return { list: actorSectionName };
-    if (PATHNAME.startsWith("/publishers")) return { publisher: getLastName(sectionName) };
+    const getOnTags = () => {
+      const nodeList = document.querySelectorAll("#tags .tag_labels .tag.is-info");
+      const genres = [...nodeList].map((item) => item.textContent.trim());
+      return { genres };
+    };
+
+    const getOnActors = () => {
+      const nodeList = document.querySelectorAll(".actor-tags.tags .tag.is-medium.is-link:not(.is-outlined)");
+      const genres = [...nodeList].map((item) => item.textContent.trim());
+      return { actors: [getLastName(actorSectionName)], genres };
+    };
+
+    const getOnSeries = () => {
+      return { series: sectionName };
+    };
+
+    const getOnMakers = () => {
+      return { maker: getLastName(sectionName) };
+    };
+
+    const getOnDirectors = () => {
+      return { director: getLastName(sectionName) };
+    };
+
+    const getOnVideoCodes = () => {
+      return { prefix: sectionName };
+    };
+
+    const getOnLists = () => {
+      return { list: actorSectionName };
+    };
+
+    const getOnPublishers = () => {
+      return { publisher: getLastName(sectionName) };
+    };
+
+    const { pathname: PATHNAME } = location;
+    if (PATHNAME.startsWith("/tags")) return getOnTags();
+    if (PATHNAME.startsWith("/actors")) return getOnActors();
+    if (PATHNAME.startsWith("/series")) return getOnSeries();
+    if (PATHNAME.startsWith("/makers")) return getOnMakers();
+    if (PATHNAME.startsWith("/directors")) return getOnDirectors();
+    if (PATHNAME.startsWith("/video_codes")) return getOnVideoCodes();
+    if (PATHNAME.startsWith("/lists")) return getOnLists();
+    if (PATHNAME.startsWith("/publishers")) return getOnPublishers();
     return {};
   };
 
   const params = getParams();
-  const actions = Offline.getActions(config, params);
+  const actions = Offline.getActions(defaultConfig, params);
   if (!actions.length) return;
 
   const insertActions = (actions) => {
-    const actionsTxt = `<div class="px-2 pt-2 buttons">${actions.map(renderAction).join("")}</div>`;
+    const actionsStr = `<div class="px-2 pt-2 buttons">${actions.map(renderAction).join("")}</div>`;
 
-    const insert = (node) => node.querySelector(".cover").insertAdjacentHTML("beforeend", actionsTxt);
+    const insert = (node) => node.querySelector(".cover")?.insertAdjacentHTML("beforeend", actionsStr);
     const insertList = (nodeList) => nodeList.forEach(insert);
 
     insertList(movieList);
@@ -333,27 +360,18 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
   const onstart = (target) => {
     target.classList.add(LOAD_CLASS);
-
-    target
-      .closest(SELECTOR)
-      .querySelectorAll(`.${TARGET_CLASS}`)
-      .forEach((item) => item.setAttribute("disabled", ""));
+    target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.setAttribute("disabled", ""));
   };
 
   const onfinally = (target, res) => {
-    target
-      .closest(SELECTOR)
-      .querySelectorAll(`.${TARGET_CLASS}`)
-      .forEach((item) => item.removeAttribute("disabled"));
-
+    target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.removeAttribute("disabled"));
     target.classList.remove(LOAD_CLASS);
-
-    if (res) Req115.sleep(0.5).then(() => unsafeWindow["reMatch"]?.(target));
+    if (res) setTimeout(() => unsafeWindow[MATCH_API]?.(target), 750);
   };
 
   const onclick = async (e) => {
-    const target = e.target.closest(`.${TARGET_CLASS}`);
-    if (!target) return;
+    const { target } = e;
+    if (!target.classList.contains(TARGET_CLASS)) return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -365,20 +383,22 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     try {
       const dom = await Req.request(target.closest("a").href);
       const details = getDetails(dom);
-      if (!details) return onfinally(target);
+      if (!details) throw new Error("Not found details");
 
+      const UNC = isUncensored(dom);
       const { magnetOptions, ...options } = Offline.getOptions(action, details);
+
       const magnets = Offline.getMagnets(getMagnets(dom), magnetOptions);
-      if (!magnets.length) return onfinally(target);
+      if (!magnets.length) throw new Error("Not found magnets");
 
       offline({
         options,
-        magnets,
+        magnets: checkCrack(magnets, UNC),
         onfinally: (res) => onfinally(target, res),
       });
     } catch (err) {
-      console.warn(err?.message);
-      return onfinally(target);
+      onfinally(target);
+      Util.print(err?.message);
     }
   };
 

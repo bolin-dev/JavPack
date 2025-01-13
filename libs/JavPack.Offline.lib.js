@@ -1,4 +1,10 @@
 class Offline {
+  static defaultDir = "云下载";
+
+  static defaultType = "plain";
+
+  static defaultColor = "is-info";
+
   static defaultRename = "${zh}${crack} ${code} ${title}";
 
   static defaultOptions = {
@@ -42,14 +48,16 @@ class Offline {
 
   static getActions(config, params) {
     return config
-      .flatMap(({ type = "plain", match = [], exclude = [], ...item }, index) => {
-        let { name, dir = "云下载", rename } = item;
+      .flatMap(({ type = this.defaultType, match = [], exclude = [], ...item }, index) => {
+        let { name, dir = this.defaultDir, rename = this.defaultRename } = item;
         if (!name) return null;
 
-        rename = rename?.toString().trim() || this.defaultRename;
-        rename = rename.replaceAll("${zh}", "$zh");
-        rename = rename.replaceAll("${crack}", "$crack");
-        if (!rename.includes("${code}")) rename = "${code} " + rename;
+        rename = rename?.toString().trim();
+        if (rename) {
+          rename = rename.replaceAll("${zh}", "$zh");
+          rename = rename.replaceAll("${crack}", "$crack");
+          if (!rename.includes("${code}")) rename = "${code} " + rename;
+        }
 
         if (type === "plain") return { ...item, dir: this.parseDir(dir, params), rename, idx: 0, index };
 
@@ -64,19 +72,20 @@ class Offline {
         const typeItemTxt = "${" + typeItemKey + "}";
 
         return classes.map((cls, idx) => {
+          const val = cls.replace(/♀|♂/, "").trim();
           return {
             ...item,
-            dir: this.parseDir(dir, { ...params, [typeItemKey]: cls }),
-            rename: rename.replaceAll(typeItemTxt, cls),
-            name: name.replaceAll(typeItemTxt, cls),
+            dir: this.parseDir(dir, { ...params, [typeItemKey]: val }),
+            rename: rename.replaceAll(typeItemTxt, val),
+            name: name.replaceAll(typeItemTxt, val),
             index,
             idx,
           };
         });
       })
       .filter((item) => Boolean(item) && item.dir.every(Boolean))
-      .map(({ color = "is-info", inMagnets = false, desc, ...options }) => {
-        return { ...options, color, inMagnets, desc: desc ? desc.toString() : options.dir.join("/") };
+      .map(({ color = this.defaultColor, desc, ...options }) => {
+        return { ...options, color, desc: desc ? desc.toString() : options.dir.join("/") };
       });
   }
 
@@ -109,15 +118,5 @@ class Offline {
     if (sort) magnets = magnets.toSorted(sort);
     if (max) magnets = magnets.slice(0, max);
     return magnets;
-  }
-
-  static verifyAccount(key, val) {
-    document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
-      setTimeout(() => {
-        if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;
-        GM_setValue(key, val);
-        window.close();
-      }, 300);
-    });
   }
 }

@@ -16,10 +16,11 @@
     "ReqMagnet": true,
     "ReqSprite": true,
     "ReqTrailer": true,
-    "Util": true
+    "Util": true,
+    "Verify115": true
   },
   "rules": {
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|Magnet|Offline|Req|Util" }],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^Grant|Magnet|Offline|Req|Util|Verify" }],
     "no-param-reassign": "off",
     "no-template-curly-in-string": "off"
   },
