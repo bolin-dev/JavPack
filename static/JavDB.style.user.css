@@ -5,20 +5,20 @@
   --x-size-md: 0.875rem;
   --x-trans: all 0.3s cubic-bezier(0, 0, 0.5, 1);
   --x-shadow: 2px 4px 12px #00000014;
-  --x-success: #198754;
-  --x-info: #0d6efd;
-  --x-warning: #ffc107;
-  --x-danger: #dc3545;
-  --x-success-bd: #198754;
-  --x-info-bd: #0d6efd;
-  --x-warning-bd: #ffc107;
-  --x-danger-bd: #dc3545;
+  --x-success: rgb(25 135 84);
+  --x-info: rgb(13 110 253);
+  --x-warning: rgb(255 193 7);
+  --x-danger: rgb(220 53 69);
+  --x-success-bd: rgb(163 207 187);
+  --x-info-bd: rgb(158 197 254);
+  --x-warning-bd: rgb(255 230 156);
+  --x-danger-bd: rgb(241 174 181);
 
   &[data-theme="dark"] {
-    --x-success-bd: #0f5132;
-    --x-info-bd: #084298;
-    --x-warning-bd: #997404;
-    --x-danger-bd: #842029;
+    --x-success-bd: rgb(15 81 50);
+    --x-info-bd: rgb(8 66 152);
+    --x-warning-bd: rgb(153 116 4);
+    --x-danger-bd: rgb(132 32 41);
 
     background-color: transparent;
 
@@ -798,6 +798,10 @@ br + .title {
     padding-bottom: 0;
     border-bottom: none !important;
   }
+
+  .review-buttons .button {
+    border-radius: 1px !important;
+  }
 }
 
 .fancybox-slide {
@@ -867,6 +871,7 @@ br + .title {
 
       .button {
         margin-bottom: 0;
+        border-radius: 1px;
       }
 
       &:has(.x-offline) a.button {
