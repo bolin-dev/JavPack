@@ -31,7 +31,7 @@ const TARGET_CLASS = "x-match";
 
 const VOID = "javascript:void(0);";
 const CHANNEL = new BroadcastChannel(GM_info.script.name);
-const API_NAME = "reMatch";
+const MATCH_API = "reMatch";
 
 const listenClick = (onclose, defaultAction) => {
   const actions = {
@@ -159,7 +159,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
 
   matcher();
   listenClick(matcher);
-  unsafeWindow[API_NAME] = matcher;
+  unsafeWindow[MATCH_API] = matcher;
 
   const refresh = ({ target }) => {
     if (target.textContent === TARGET_TXT) return;
@@ -203,7 +203,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
 
       pc = active.pc;
       cid = active.cid;
-      title = sources.map(formatTip).join("\n");
+      title = sources.map(formatTip).join("\n\n");
       className = both ? "is-danger" : zh ? "is-warning" : crack ? "is-info" : "is-success";
       textContent = "已匹配";
       if (len > 1) textContent += ` ${len}`;
@@ -333,6 +333,6 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     if (code) setTimeout(() => publish(code), 750);
   };
 
-  unsafeWindow[API_NAME] = matchCode;
+  unsafeWindow[MATCH_API] = matchCode;
   listenClick(matchCode, refresh);
 })();
