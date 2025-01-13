@@ -1,5 +1,3 @@
-![JavPack](./assets/icon.png)
-
 # JavPack
 
 > 一点微小的工作

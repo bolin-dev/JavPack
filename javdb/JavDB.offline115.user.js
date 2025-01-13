@@ -14,7 +14,7 @@
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Verify115.lib.js
-// @resource        pend https://github.com/bolin-dev/JavPack/raw/main/assets/icon.png
+// @resource        pend https://github.com/bolin-dev/JavPack/raw/main/assets/pend.png
 // @resource        warn https://github.com/bolin-dev/JavPack/raw/main/assets/warn.png
 // @resource        error https://github.com/bolin-dev/JavPack/raw/main/assets/error.png
 // @resource        success https://github.com/bolin-dev/JavPack/raw/main/assets/success.png
