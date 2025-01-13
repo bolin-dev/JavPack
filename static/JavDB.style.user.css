@@ -320,21 +320,6 @@ body:has(.x-load) #footer,
         transition: var(--x-trans);
       }
 
-      &:hover img {
-        z-index: 0;
-        transform: none;
-      }
-
-      &.x-hovered img {
-        filter: blur(2px);
-      }
-
-      .buttons:has(.x-offline) {
-        position: absolute;
-        top: 0;
-        z-index: 2;
-      }
-
       video {
         position: absolute;
         inset: 0;
@@ -355,6 +340,31 @@ body:has(.x-load) #footer,
         &::-webkit-media-controls-timeline {
           display: none;
         }
+      }
+
+      .buttons:has(.x-offline) {
+        position: absolute;
+        top: 0;
+        z-index: 2;
+      }
+
+      .x-offline {
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      &:hover img {
+        z-index: 0;
+        transform: none;
+      }
+
+      &.x-hovered img {
+        filter: blur(2px);
+      }
+
+      &:hover .x-offline,
+      .x-offline.is-loading {
+        opacity: 1;
       }
     }
 
