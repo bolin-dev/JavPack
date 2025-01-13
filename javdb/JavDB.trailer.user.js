@@ -280,8 +280,8 @@ const useVideo = () => {
     };
 
     const onScroll = () => {
-      isScrolling = true;
       clearTimeout(scrollTimer);
+      isScrolling = true;
 
       scrollTimer = setTimeout(() => {
         isScrolling = false;
