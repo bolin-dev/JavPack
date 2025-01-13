@@ -348,11 +348,6 @@ body:has(.x-load) #footer,
         z-index: 2;
       }
 
-      .x-offline {
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
-
       &:hover img {
         z-index: 0;
         transform: none;
@@ -360,11 +355,6 @@ body:has(.x-load) #footer,
 
       &.x-hovered img {
         filter: blur(2px);
-      }
-
-      &:hover .x-offline,
-      .x-offline.is-loading {
-        opacity: 1;
       }
     }
 
@@ -431,6 +421,10 @@ body:has(.x-load) #footer,
   .column:only-child {
     padding: 0;
   }
+}
+
+.x-offline {
+  border-radius: 1px !important;
 }
 
 .x-load {
