@@ -1,33 +1,43 @@
 class Drive115 extends Req {
   static defaultGetResponseType = "json";
-  static limit = 1150;
 
-  static post(details) {
-    return this.request({ method: "POST", ...details });
+  static files(cid, params = {}) {
+    return this.request({
+      url: "https://webapi.115.com/files",
+      params: { cid, ...params },
+    });
   }
 
   static filesSearch(search_value, params = {}) {
     return this.request({
       url: "https://webapi.115.com/files/search",
-      params: {
-        offset: 0,
-        limit: this.limit,
-        search_value,
-        date: "",
-        aid: 1,
-        cid: 0,
-        pick_code: "",
-        type: 0,
-        count_folders: 1,
-        source: "",
-        format: "json",
-        o: "user_ptime",
-        asc: 0,
-        star: "",
-        suffix: "",
-        ...params,
-      },
+      params: { search_value, ...params },
     });
+  }
+
+  static lixianTaskLists(page = 1) {
+    return this.request({
+      url: "https://115.com/web/lixian/",
+      params: { ct: "lixian", ac: "task_lists", page },
+    });
+  }
+
+  static labelList() {
+    return this.request({
+      url: "https://webapi.115.com/label/list",
+      params: { keyword: "", limit: 11150 },
+    });
+  }
+
+  static filesVideo(pickcode) {
+    return this.request({
+      url: "https://v.anxia.com/webapi/files/video",
+      params: { pickcode, local: 1 },
+    });
+  }
+
+  static post(details) {
+    return this.request({ method: "POST", ...details });
   }
 
   static filesAdd(cname, pid) {
@@ -45,75 +55,6 @@ class Drive115 extends Req {
     });
   }
 
-  static lixianTaskLists() {
-    return this.request({
-      url: "https://115.com/web/lixian/",
-      params: { ct: "lixian", ac: "task_lists" },
-    });
-  }
-
-  static files(cid = "0", params = {}) {
-    return this.request({
-      url: "https://webapi.115.com/files",
-      params: {
-        aid: 1,
-        cid,
-        o: "user_ptime",
-        asc: 0,
-        offset: 0,
-        show_dir: 1,
-        limit: this.limit,
-        code: "",
-        scid: "",
-        snap: 0,
-        natsort: 1,
-        record_open_time: 1,
-        count_folders: 1,
-        type: "",
-        source: "",
-        format: "json",
-        star: "",
-        is_share: "",
-        suffix: "",
-        custom_order: "",
-        fc_mix: "",
-        is_q: "",
-        ...params,
-      },
-    });
-  }
-
-  static natsortFiles(cid = "0", params = {}) {
-    return this.request({
-      url: "https://aps.115.com/natsort/files.php",
-      params: {
-        aid: 1,
-        cid,
-        o: "file_name",
-        asc: 0,
-        offset: 0,
-        show_dir: 1,
-        limit: this.limit,
-        code: "",
-        scid: "",
-        snap: 0,
-        natsort: 1,
-        record_open_time: 1,
-        count_folders: 1,
-        type: "",
-        source: "",
-        format: "json",
-        star: "",
-        is_share: "",
-        suffix: "",
-        custom_order: "",
-        fc_mix: 0,
-        is_q: "",
-        ...params,
-      },
-    });
-  }
-
   /**
    * Bulk delete offline tasks and source files
    * @param {string[]} hash Array of info_hashes
@@ -123,13 +64,6 @@ class Drive115 extends Req {
       url: "https://115.com/web/lixian/",
       params: { ct: "lixian", ac: "task_del" },
       data: { hash, flag: 1 },
-    });
-  }
-
-  static rbClean(password) {
-    return this.post({
-      url: "https://webapi.115.com/rb/clean",
-      data: { password },
     });
   }
 
@@ -145,10 +79,22 @@ class Drive115 extends Req {
     });
   }
 
-  static labelList(params = {}) {
-    return this.request({
-      url: "https://webapi.115.com/label/list",
-      params: { keyword: "", limit: this.limit, ...params },
+  static rbClean(password) {
+    return this.post({
+      url: "https://webapi.115.com/rb/clean",
+      data: { password },
+    });
+  }
+
+  /**
+   * Batch move files
+   * @param {string[]} fid Array of file IDs
+   * @param {string} pid Destination folder ID
+   */
+  static filesMove(fid, pid) {
+    return this.post({
+      url: "https://webapi.115.com/files/move",
+      data: { fid, pid, move_proid: "" },
     });
   }
 
@@ -173,18 +119,6 @@ class Drive115 extends Req {
     return this.post({
       url: "https://webapi.115.com/files/batch_rename",
       data: { files_new_name },
-    });
-  }
-
-  /**
-   * Batch move files
-   * @param {string[]} fid Array of file IDs
-   * @param {string} pid Destination folder ID
-   */
-  static filesMove(fid, pid) {
-    return this.post({
-      url: "https://webapi.115.com/files/move",
-      data: { fid, pid, move_proid: "" },
     });
   }
 
@@ -226,84 +160,86 @@ class Drive115 extends Req {
       data: { fid, fid_cover },
     });
   }
-
-  static filesVideo(pickcode) {
-    return this.request({
-      url: "https://v.anxia.com/webapi/files/video",
-      params: { pickcode, local: 1 },
-    });
-  }
 }
 
 class Req115 extends Drive115 {
-  static async filesSearchVideosAll(search_value) {
-    const params = { type: 4 };
-    const res = await this.filesSearch(search_value, params);
-
-    const { count, page_size, data } = res;
-    return count > page_size && data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
-  }
-
-  static filesSearchFolders(search_value, cid) {
-    return this.filesSearch(search_value, {
-      cid,
-      max_size: "",
-      limit: 50,
-      show_dir: 1,
-      o: "",
-      nf: 1,
-      qid: 0,
-      natsort: 1,
-      type: "",
-      fc: 1,
-    });
-  }
-
-  static async generateCid(routes) {
-    if (routes.length === 1 && /^\d+$/.test(routes[0])) return routes[0];
-    let cid = "0";
-
-    for (const route of routes) {
-      const { data } = await this.filesSearchFolders(route, cid);
-      let item = data.find(({ n }) => n === route);
-      if (!item) item = await this.filesAdd(route, cid);
-      cid = item?.cid;
-      if (!cid) break;
-    }
-
-    return cid;
-  }
-
-  static sleep(s = 1) {
-    return new Promise((r) => {
-      setTimeout(r, s * 1000);
-    });
-  }
-
-  static async natsortFilesAll(cid, params = {}) {
-    const res = await this.natsortFiles(cid, params);
-    const { count, page_size, data } = res;
-    return count > page_size && data.length ? this.natsortFiles(cid, { ...params, limit: count }) : res;
-  }
-
   static async filesAll(cid, params = {}) {
     const res = await this.files(cid, params);
-    if (res.errNo === 20130827) return this.natsortFilesAll(cid, params);
-
     const { count, page_size, data } = res;
     return count > page_size && data.length ? this.files(cid, { ...params, limit: count }) : res;
   }
 
-  static videosAll(cid) {
-    return this.filesAll(cid, { type: 4 });
+  static filesAllVideos(cid, params = {}) {
+    return this.filesAll(cid, { ...params, type: 4 });
   }
 
-  static async verifyTask(info_hash, { regex, codes }, { max, filter }) {
+  static filesAllSRTs(cid, params = {}) {
+    return this.filesAll(cid, { ...params, suffix: "srt" });
+  }
+
+  static async filesSearchAll(search_value, params = {}) {
+    const res = await this.filesSearch(search_value, params);
+    const { count, page_size, data } = res;
+    return count > page_size && data.length ? this.filesSearch(search_value, { ...params, limit: count }) : res;
+  }
+
+  static filesSearchAllVideos(search_value, params = {}) {
+    return this.filesSearchAll(search_value, { ...params, type: 4 });
+  }
+
+  static filesSearchAllFolders(search_value, params = {}) {
+    return this.filesSearchAll(search_value, { ...params, fc: 1 });
+  }
+
+  static async handleDir(routes) {
+    if (routes.length === 1 && /^\d+$/.test(routes[0])) return routes[0];
+
+    let cid;
+    const routesStr = routes.join("/");
+    const cachedCid = localStorage.getItem(routesStr);
+
+    if (cachedCid) {
+      const res = await this.files(cachedCid);
+      if (res?.path?.length) {
+        const path = res.path.slice(1).map((p) => p.name);
+        if (path.join("/") === routesStr) cid = cachedCid;
+      }
+    }
+
+    if (!cid) {
+      cid = "0";
+
+      for (const route of routes) {
+        const { data } = await this.filesSearchAllFolders(route, { cid });
+        let folder = data.find((folder) => folder.n === route);
+        if (!folder) folder = await this.filesAdd(route, cid);
+        cid = folder?.cid;
+        if (!cid) break;
+      }
+    }
+
+    const month = new Date().getMonth().toString();
+    if (localStorage.getItem("115_CD") !== month) {
+      localStorage.clear();
+      localStorage.setItem("115_CD", month);
+    }
+
+    if (cid) localStorage.setItem(routesStr, cid);
+    return cid;
+  }
+
+  static async handleVerify(info_hash, { regex, codes }, { max, filter }) {
+    const sleep = () => {
+      return new Promise((r) => {
+        setTimeout(r, 1000);
+      });
+    };
+
     let file_id = "";
     let videos = [];
 
     for (let index = 0; index < max; index++) {
-      if (index) await this.sleep();
+      if (index) await sleep();
       const { tasks } = await this.lixianTaskLists();
 
       const task = tasks.find((task) => task.info_hash === info_hash);
@@ -312,11 +248,12 @@ class Req115 extends Drive115 {
       file_id = task.file_id;
       if (file_id) break;
     }
+
     if (!file_id) return { file_id, videos };
 
     for (let index = 0; index < max; index++) {
-      if (index) await this.sleep();
-      const { data } = await this.videosAll(file_id);
+      if (index) await sleep();
+      const { data } = await this.filesAllVideos(file_id);
 
       videos = data.filter((item) => regex.test(item.n));
       if (videos.length) break;
@@ -327,30 +264,45 @@ class Req115 extends Drive115 {
       const task = tasks.find((task) => task.info_hash === info_hash);
 
       if (task.status === 2) {
-        const { data } = await this.videosAll(file_id);
-        videos = data.filter((item) => codes.some((it) => item.n.includes(it)));
+        const { data } = await this.filesAllVideos(file_id);
+        codes = codes.map((code) => code.toUpperCase());
+
+        videos = data.filter((item) => {
+          const name = item.n.toUpperCase();
+          return codes.some((code) => name.includes(code));
+        });
       }
     }
 
     return { videos: videos.filter(filter), file_id };
   }
 
-  static async handleTags(files, tags) {
-    const list = (await this.labelList())?.data.list;
-    if (!list?.length) return;
+  static async handleClean(keepFiles, cid) {
+    const needMove = keepFiles.filter((file) => file.cid !== cid).map((file) => file.fid);
+    if (needMove.length) await this.filesMove(needMove, cid);
 
-    const labels = [];
-    tags.forEach((tag) => {
-      const item = list.find(({ name }) => name === tag);
-      if (item) labels.push(item.id);
-    });
-    if (!labels.length) return;
+    const { data } = await this.filesAll(cid);
 
-    return this.filesBatchLabel(files.map(({ fid }) => fid).toString(), labels.toString());
+    const needRemove = data
+      .filter((item) => !keepFiles.some((file) => file.fid === item.fid))
+      .map((item) => item.fid ?? item.cid);
+
+    if (needRemove.length) return this.rbDelete(needRemove, cid);
   }
 
-  static subripsAll(cid) {
-    return this.filesAll(cid, { suffix: "srt" });
+  static async handleTags(files, tags) {
+    const { data } = await this.labelList();
+    if (!data?.list?.length) return;
+
+    const { list } = data;
+    const labels = [];
+
+    tags.forEach((tag) => {
+      const item = list.find((item) => item.name === tag);
+      if (item) labels.push(item.id);
+    });
+
+    if (labels.length) return this.filesBatchLabel(files.map((it) => it.fid).toString(), labels.toString());
   }
 
   static handleRename(files, cid, { rename, renameTxt, zh, crack }) {
@@ -390,30 +342,12 @@ class Req115 extends Drive115 {
     return this.filesBatchRename(renameObj);
   }
 
-  static async handleClean(files, cid) {
-    await this.filesMove(
-      files.map((file) => file.fid),
-      cid,
-    );
-
-    const { data } = await this.filesAll(cid);
-
-    const rm_fids = data
-      .filter((item) => !files.some(({ fid }) => fid === item.fid))
-      .map((item) => item.fid ?? item.cid);
-
-    if (rm_fids.length) return this.rbDelete(rm_fids, cid);
-  }
-
   static async handleCover(url, cid, filename) {
     const file = await this.request({ url, responseType: "blob" });
-    if (!file) return file;
+    if (!file) return;
 
     const res = await this.sampleInitUpload({ cid, filename, filesize: file.size });
-    if (!res?.host) return res;
-
-    const { data } = await this.upload({ ...res, filename, file });
-    if (data?.file_id) return this.filesEdit(cid, data.file_id);
+    if (res?.host) return this.upload({ ...res, filename, file });
   }
 
   static async handleOffline(
@@ -421,13 +355,13 @@ class Req115 extends Drive115 {
     magnets,
   ) {
     const res = { status: "error", msg: `获取目录失败: ${dir.join("/")}` };
-    const cid = await this.generateCid(dir);
+    const cid = await this.handleDir(dir);
     if (!cid) return res;
 
     for (let index = 0, { length } = magnets; index < length; index++) {
       const { url, zh, crack } = magnets[index];
-
       const { state, error_msg, errcode, info_hash } = await this.lixianAddTaskUrl(url, cid);
+
       if (!state) {
         res.msg = error_msg;
         res.status = "error";
@@ -437,27 +371,35 @@ class Req115 extends Drive115 {
         break;
       }
 
-      const { videos, file_id } = await this.verifyTask(info_hash, { regex, codes }, verifyOptions);
+      const { videos, file_id } = await this.handleVerify(info_hash, { regex, codes }, verifyOptions);
+
       if (!videos.length) {
         if (verifyOptions.clean) {
-          this.lixianTaskDel([info_hash]).then(() => cleanPwd && this.rbClean(cleanPwd));
           if (file_id) this.rbDelete([file_id], cid);
+          this.lixianTaskDel([info_hash]).then(() => cleanPwd && this.rbClean(cleanPwd));
         }
+
         res.msg = `${code} 离线验证失败`;
         res.status = "error";
         continue;
       }
 
-      if (tags.length) this.handleTags(videos, tags);
-      const { data: subs } = await this.subripsAll(file_id);
-      const files = [...videos, ...subs];
+      const { data: srts = [] } = await this.filesAllSRTs(file_id);
+      const files = [...videos, ...srts];
 
-      if (rename) this.handleRename(files, file_id, { rename, renameTxt, zh: zh || subs.length, crack });
       if (clean) {
         await this.handleClean(files, file_id);
         if (cleanPwd) this.rbClean(cleanPwd);
       }
-      if (cover) await this.handleCover(cover, file_id, `${code}.cover.jpg`);
+
+      if (tags.length) this.handleTags(videos, tags);
+
+      if (rename) this.handleRename(files, file_id, { rename, renameTxt, zh: zh || srts.length, crack });
+
+      if (cover) {
+        const { data } = await this.handleCover(cover, file_id, `${code}.cover.jpg`);
+        if (data?.file_id) this.filesEdit(file_id, data.file_id);
+      }
 
       res.msg = `${code} 离线任务成功`;
       res.status = "success";
