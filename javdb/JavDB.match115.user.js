@@ -119,7 +119,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     load.dataset.uid = UUID;
 
     try {
-      const { data = [] } = await Req115.filesSearchVideosAll(codes.join(" "));
+      const { data = [] } = await Req115.filesSearchAllVideos(codes.join(" "));
       if (load.dataset.uid !== UUID) return;
 
       const sources = extractData(data.filter((it) => regex.test(it.n)));
@@ -246,7 +246,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
       loading = true;
 
       try {
-        const { data = [] } = await Req115.filesSearchVideosAll(prefix);
+        const { data = [] } = await Req115.filesSearchAllVideos(prefix);
         const sources = extractData(data);
         GM_setValue(prefix, sources);
         over(prefix, sources);
@@ -310,7 +310,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
     target.dataset.uid = UUID;
 
     try {
-      const { data = [] } = await Req115.filesSearchVideosAll(codes.join(" "));
+      const { data = [] } = await Req115.filesSearchAllVideos(codes.join(" "));
       if (target.dataset.uid !== UUID) return;
 
       const sources = extractData(data.filter((it) => regex.test(it.n)));

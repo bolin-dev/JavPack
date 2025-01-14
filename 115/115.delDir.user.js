@@ -28,7 +28,7 @@
     target.textContent = "请求中...";
 
     const { parent_id, file_id } = await Req115.filesVideo(pickcode);
-    const { data } = await Req115.videosAll(parent_id);
+    const { data } = await Req115.filesAllVideos(parent_id);
     await Req115.rbDelete([data.length === 1 ? parent_id : file_id]);
 
     const listNode = document.querySelector("#js-video_list");
