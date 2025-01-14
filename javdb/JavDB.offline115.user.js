@@ -82,8 +82,7 @@ const defaultConfig = [
   },
 ];
 
-const config = defaultConfig.map((item) => ({ ...item, cleanPwd: "cbl199568" })); // REMOVE-BEFORE-COMMIT
-const CONFIG = GM_getValue("config", config); // REMOVE-BEFORE-COMMIT
+const CONFIG = GM_getValue("config", defaultConfig);
 
 const TARGET_CLASS = "x-offline";
 const LOAD_CLASS = "is-loading";
