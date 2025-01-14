@@ -187,6 +187,8 @@ const useVideo = () => {
 
   const createVideo = useVideo();
 
+  const onVolumechange = (e) => localStorage.setItem("muted", e.target.muted);
+
   const handleHover = (selector, onEnter, onLeave) => {
     let currElem = null;
 
@@ -303,13 +305,15 @@ const useVideo = () => {
     const video = createVideo(sources.toReversed(), cover);
 
     video.loop = true;
-    video.muted = !RUNNING;
+    video.muted = !RUNNING || localStorage.getItem("muted") === "true";
     video.autoplay = true;
     video.currentTime = 2;
     video.disablePictureInPicture = true;
     video.setAttribute("controlslist", "nofullscreen nodownload noremoteplayback noplaybackrate");
 
+    video.addEventListener("volumechange", onVolumechange);
     elem.append(video);
+
     requestAnimationFrame(() => video.classList.add(SHOW));
     video.focus();
   };
