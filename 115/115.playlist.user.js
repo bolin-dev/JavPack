@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            115.playlist
 // @namespace       115.playlist@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     播放列表
 // @match           https://115.com/*

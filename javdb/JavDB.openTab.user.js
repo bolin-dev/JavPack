@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.openTab
 // @namespace       JavDB.openTab@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     新标签页打开
 // @match           https://javdb.com/*

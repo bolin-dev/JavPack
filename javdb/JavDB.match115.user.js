@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.match115
 // @namespace       JavDB.match115@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     115 网盘匹配
 // @match           https://javdb.com/*

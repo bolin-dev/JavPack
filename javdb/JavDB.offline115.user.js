@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.offline115
 // @namespace       JavDB.offline115@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     115 网盘离线
 // @match           https://javdb.com/*

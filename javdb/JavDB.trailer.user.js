@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.trailer
 // @namespace       JavDB.trailer@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     预告片
 // @match           https://javdb.com/*

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.lists
 // @namespace       JavDB.lists@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     相关清单
 // @match           https://javdb.com/v/*

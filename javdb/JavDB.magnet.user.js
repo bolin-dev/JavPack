@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.magnet
 // @namespace       JavDB.magnet@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     磁链扩展
 // @match           https://javdb.com/v/*

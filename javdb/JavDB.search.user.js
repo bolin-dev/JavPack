@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.search
 // @namespace       JavDB.search@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     快捷搜索
 // @match           https://javdb.com/*

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            JavDB.scroll
 // @namespace       JavDB.scroll@blc
-// @version         0.0.1
+// @version         0.0.2
 // @author          blc
 // @description     滚动加载
 // @match           https://javdb.com/*
