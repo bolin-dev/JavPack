@@ -1,6 +1,11 @@
+/**
+ * @grant GM_xmlhttpRequest
+ */
 class Req {
   static defaultGetResponseType = "document";
   static defaultPostResponseType = "json";
+  static defaultTimeout = 10000;
+  static defaultMethod = "GET";
 
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
 
@@ -8,7 +13,7 @@ class Req {
     if (typeof details === "string") details = { url: details };
     if (!details?.url) throw new Error("URL is required");
 
-    details = { method: "GET", timeout: 10000, ...details };
+    details = { method: this.defaultMethod, timeout: this.defaultTimeout, ...details };
     const { params, method, data } = details;
 
     if (params) {
