@@ -349,6 +349,7 @@ body:has(.x-load) #footer,
       }
 
       .x-offline {
+        min-width: 54px;
         height: 2em;
         padding: 0 0.75em;
         border: none;
@@ -434,6 +435,7 @@ body:has(.x-load) #footer,
 }
 
 .x-offline {
+  min-width: 62px;
   border-radius: 1px !important;
 }
 
