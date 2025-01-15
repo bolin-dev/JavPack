@@ -33,7 +33,7 @@ class Req {
 
         for (const [key, val] of Object.entries(data)) {
           if (!Array.isArray(val) && !this.isPlainObj(val)) {
-            formData.append(key, val);
+            if (val !== undefined) formData.append(key, val);
             continue;
           }
 
