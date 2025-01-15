@@ -1,4 +1,6 @@
 class Verify115 {
+  static TAG = GM_info.script.name;
+
   static HOST = "captchaapi.115.com";
 
   static STATUS_KEY = "VERIFY";
@@ -10,7 +12,7 @@ class Verify115 {
   };
 
   static get url() {
-    return `https://${this.HOST}/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}`;
+    return `https://${this.HOST}/?ac=security_code&type=web&cb=Close911_${new Date().getTime()}&tag=${this.TAG}`;
   }
 
   static start() {
@@ -20,13 +22,14 @@ class Verify115 {
   }
 
   static verify() {
-    document.querySelector("#js_ver_code_box button[rel=verify]").addEventListener("click", () => {
-      setTimeout(() => {
-        if (document.querySelector(".vcode-hint").getAttribute("style").indexOf("none") === -1) return;
-        GM_setValue(this.STATUS_KEY, this.STATUS_VAL.VERIFIED);
-        window.close();
-      }, 300);
-    });
+    const params = new URLSearchParams(location.search);
+    const cb = params.get("cb");
+    const tag = params.get("tag");
+    if (!cb || tag !== this.TAG) return;
+
+    const key = "setting_win";
+    unsafeWindow[key] ??= {};
+    unsafeWindow[key][cb] = () => GM_setValue(this.STATUS_KEY, this.STATUS_VAL.VERIFIED) || window.close();
   }
 
   static finally() {
