@@ -331,8 +331,8 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 })();
 
 (function () {
-  const SELECTOR = ".movie-list .item";
-  const movieList = document.querySelectorAll(SELECTOR);
+  const COVER_SELECTOR = ".cover";
+  const movieList = document.querySelectorAll(".movie-list .item");
   if (!movieList.length) return;
 
   const getParams = () => {
@@ -402,12 +402,14 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   const insertActions = (actions) => {
     const actionsStr = `<div class="px-2 pt-2 buttons">${actions.map(renderAction).join("")}</div>`;
 
-    const insert = (node) => node.querySelector(".cover")?.insertAdjacentHTML("beforeend", actionsStr);
+    const insert = (node) => node.querySelector(COVER_SELECTOR)?.insertAdjacentHTML("beforeend", actionsStr);
     const insertList = (nodeList) => nodeList.forEach(insert);
 
     insertList(movieList);
     window.addEventListener("JavDB.scroll", ({ detail }) => insertList(detail));
   };
+
+  const videoFocus = (target) => target.closest(COVER_SELECTOR)?.querySelector("video")?.focus();
 
   const onstart = (target) => {
     target.classList.add(LOAD_CLASS);
@@ -426,6 +428,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
     e.preventDefault();
     e.stopPropagation();
+    requestAnimationFrame(() => videoFocus(target));
 
     const action = findAction(target.dataset, actions);
     if (!action) return;
