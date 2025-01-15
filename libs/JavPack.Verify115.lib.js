@@ -16,7 +16,7 @@ class Verify115 {
   static start() {
     GM_setValue(this.STATUS_KEY, this.STATUS_VAL.PENDING);
     const tab = GM_openInTab(this.url, { active: true, setParent: true });
-    tab.onclose = this.finally;
+    tab.onclose = () => this.finally();
   }
 
   static verify() {
