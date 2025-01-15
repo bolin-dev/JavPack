@@ -189,7 +189,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
 
     let pc = "";
     let cid = "";
-    let title = "";
+    let title = "鼠标左键缓存刷新，右键接口刷新";
     let className = "is-normal";
     let textContent = "未匹配";
 
@@ -326,6 +326,7 @@ const formatTip = ({ n, s, t }) => `${n} - ${s} / ${t}`;
   const refresh = ({ type, target }) => {
     if (target.textContent === TARGET_TXT) return;
     target.textContent = TARGET_TXT;
+    target.title = "";
 
     if (type === "contextmenu") return matchCode(target);
     if (type !== "click") return;
