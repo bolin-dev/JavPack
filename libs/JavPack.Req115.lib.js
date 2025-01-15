@@ -71,7 +71,7 @@ class Drive115 extends Req {
     return this.post({
       url: "https://115.com/web/lixian/",
       params: { ct: "lixian", ac: "task_del" },
-      data: { hash, flag: 1 },
+      data: { hash },
     });
   }
 
