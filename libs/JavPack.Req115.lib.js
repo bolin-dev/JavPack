@@ -79,13 +79,6 @@ class Drive115 extends Req {
     });
   }
 
-  static rbClean(password) {
-    return this.post({
-      url: "https://webapi.115.com/rb/clean",
-      data: { password },
-    });
-  }
-
   /**
    * Batch move files
    * @param {string[]} fid Array of file IDs
@@ -351,7 +344,7 @@ class Req115 extends Drive115 {
   }
 
   static async handleOffline(
-    { dir, regex, codes, verifyOptions, cleanPwd, code, rename, renameTxt, tags, clean, cover },
+    { dir, regex, codes, verifyOptions, code, rename, renameTxt, tags, clean, cover },
     magnets,
   ) {
     const res = { status: "error", msg: `获取目录失败: ${dir.join("/")}` };
@@ -376,7 +369,7 @@ class Req115 extends Drive115 {
       if (!videos.length) {
         if (verifyOptions.clean) {
           if (file_id) this.rbDelete([file_id], cid);
-          this.lixianTaskDel([info_hash]).then(() => cleanPwd && this.rbClean(cleanPwd));
+          this.lixianTaskDel([info_hash]);
         }
 
         res.msg = `${code} 离线验证失败`;
@@ -387,10 +380,7 @@ class Req115 extends Drive115 {
       const { data: srts = [] } = await this.filesAllSRTs(file_id);
       const files = [...videos, ...srts];
 
-      if (clean) {
-        await this.handleClean(files, file_id);
-        if (cleanPwd) this.rbClean(cleanPwd);
-      }
+      if (clean) await this.handleClean(files, file_id);
 
       if (tags.length) this.handleTags(videos, tags);
 
