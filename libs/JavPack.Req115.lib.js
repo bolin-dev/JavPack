@@ -378,10 +378,8 @@ class Req115 extends Drive115 {
       const { videos, file_id } = await this.handleVerify(info_hash, { regex, codes }, verifyOptions);
 
       if (!videos.length) {
-        if (verifyOptions.clean) {
-          if (file_id) this.rbDelete([file_id], cid);
-          this.lixianTaskDel([info_hash]);
-        }
+        if (verifyOptions.clean) this.lixianTaskDel([info_hash]);
+        if (file_id && clean) this.rbDelete([file_id], cid);
 
         res.msg = `${code} 离线验证失败`;
         res.status = "error";
