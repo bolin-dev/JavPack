@@ -79,7 +79,6 @@
 | `renameTxt.crack`      | `string`                          | 重命名破解匹配格式                                                                                                                          | `"[破解]"`                                   |
 | `tags`                 | `["genres", "actors"]`            | 设置标签                                                                                                                                    | `["genres", "actors"]`                       |
 | `clean`                | `boolean`                         | 验证成功删除不相关文件                                                                                                                      | `true`                                       |
-| `cleanPwd`             | `string`                          | 删除文件后清空回收站                                                                                                                        |                                              |
 | `cover`                | `boolean`                         | 上传设置封面                                                                                                                                | `true`                                       |
 
 <details><summary>动态参数及示例</summary>
