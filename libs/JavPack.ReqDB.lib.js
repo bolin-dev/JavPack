@@ -1,3 +1,6 @@
+/**
+ * @require JavPack.Req.lib.js
+ */
 class ReqDB extends Req {
   static signature() {
     const TS_KEY = "TS";
@@ -17,6 +20,9 @@ class ReqDB extends Req {
     return sign;
   }
 
+  /**
+   * @connect hechuangxinxi.xyz
+   */
   static related(movie_id) {
     return this.request({
       url: "https://api.hechuangxinxi.xyz/api/v1/lists/related",
