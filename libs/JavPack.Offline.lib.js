@@ -34,7 +34,7 @@ class Offline {
   };
 
   static parseVar(txt, params, rep = "") {
-    const reg = /\$\{([a-z]+)\}/g;
+    const reg = /\$\{(\w+)\}/g;
     return txt.replace(reg, (_, key) => (params.hasOwnProperty(key) ? params[key].toString() : rep)).trim();
   }
 
