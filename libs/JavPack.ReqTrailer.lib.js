@@ -1,4 +1,10 @@
+/**
+ * @require JavPack.Req.lib.js
+ */
 class ReqTrailer extends Req {
+  /**
+   * @connect dmm.co.jp
+   */
   static useDMM() {
     const origin = "https://www.dmm.co.jp";
     const options = { cookie: "age_check_done=1", headers: { "accept-language": "ja-JP,ja;q=0.9" } };
@@ -83,6 +89,16 @@ class ReqTrailer extends Req {
     };
   }
 
+  /**
+   * @connect caribbeancom.com
+   * @connect pacopacomama.com
+   * @connect tokyo-hot.com
+   * @connect heydouga.com
+   * @connect 10musume.com
+   * @connect muramura.tv
+   * @connect heyzo.com
+   * @connect 1pondo.tv
+   */
   static useStudio() {
     const sampleUrl = "https://smovie.$host/sample/movies/$code/%s.mp4";
     const resolutions = ["1080p", "720p", "480p", "360p", "240p"];

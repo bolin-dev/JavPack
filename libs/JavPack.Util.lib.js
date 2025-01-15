@@ -1,4 +1,10 @@
 class Util {
+  /**
+   * @grant GM_deleteValues
+   * @grant GM_listValues
+   * @grant GM_getValue
+   * @grant GM_setValue
+   */
   static upStore() {
     const KEY = "CD";
     const DATE = new Date().getDate();
@@ -23,15 +29,24 @@ class Util {
     };
   }
 
+  /**
+   * @grant GM_getResourceURL
+   */
   static setFavicon(icon) {
     const favicon = GM_getResourceURL(icon?.status ? icon.status : icon);
     if (favicon) document.querySelectorAll("link[rel*='icon']").forEach((item) => item.setAttribute("href", favicon));
   }
 
+  /**
+   * @grant GM_info
+   */
   static dispatchEvent(detail = null) {
     return window.dispatchEvent(new CustomEvent(GM_info.script.name, { detail }));
   }
 
+  /**
+   * @grant GM_info
+   */
   static print(data) {
     console.warn(`[${GM_info.script.name}]`, data);
   }

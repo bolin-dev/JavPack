@@ -1,6 +1,14 @@
 class Grant {
+  /**
+   * @grant GM_openInTab
+   */
   static openTab = (url, active = true) => GM_openInTab(url, { active, setParent: true });
 
+  /**
+   * @grant GM_getResourceURL
+   * @grant GM_notification
+   * @grant GM_info
+   */
   static notify = (options) => {
     if (typeof options === "string") options = { text: options };
     options.text = options.text ?? options.msg;

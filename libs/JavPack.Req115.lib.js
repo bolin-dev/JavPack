@@ -1,3 +1,8 @@
+/**
+ * @require JavPack.Req.lib.js
+ *
+ * @connect 115.com
+ */
 class Drive115 extends Req {
   static defaultGetResponseType = "json";
 
@@ -29,6 +34,9 @@ class Drive115 extends Req {
     });
   }
 
+  /**
+   * @connect anxia.com
+   */
   static filesVideo(pickcode) {
     return this.request({
       url: "https://v.anxia.com/webapi/files/video",
@@ -122,6 +130,9 @@ class Drive115 extends Req {
     });
   }
 
+  /**
+   * @connect aliyuncs.com
+   */
   static upload({
     host: url,
     filename: name,

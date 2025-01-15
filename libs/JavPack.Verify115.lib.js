@@ -1,3 +1,13 @@
+/**
+ * @match https://captchaapi.115.com/*
+ *
+ * @grant unsafeWindow
+ * @grant GM_openInTab
+ * @grant window.close
+ * @grant GM_getValue
+ * @grant GM_setValue
+ * @grant GM_info
+ */
 class Verify115 {
   static TAG = GM_info.script.name;
 

@@ -1,4 +1,10 @@
+/**
+ * @require JavPack.Req.lib.js
+ */
 class ReqMagnet extends Req {
+  /**
+   * @connect btdig.com
+   */
   static btdig({ code, regex }) {
     return this.tasks(`https://btdig.com/search?order=0&q=${code}`, [
       (dom) => {
@@ -17,6 +23,9 @@ class ReqMagnet extends Req {
     ]);
   }
 
+  /**
+   * @connect nyaa.si
+   */
   static nyaa({ code, regex }) {
     return this.tasks(`https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}`, [
       (dom) => {

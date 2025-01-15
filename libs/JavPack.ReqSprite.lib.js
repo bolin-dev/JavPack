@@ -1,4 +1,11 @@
+/**
+ * @require JavPack.Req.lib.js
+ */
 class ReqSprite extends Req {
+  /**
+   * @connect javbee.me
+   * @connect *
+   */
   static async javbee(code, regex) {
     const res = await this.request(`https://javbee.me/search?keyword=${code}`);
 
@@ -18,6 +25,9 @@ class ReqSprite extends Req {
     return sprite;
   }
 
+  /**
+   * @connect javfree.me
+   */
   static async javfree(code, regex) {
     const res = await this.request(`https://javfree.me/?s=${code}`);
 
@@ -37,6 +47,10 @@ class ReqSprite extends Req {
     return sprites.at(-1);
   }
 
+  /**
+   * @connect javstore.net
+   * @connect pixhost.to
+   */
   static async javstore(code, regex) {
     const res = await this.request(`https://javstore.net/search/${code}.html`);
 
