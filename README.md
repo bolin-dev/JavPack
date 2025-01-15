@@ -84,26 +84,27 @@
 <details><summary>动态参数及示例</summary>
 
 ```JavaScript
-// code        番号
-// prefix      前缀
-// title       标题
-// date        日期
-// year        年
-// month       月
-// day         日
-// director    导演
-// maker       片商
-// publisher   发行
-// series      系列
-// genres      类别
-// actors      演员
-// list        清单
+// code               番号
+// codeFirstLetter    番号首字母
+// prefix             前缀
+// title              标题
+// date               日期
+// year               年
+// month              月
+// day                日
+// director           导演
+// maker              片商
+// publisher          发行
+// series             系列
+// genres             类别
+// actors             演员
+// list               清单
 
-// genre       genres[]，仅 type = "genres" 时可用
-// actor       actors[]，仅 type = "actors" 时可用
+// genre              genres[]，仅 type = "genres" 时可用
+// actor              actors[]，仅 type = "actors" 时可用
 
-// zh          字幕资源，仅 rename 内可用
-// crack       破解资源，仅 rename 内可用
+// zh                 字幕资源，仅 rename 内可用
+// crack              破解资源，仅 rename 内可用
 
 // config 自定义配置示例:
 const config = [

@@ -103,6 +103,7 @@ const getDetails = (dom = document) => {
   const codeNode = infoNode.querySelector(".first-block .value");
   const prefix = codeNode.querySelector("a")?.textContent.trim();
   const code = codeNode.textContent.trim();
+  info.codeFirstLetter = code[0];
   if (prefix) info.prefix = prefix;
 
   const titleNode = dom.querySelector(".title.is-4");
@@ -365,7 +366,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     };
 
     const getOnVideoCodes = () => {
-      return { prefix: sectionName };
+      return { prefix: sectionName, codeFirstLetter: sectionName[0] };
     };
 
     const getOnLists = () => {
