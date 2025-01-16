@@ -4,7 +4,7 @@
 class Req {
   static defaultGetResponseType = "document";
   static defaultPostResponseType = "json";
-  static defaultTimeout = 10000;
+  static defaultTimeout = 30000;
   static defaultMethod = "GET";
 
   static isPlainObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
