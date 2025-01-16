@@ -16,13 +16,13 @@ class Offline {
   static defaultMagnetOptions = {
     filter: ({ size }) => {
       const magnetSize = parseFloat(size);
-      return magnetSize > 300000000 || magnetSize < 1;
+      return magnetSize > 314572800 || magnetSize < 1;
     },
     max: 10,
   };
 
   static defaultVerifyOptions = {
-    filter: ({ s }) => s > 52428800,
+    filter: ({ s }) => s > 157286400,
     clean: true,
     max: 10,
   };
