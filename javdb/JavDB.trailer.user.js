@@ -178,6 +178,7 @@ const useVideo = () => {
   if (!document.querySelector(selector)) return;
 
   const HOVER = "x-hovered";
+  const UN_HOVER = "x-un-hover";
   const SHOW = "x-show";
   const HIDE = "x-hide";
 
@@ -191,6 +192,7 @@ const useVideo = () => {
 
   const handleHover = (selector, onEnter, onLeave) => {
     let currElem = null;
+    let nextElem = null;
 
     let prevX = null;
     let prevY = null;
@@ -208,6 +210,7 @@ const useVideo = () => {
       lastX = e.pageX;
       lastY = e.pageY;
       lastTime = Date.now();
+      nextElem = e.target;
     };
 
     const inViewport = (elem) => {
@@ -228,11 +231,13 @@ const useVideo = () => {
     const calcSpeed = () => Math.sqrt((prevX - lastX) ** 2 + (prevY - lastY) ** 2) / (lastTime - prevTime);
 
     const trackSpeed = () => {
-      const speed = lastTime && lastTime !== prevTime ? calcSpeed() : 0;
+      if (!nextElem.classList.contains(UN_HOVER)) {
+        const speed = lastTime && lastTime !== prevTime ? calcSpeed() : 0;
 
-      if (speed <= 0.02 && inViewport(currElem) && !isScrolling) {
-        clearTrack(currElem);
-        return onEnter?.(currElem);
+        if (speed <= 0.02 && inViewport(currElem) && !isScrolling) {
+          clearTrack(currElem);
+          return onEnter?.(currElem);
+        }
       }
 
       prevX = lastX;
@@ -249,8 +254,8 @@ const useVideo = () => {
       prevX = e.pageX;
       prevY = e.pageY;
       prevTime = Date.now();
-
       currElem = target;
+
       currElem.addEventListener("mousemove", onMousemove);
       trackSpeedInterval = setInterval(trackSpeed, 200);
     };

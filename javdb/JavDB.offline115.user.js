@@ -165,7 +165,7 @@ const isUncensored = (dom = document) => {
 const renderAction = ({ color, index, idx, desc, name }) => {
   return `
   <button
-    class="${TARGET_CLASS} button is-small ${color}"
+    class="${TARGET_CLASS} button is-small x-un-hover ${color}"
     data-index="${index}"
     data-idx="${idx}"
     title="${desc}"
