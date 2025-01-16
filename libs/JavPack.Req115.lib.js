@@ -6,7 +6,7 @@
 class Drive115 extends Req {
   static defaultGetResponseType = "json";
 
-  static files(cid, params = {}) {
+  static files(cid = "0", params = {}) {
     return this.request({
       url: "https://webapi.115.com/files",
       params: { cid, ...params },
