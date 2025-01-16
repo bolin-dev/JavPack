@@ -347,7 +347,7 @@ class Req115 extends Drive115 {
   }
 
   static async handleCover(url, cid, filename) {
-    const file = await this.request({ url, responseType: "blob" });
+    const file = await this.request({ url, timeout: 60000, responseType: "blob" });
     if (!file) return;
 
     const res = await this.sampleInitUpload({ cid, filename, filesize: file.size });
@@ -396,8 +396,12 @@ class Req115 extends Drive115 {
       if (rename) this.handleRename(files, file_id, { rename, renameTxt, zh: zh || srts.length, crack });
 
       if (cover) {
-        const { data } = await this.handleCover(cover, file_id, `${code}.cover.jpg`);
-        if (data?.file_id) this.filesEdit(file_id, data.file_id);
+        try {
+          const { data } = await this.handleCover(cover, file_id, `${code}.cover.jpg`);
+          if (data?.file_id) this.filesEdit(file_id, data.file_id);
+        } catch (err) {
+          console.warn("[Req115.handleCover]", err?.message);
+        }
       }
 
       res.msg = `${code} 离线任务成功`;
