@@ -101,7 +101,7 @@
   };
 
   const loadMore = useLoadMore(nextUrl, currList, { nextSelector, listSelector });
-  const obs = new IntersectionObserver(loadMore, { rootMargin: "500px" });
+  const obs = new IntersectionObserver(loadMore, { rootMargin: "300px" });
 
   const load = document.createElement("button");
   load.classList.add("button", "is-rounded", "has-text-grey", "is-flex", "my-4", "mx-auto", "x-load");
