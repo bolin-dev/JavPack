@@ -361,11 +361,11 @@ body:has(.x-load) #footer,
         transform: none;
       }
 
-      &.x-hovered:not(:has(video)) {
+      &.x-hovered:not(:has(video)):hover {
         cursor: progress;
       }
 
-      &.x-hovered img {
+      &.x-hovered:hover img {
         filter: blur(2px);
       }
     }
