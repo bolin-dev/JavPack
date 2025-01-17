@@ -349,9 +349,10 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     };
 
     const getOnActors = () => {
+      const actor = getLastName(actorSectionName).replace("(無碼)", "").trim();
       const nodeList = document.querySelectorAll(".actor-tags.tags .tag.is-medium.is-link:not(.is-outlined)");
       const genres = [...nodeList].map((item) => item.textContent.trim());
-      return { actors: [getLastName(actorSectionName)], genres };
+      return { actors: [actor], genres };
     };
 
     const getOnSeries = () => {
