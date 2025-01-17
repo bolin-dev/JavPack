@@ -53,6 +53,7 @@
 
 html {
   overflow-y: overlay;
+  scroll-behavior: smooth;
 
   &.has-navbar-fixed-bottom {
     padding-bottom: 0;
