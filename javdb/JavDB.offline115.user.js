@@ -83,7 +83,46 @@ const defaultConfig = [
   },
 ];
 
-const CONFIG = GM_getValue("config", defaultConfig);
+const CUSTOM_CONFIG = "CUSTOM_CONFIG";
+
+const getConfig = async () => {
+  const customConfig = GM_getValue(CUSTOM_CONFIG);
+  if (!customConfig) return defaultConfig;
+
+  const blob = new Blob([customConfig], { type: "application/javascript" });
+  const moduleUrl = URL.createObjectURL(blob);
+
+  try {
+    const { default: func } = await import(moduleUrl);
+    return func(defaultConfig);
+  } catch (_) {
+    return defaultConfig;
+  } finally {
+    URL.revokeObjectURL(moduleUrl);
+  }
+};
+
+const setConfig = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  try {
+    if (file.type !== "text/javascript") throw new Error("不支持文件类型");
+    if (file.size > 3145728) throw new Error("文件大小限制 3 MB");
+
+    const customConfig = await new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.onerror = () => reject(new Error("文件读取失败"));
+      fileReader.onload = (e) => resolve(e.target.result);
+      fileReader.readAsText(file);
+    });
+
+    GM_setValue(CUSTOM_CONFIG, customConfig);
+    Grant.notify({ icon: "success", msg: "导入成功，页面刷新后生效" });
+  } catch (err) {
+    Grant.notify({ icon: "warn", msg: err?.message });
+  }
+};
 
 const TARGET_CLASS = "x-offline";
 const LOAD_CLASS = "is-loading";
@@ -223,43 +262,18 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 (function () {
   if (location.host === HOST) return Verify115.verify();
 
-  const onChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const attributes = { type: "file", accept: ".js", class: "is-hidden" };
+  const fileInput = GM_addElement(document.body, "input", attributes);
 
-    try {
-      if (file.type !== "application/json") throw new Error("不支持文件类型");
-      if (file.size > 3145728) throw new Error("文件大小限制 3 MB");
-
-      const result = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error("文件读取失败"));
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsText(file);
-      });
-
-      const config = JSON.parse(result);
-      if (!Array.isArray(config)) throw new Error("书写格式错误");
-      if (!config.length) throw new Error("配置为空");
-
-      GM_setValue("config", config);
-      Grant.notify({ icon: "success", msg: "导入成功，页面刷新后生效" });
-    } catch (err) {
-      Grant.notify({ icon: "warn", msg: err?.message });
-    }
-  };
-
-  const attributes = { type: "file", accept: ".json", class: "is-hidden" };
-  const inputFile = GM_addElement(document.body, "input", attributes);
-
-  inputFile.addEventListener("change", onChange);
-  document.addEventListener("keydown", (e) => e.altKey && e.code === "KeyU" && inputFile.click());
+  document.addEventListener("keydown", (e) => e.altKey && e.code === "KeyU" && fileInput.click());
+  fileInput.addEventListener("change", setConfig);
 })();
 
-(function () {
+(async function () {
   const details = getDetails();
   if (!details) return;
 
+  const CONFIG = await getConfig();
   const actions = Offline.getActions(CONFIG, details);
   if (!actions.length) return;
 
@@ -331,7 +345,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   document.addEventListener("click", onclick);
 })();
 
-(function () {
+(async function () {
   const COVER_SELECTOR = ".cover";
   const movieList = document.querySelectorAll(".movie-list .item");
   if (!movieList.length) return;
@@ -397,6 +411,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     return {};
   };
 
+  const CONFIG = await getConfig();
   const params = getParams();
   const actions = Offline.getActions(CONFIG, params);
   if (!actions.length) return;
