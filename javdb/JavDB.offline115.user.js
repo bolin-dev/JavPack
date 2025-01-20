@@ -118,7 +118,7 @@ const setConfig = async (e) => {
     });
 
     GM_setValue(CUSTOM_CONFIG, customConfig);
-    Grant.notify({ icon: "success", msg: "导入成功，页面刷新后生效" });
+    Grant.notify({ icon: "success", msg: "导入成功，页面刷新后生效", onclick: () => location.reload() });
   } catch (err) {
     Grant.notify({ icon: "warn", msg: err?.message });
   }
