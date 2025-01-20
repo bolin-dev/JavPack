@@ -99,12 +99,21 @@ const useVideo = () => {
   const onKeyup = (e) => {
     const code = e.code;
 
+    if (["KeyW"].includes(code)) return changeVolume(e, 0.2);
+    if (["KeyD"].includes(code)) return changeTime(e, 4);
+    if (["KeyS"].includes(code)) return changeVolume(e, -0.1);
+    if (["KeyA"].includes(code)) return changeTime(e, -2);
+  };
+
+  const onKeydown = (e) => {
+    const code = e.code;
+
     if (["KeyM"].includes(code)) return toggleMute(e);
     if (["Space"].includes(code)) return togglePlay(e);
-    if (["KeyW", "ArrowUp"].includes(code)) return changeVolume(e, 0.2);
-    if (["KeyD", "ArrowRight"].includes(code)) return changeTime(e, 4);
-    if (["KeyS", "ArrowDown"].includes(code)) return changeVolume(e, -0.1);
-    if (["KeyA", "ArrowLeft"].includes(code)) return changeTime(e, -2);
+    if (["ArrowUp"].includes(code)) return changeVolume(e, 0.2);
+    if (["ArrowRight"].includes(code)) return changeTime(e, 4);
+    if (["ArrowDown"].includes(code)) return changeVolume(e, -0.1);
+    if (["ArrowLeft"].includes(code)) return changeTime(e, -2);
   };
 
   const onVolumechange = (e) => localStorage.setItem("volume", e.target.volume);
@@ -120,6 +129,7 @@ const useVideo = () => {
     video.innerHTML = sources.map((src) => `<source src="${src}" />`).join("");
 
     video.addEventListener("volumechange", onVolumechange);
+    video.addEventListener("keydown", onKeydown);
     video.addEventListener("keyup", onKeyup);
     return video;
   };
