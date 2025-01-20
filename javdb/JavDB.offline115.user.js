@@ -135,6 +135,28 @@ const { PENDING, VERIFIED, FAILED } = STATUS_VAL;
 
 const transToByte = Magnet.useTransByte();
 
+const onShortcut = () => {
+  let hovered = null;
+  const regex = /^Digit\d$/;
+
+  const onMouseover = (e) => {
+    hovered = e.target;
+  };
+
+  const onKeydown = (e) => {
+    if (!e.altKey || !regex.test(e.code)) return;
+
+    const digit = Number(e.code[5]);
+    const shortcut = digit ? digit - 1 : 9;
+
+    const target = hovered?.closest(`.item:has(.${TARGET_CLASS})`) ?? document.querySelector(".movie-panel-info");
+    if (target) target.querySelectorAll(`.${TARGET_CLASS}`)?.[shortcut]?.click();
+  };
+
+  document.addEventListener("mouseover", onMouseover);
+  document.addEventListener("keydown", onKeydown);
+};
+
 const getDetails = (dom = document) => {
   const infoNode = dom.querySelector(".movie-panel-info");
   if (!infoNode) return;
@@ -267,6 +289,8 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 
   document.addEventListener("keydown", (e) => e.altKey && e.code === "KeyU" && fileInput.click());
   fileInput.addEventListener("change", setConfig);
+
+  onShortcut();
 })();
 
 (async function () {
