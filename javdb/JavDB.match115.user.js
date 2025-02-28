@@ -37,7 +37,7 @@ const listenClick = (onclose, defaultAction) => {
   const actions = {
     click: {
       val: "pc",
-      url: "https://v.anxia.com/?pickcode=%s",
+      url: "https://115vod.com/?pickcode=%s&share_id=0",
     },
     contextmenu: {
       val: "cid",
