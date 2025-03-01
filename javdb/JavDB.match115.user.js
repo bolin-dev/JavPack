@@ -37,11 +37,11 @@ const listenClick = (onclose, defaultAction) => {
   const actions = {
     click: {
       val: "pc",
-      url: "https://115vod.com/?pickcode=%s&share_id=0",
+      url: "https://115vod.com/?pickcode=%s",
     },
     contextmenu: {
       val: "cid",
-      url: "https://115.com/?cid=%s&offset=0&tab=&mode=wangpan",
+      url: "https://115.com/?cid=%s&mode=wangpan",
     },
   };
 
