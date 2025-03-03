@@ -5,8 +5,8 @@
 // @author          blc
 // @description     播放列表
 // @match           https://115.com/*
-// @match           https://v.anxia.com/*
-// @icon            https://v.anxia.com/m_r/favicon.ico
+// @match           https://115vod.com/*
+// @icon            https://115vod.com/m_r/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Grant.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Util.lib.js
 // @run-at          document-end
@@ -51,7 +51,7 @@ Util.upStore();
     const nodeList = target.closest(".list-contents ul").querySelectorAll("li");
     GM_setValue(cid, getPlaylist(nodeList));
 
-    const tab = Grant.openTab(`https://v.anxia.com/?pickcode=${pickcode}&cid=${cid}`);
+    const tab = Grant.openTab(`https://115vod.com/?pickcode=${pickcode}&cid=${cid}`);
     tab.onclose = () => GM_deleteValue(cid);
   };
 

@@ -4,8 +4,8 @@
 // @version         0.0.2
 // @author          blc
 // @description     播放页删除
-// @match           https://v.anxia.com/*
-// @icon            https://v.anxia.com/m_r/favicon.ico
+// @match           https://115vod.com/*
+// @icon            https://115vod.com/m_r/favicon.ico
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req.lib.js
 // @require         https://github.com/bolin-dev/JavPack/raw/main/libs/JavPack.Req115.lib.js
 // @connect         115.com

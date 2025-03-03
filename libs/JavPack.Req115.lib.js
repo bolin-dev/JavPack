@@ -35,11 +35,11 @@ class Drive115 extends Req {
   }
 
   /**
-   * @connect anxia.com
+   * @connect 115vod.com
    */
   static filesVideo(pickcode) {
     return this.request({
-      url: "https://v.anxia.com/webapi/files/video",
+      url: "https://115vod.com/webapi/files/video",
       params: { pickcode, local: 1 },
     });
   }
