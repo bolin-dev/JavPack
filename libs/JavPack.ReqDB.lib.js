@@ -21,11 +21,11 @@ class ReqDB extends Req {
   }
 
   /**
-   * @connect hechuangxinxi.xyz
+   * @connect ffaoa.com
    */
   static related(movie_id) {
     return this.request({
-      url: "https://api.hechuangxinxi.xyz/api/v1/lists/related",
+      url: "https://api.ffaoa.com/api/v1/lists/related",
       params: { movie_id, page: 1, limit: 24 },
       headers: { jdSignature: this.signature() },
       responseType: "json",
