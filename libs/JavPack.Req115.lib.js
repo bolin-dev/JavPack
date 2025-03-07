@@ -196,7 +196,7 @@ class Req115 extends Drive115 {
   }
 
   static async handleDir(routes) {
-    if (routes.length === 1 && /^\d+$/.test(routes[0])) return routes[0];
+    if (routes.length === 1 && /^\d{5,}$/.test(routes[0])) return routes[0];
 
     let cid;
     const routesStr = routes.join("/");
