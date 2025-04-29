@@ -66,6 +66,10 @@ body {
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+.compensate-for-scrollbar {
+  margin-right: 0 !important;
+}
+
 video:focus {
   outline: none;
 }
