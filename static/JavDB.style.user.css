@@ -14,6 +14,8 @@
   --x-warning-bd: rgb(255 230 156);
   --x-danger-bd: rgb(241 174 181);
 
+  color-scheme: light;
+
   &[data-theme="dark"] {
     --x-success-bd: rgb(15 81 50);
     --x-info-bd: rgb(8 66 152);
@@ -21,6 +23,7 @@
     --x-danger-bd: rgb(132 32 41);
 
     background-color: transparent;
+    color-scheme: dark;
 
     .navbar {
       --x-rgb: 181 181 181;
