@@ -284,7 +284,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
 (function () {
   if (location.host === HOST) return Verify115.verify();
 
-  const attributes = { type: "file", accept: ".js", class: "is-hidden" };
+  const attributes = { type: "file", accept: ".js", style: "display: none;" };
   const fileInput = GM_addElement(document.body, "input", attributes);
 
   document.addEventListener("keydown", (e) => e.altKey && e.code === "KeyU" && fileInput.click());
