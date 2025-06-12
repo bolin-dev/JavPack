@@ -83,9 +83,9 @@ class ReqTrailer extends Req {
       return parse(target);
     };
 
-    return async (searchstr, isVR) => {
+    return async (searchstr) => {
       const cid = await getCid(searchstr);
-      return isVR ? Promise.any(rules.map((item) => getSamples(cid, item))) : getSamples(cid, rules[0]);
+      return Promise.any(rules.map((item) => getSamples(cid, item)));
     };
   }
 
@@ -182,7 +182,7 @@ class ReqTrailer extends Req {
       return guessStudio(code, studio);
     } else {
       const getDMM = this.useDMM();
-      return getDMM(code, isVR).catch(() => getDMM(title, isVR));
+      return isVR ? getDMM(title) : getDMM(code);
     }
   }
 }
