@@ -6,9 +6,6 @@ class ReqTrailer extends Req {
    * @connect dmm.co.jp
    */
   static useDMM() {
-    const origin = "https://www.dmm.co.jp";
-    const options = { cookie: "age_check_done=1", headers: { "accept-language": "ja-JP,ja;q=0.9" } };
-
     const rules = [
       {
         urlSep: "service/digitalapi/-/html5_player",
@@ -42,40 +39,30 @@ class ReqTrailer extends Req {
       },
     ];
 
-    const parseCid = (url) => {
-      const { hostname, pathname, searchParams } = new URL(url);
-      let cid = "";
+    const getCid = async (keyword) => {
+      const res = await this.request({
+        url: "https://api.dmm.com/affiliate/v3/ItemList",
+        params: {
+          api_id: "UrwskPfkqQ0DuVry2gYL",
+          affiliate_id: "10278-996",
+          output: "json",
+          site: "FANZA",
+          sort: "match",
+          keyword,
+        },
+        responseType: "json",
+      });
 
-      switch (hostname) {
-        case "tv.dmm.co.jp":
-          cid = searchParams.get("content");
-          break;
-        case "www.dmm.co.jp":
-          cid = pathname
-            .split("/")
-            .find((item) => item.startsWith("cid="))
-            ?.replace("cid=", "");
-          break;
-      }
-
-      return cid;
-    };
-
-    const getCid = async (searchstr) => {
-      const urlSep = "/search/?redirect=1&enc=UTF-8&category=&searchstr=";
-      const res = await this.request({ ...options, url: `${origin}${urlSep}${searchstr}` });
-
-      const target = res?.querySelector("#list .tmb a")?.href;
-      if (!target) throw new Error("Not found target");
-
-      const cid = parseCid(target);
-      if (!cid) throw new Error("Not found cid");
-
-      return cid;
+      if (!res?.result?.result_count) throw new Error("Not found result");
+      return res.result.items[0].content_id;
     };
 
     const getSamples = async (cid, { urlSep, selector, parse }) => {
-      const res = await this.request({ ...options, url: `${origin}/${urlSep}/=/cid=${cid}` });
+      const res = await this.request({
+        url: `https://www.dmm.co.jp/${urlSep}/=/cid=${cid}`,
+        headers: { "accept-language": "ja-JP,ja;q=0.9" },
+        cookie: "age_check_done=1",
+      });
 
       const target = res?.querySelector(selector)?.textContent;
       if (!target) throw new Error("Not found target");
@@ -83,9 +70,9 @@ class ReqTrailer extends Req {
       return parse(target);
     };
 
-    return async (searchstr) => {
-      const cid = await getCid(searchstr);
-      return Promise.any(rules.map((item) => getSamples(cid, item)));
+    return async (keyword) => {
+      const cid = await getCid(keyword);
+      return Promise.any(rules.map((rule) => getSamples(cid, rule)));
     };
   }
 
