@@ -18,6 +18,7 @@
 // @connect         dmm.co.jp
 // @connect         heyzo.com
 // @connect         1pondo.tv
+// @connect         dmm.com
 // @connect         self
 // @run-at          document-end
 // @grant           GM_xmlhttpRequest
