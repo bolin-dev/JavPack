@@ -182,7 +182,7 @@ class ReqTrailer extends Req {
       return guessStudio(code, studio);
     } else {
       const getDMM = this.useDMM();
-      return isVR ? getDMM(title, isVR) : getDMM(code, isVR).catch(() => getDMM(title, isVR));
+      return getDMM(code, isVR).catch(() => getDMM(title, isVR));
     }
   }
 }
