@@ -219,16 +219,11 @@ body:has(.x-load) #footer,
   }
 }
 
-.notification {
-  padding: 0.75rem;
-
-  &:not(:last-child) {
-    margin-bottom: 1rem;
-  }
+.notification:not(:last-child) {
+  margin-bottom: 1rem;
 }
 
 .site-announce {
-  padding: 0.75rem;
   font-size: var(--x-size-sm);
 }
 
