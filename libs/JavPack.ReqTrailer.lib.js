@@ -54,7 +54,7 @@ class ReqTrailer extends Req {
       });
 
       if (!res?.result?.result_count) throw new Error("Not found result");
-      return res.result.items[0].content_id;
+      return res.result.items.map((item) => item.content_id);
     };
 
     const getSamples = async (cid, { urlSep, selector, parse }) => {
@@ -71,8 +71,8 @@ class ReqTrailer extends Req {
     };
 
     return async (keyword) => {
-      const cid = await getCid(keyword);
-      return Promise.any(rules.map((rule) => getSamples(cid, rule)));
+      const cidArr = await getCid(keyword);
+      return Promise.any(rules.flatMap((rule) => cidArr.map((cid) => getSamples(cid, rule))));
     };
   }
 

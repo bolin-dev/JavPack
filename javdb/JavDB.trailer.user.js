@@ -59,7 +59,7 @@ const getDetails = (dom = document) => {
 
   const sources = [...dom.querySelectorAll("#preview-video source")]
     .map((node) => node.getAttribute("src")?.trim())
-    .filter(Boolean);
+    .filter((src) => Boolean(src) && !src.includes(".m3u"));
 
   return { code, isWestern, isFC2, isVR, isUncensored, title, cover, studio, sources };
 };
