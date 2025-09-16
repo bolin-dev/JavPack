@@ -39,7 +39,7 @@ class ReqTrailer extends Req {
       },
     ];
 
-    const getCid = async (keyword) => {
+    const getResult = async (keyword) => {
       const res = await this.request({
         url: "https://api.dmm.com/affiliate/v3/ItemList",
         params: {
@@ -54,12 +54,16 @@ class ReqTrailer extends Req {
       });
 
       if (!res?.result?.result_count) throw new Error("Not found result");
-      return res.result.items.map((item) => item.content_id);
+      return res.result.items.map((item) => ({
+        service: item.service_code,
+        floor: item.floor_code,
+        cid: item.content_id,
+      }));
     };
 
-    const getSamples = async (cid, { urlSep, selector, parse }) => {
+    const getSamples = async ({ cid, service, floor }, { urlSep, selector, parse }) => {
       const res = await this.request({
-        url: `https://www.dmm.co.jp/${urlSep}/=/cid=${cid}`,
+        url: `https://www.dmm.co.jp/${urlSep}/=/cid=${cid}/mtype=AhRVShI_/service=${service}/floor=${floor}/mode=/`,
         headers: { "accept-language": "ja-JP,ja;q=0.9" },
         cookie: "age_check_done=1",
       });
@@ -70,9 +74,12 @@ class ReqTrailer extends Req {
       return parse(target);
     };
 
-    return async (keyword) => {
-      const cidArr = await getCid(keyword);
-      return Promise.any(rules.flatMap((rule) => cidArr.map((cid) => getSamples(cid, rule))));
+    return async ({ isVR, title, code }) => {
+      const keyword = isVR ? title : code;
+      const rule = isVR ? rules[1] : rules[0];
+
+      const result = await getResult(keyword);
+      return Promise.any(result.map((res) => getSamples(res, rule)));
     };
   }
 
@@ -169,7 +176,7 @@ class ReqTrailer extends Req {
       return guessStudio(code, studio);
     } else {
       const getDMM = this.useDMM();
-      return isVR ? getDMM(title) : getDMM(code);
+      return getDMM({ isVR, title, code });
     }
   }
 }
