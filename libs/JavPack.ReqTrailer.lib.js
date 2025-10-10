@@ -74,11 +74,9 @@ class ReqTrailer extends Req {
       return parse(target);
     };
 
-    return async ({ isVR, title, code }) => {
-      const keyword = `${code}|${title}`;
+    return async (title, isVR) => {
+      const result = await getResult(title);
       const rule = isVR ? rules[1] : rules[0];
-
-      const result = await getResult(keyword);
       return Promise.any(result.map((res) => getSamples(res, rule)));
     };
   }
@@ -176,7 +174,7 @@ class ReqTrailer extends Req {
       return guessStudio(code, studio);
     } else {
       const getDMM = this.useDMM();
-      return getDMM({ isVR, title, code });
+      return getDMM(title, isVR);
     }
   }
 }
