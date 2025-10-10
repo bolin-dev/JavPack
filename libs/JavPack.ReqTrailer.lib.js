@@ -75,7 +75,7 @@ class ReqTrailer extends Req {
     };
 
     return async ({ isVR, title, code }) => {
-      const keyword = isVR ? title : code;
+      const keyword = `${code}|${title}`;
       const rule = isVR ? rules[1] : rules[0];
 
       const result = await getResult(keyword);

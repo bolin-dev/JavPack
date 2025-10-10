@@ -48,7 +48,7 @@ const getDetails = (dom = document) => {
   const label = titleNode.querySelector("strong").textContent;
   const origin = titleNode.querySelector(".origin-title");
   const current = titleNode.querySelector(".current-title");
-  const title = (origin ?? current).textContent.replace(label, "").trim();
+  const title = (origin ?? current).textContent.replace(label, "").replace(code, "").trim();
   const cover = dom.querySelector(".video-cover")?.src ?? "";
 
   const studio =
