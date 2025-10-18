@@ -15,6 +15,7 @@
   --x-danger-bd: rgb(241 174 181);
 
   color-scheme: light;
+  text-autospace: normal;
 
   &[data-theme="dark"] {
     --x-success-bd: rgb(15 81 50);
@@ -22,8 +23,8 @@
     --x-warning-bd: rgb(153 116 4);
     --x-danger-bd: rgb(132 32 41);
 
-    background-color: transparent;
     color-scheme: dark;
+    background-color: transparent;
 
     .navbar {
       --x-rgb: 181 181 181;
@@ -55,7 +56,7 @@
 }
 
 html {
-  overflow-y: overlay;
+  overflow-y: auto;
   scroll-behavior: smooth;
 
   &.has-navbar-fixed-bottom {
@@ -105,8 +106,8 @@ body:has(.x-load) #footer,
 
   &.is-black {
     background-color: var(--x-bg) !important;
-    backdrop-filter: saturate(1.8) blur(20px);
     border-bottom: 1px solid var(--x-bd);
+    backdrop-filter: saturate(1.8) blur(20px);
 
     .navbar-brand > a.navbar-item:is(:focus, :hover, :focus-within) {
       background-color: var(--x-hv) !important;
@@ -161,9 +162,9 @@ body:has(.x-load) #footer,
       0 8px 8px rgb(10 10 10 / 10%),
       0 0 0 1px rgb(10 10 10 / 10%);
     opacity: 0;
+    transform: translateY(-5px);
     transition-duration: 86ms;
     transition-property: opacity, transform;
-    transform: translateY(-5px);
   }
 
   .navbar-item.is-hoverable:is(:focus, :hover, :focus-within) .navbar-dropdown.is-right {
@@ -343,8 +344,8 @@ body:has(.x-load) #footer,
         z-index: 1;
         width: 100%;
         height: 100%;
-        background-color: #000;
         object-fit: contain;
+        background-color: #000;
         opacity: 0;
         transition: var(--x-trans);
 
@@ -392,9 +393,9 @@ body:has(.x-load) #footer,
       padding-top: 0.5rem;
       padding-right: 0.5rem;
       padding-bottom: 0;
+      -webkit-line-clamp: 2;
       font-size: var(--x-size-md);
       white-space: normal;
-      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
 
       .x-match {
@@ -537,8 +538,8 @@ nav.pagination {
     }
 
     a.tag-expand {
-      order: 3;
       float: none;
+      order: 3;
       margin-top: 0;
       transform: translateY(-1px);
     }
@@ -779,8 +780,8 @@ br + .title {
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
       max-height: none;
+      object-fit: contain;
     }
 
     video {
@@ -816,9 +817,9 @@ br + .title {
       display: -webkit-box;
       overflow: hidden;
       text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
       word-break: break-all;
       white-space: unset;
-      -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
     }
   }
@@ -838,7 +839,7 @@ br + .title {
 }
 
 .fancybox-slide {
-  overflow-y: overlay;
+  overflow-y: auto;
   overscroll-behavior: contain;
 }
 
@@ -874,8 +875,8 @@ br + .title {
           flex: 1;
           overflow: hidden;
           text-overflow: ellipsis;
-          word-break: break-all;
           -webkit-line-clamp: 1;
+          word-break: break-all;
           -webkit-box-orient: vertical;
 
           &::before {
@@ -954,7 +955,7 @@ br + .title {
 
   & + #magnets-content {
     max-height: calc(54px * 9);
-    overflow-y: overlay;
+    overflow-y: auto;
   }
 }
 
@@ -1018,7 +1019,7 @@ br + .title {
     flex: 1;
     width: 100%;
     margin-bottom: 0.375rem;
-    background-color: #aa9084;
     object-fit: contain;
+    background-color: #aa9084;
   }
 }
