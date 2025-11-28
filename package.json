@@ -5,14 +5,14 @@
   "author": "blc",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "@babel/core": "^7.28.3",
-    "@babel/eslint-parser": "^7.28.0",
-    "eslint": "^9.34.0",
+    "@babel/core": "^7.28.5",
+    "@babel/eslint-parser": "^7.28.5",
+    "eslint": "^9.39.1",
     "eslint-config-alloy": "^5.1.2",
-    "prettier": "^3.6.2",
-    "stylelint": "^16.23.1",
-    "stylelint-config-recess-order": "^7.2.0",
+    "prettier": "^3.7.1",
+    "stylelint": "^16.26.0",
+    "stylelint-config-recess-order": "^7.4.0",
     "stylelint-config-standard": "^38.0.0"
   },
-  "packageManager": "pnpm@10.15.0"
+  "packageManager": "pnpm@10.24.0"
 }
