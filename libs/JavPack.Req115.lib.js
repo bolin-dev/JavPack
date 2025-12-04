@@ -312,6 +312,7 @@ class Req115 extends Drive115 {
   static handleRename(files, cid, { rename, renameTxt, zh, crack }) {
     rename = rename.replaceAll("$zh", zh ? renameTxt.zh : "");
     rename = rename.replaceAll("$crack", crack ? renameTxt.crack : "");
+    rename = rename.split("$sep").filter(Boolean).join(renameTxt.sep);
     rename = rename.trim();
 
     const renameObj = { [cid]: rename };

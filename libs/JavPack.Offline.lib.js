@@ -29,6 +29,7 @@ class Offline {
 
   static defaultRenameTxt = {
     no: ".${no}",
+    sep: "-",
     zh: "[中字]",
     crack: "[破解]",
   };
@@ -54,6 +55,7 @@ class Offline {
 
         rename = rename?.toString().trim();
         if (rename) {
+          rename = rename.replaceAll("${sep}", "$sep");
           rename = rename.replaceAll("${zh}", "$zh");
           rename = rename.replaceAll("${crack}", "$crack");
           if (!rename.includes("${code}")) rename = "${code} " + rename;
