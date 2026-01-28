@@ -63,7 +63,7 @@ class Req {
         options.data = formData;
       }
     } else if (method === "GET") {
-      options.responseType ??= this.DEFAULT_GET_RESPONSE_TYPE;
+      options.responseType ??= options.url.split(/[?#]/)[0].endsWith(".json") ? "json" : this.DEFAULT_GET_RESPONSE_TYPE;
     }
 
     return new Promise((resolve, reject) => {
