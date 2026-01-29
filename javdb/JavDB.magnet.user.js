@@ -77,7 +77,7 @@ Util.upStore();
     `;
   };
 
-  const filterMin = (item) => !item.min;
+  const filterMin = item => !item.min;
 
   const parseSize = ({ size, files, ...item }) => {
     const meta = [];
@@ -111,8 +111,8 @@ Util.upStore();
   };
 
   const setMagnets = (details) => {
-    CONT.innerHTML =
-      Object.values(details)
+    CONT.innerHTML
+      = Object.values(details)
         .flat()
         .map(parseName)
         .reduce(reduceMagnet, [])
@@ -130,7 +130,7 @@ Util.upStore();
 
     const btdig = `https://btdig.com/search?order=0&q=${code}`;
     const nyaa = `https://sukebei.nyaa.si/?f=0&c=2_2&q=${code}`;
-    const iconStr = '<span class="icon is-small"><i class="icon-check-circle"></i></span>';
+    const iconStr = "<span class='icon is-small'><i class='icon-check-circle'></i></span>";
 
     CONT.insertAdjacentHTML(
       "beforebegin",
@@ -166,6 +166,6 @@ Util.upStore();
   };
 
   if (!details.origin) setDetails(getMagnets(), "origin");
-  if (!details.btdig) ReqMagnet.btdig(codeDetails).then((sources) => setDetails(sources, "btdig"));
-  if (!details.nyaa) ReqMagnet.nyaa(codeDetails).then((sources) => setDetails(sources, "nyaa"));
+  if (!details.btdig) ReqMagnet.btdig(codeDetails).then(sources => setDetails(sources, "btdig"));
+  if (!details.nyaa) ReqMagnet.nyaa(codeDetails).then(sources => setDetails(sources, "nyaa"));
 })();

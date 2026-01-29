@@ -24,14 +24,14 @@ const config = [/男の娘/];
     const title = titleNode?.textContent.split(code).pop().trim() ?? "";
     const score = node.querySelector(".score .value")?.textContent.replace(/^\s+/, "") ?? "";
     const date = node.querySelector(".meta")?.textContent.trim() ?? "";
-    const tags = [...node.querySelectorAll(".tags .tag")].map((tag) => tag?.textContent.trim() ?? "");
+    const tags = [...node.querySelectorAll(".tags .tag")].map(tag => tag?.textContent.trim() ?? "");
     return `[${code}][${title}][${score}][${date}][${tags}]`;
   };
 
   const filter = (list) => {
     list.forEach((item) => {
       const txt = parse(item);
-      if (config.some((reg) => reg.test(txt))) item.classList.add("is-hidden");
+      if (config.some(reg => reg.test(txt))) item.classList.add("is-hidden");
     });
   };
 

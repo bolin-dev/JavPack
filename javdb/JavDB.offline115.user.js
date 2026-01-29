@@ -95,9 +95,11 @@ const getConfig = async () => {
   try {
     const { default: func } = await import(moduleUrl);
     return func(defaultConfig);
-  } catch (_) {
+  }
+  catch {
     return defaultConfig;
-  } finally {
+  }
+  finally {
     URL.revokeObjectURL(moduleUrl);
   }
 };
@@ -113,13 +115,14 @@ const setConfig = async (e) => {
     const customConfig = await new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.onerror = () => reject(new Error("文件读取失败"));
-      fileReader.onload = (e) => resolve(e.target.result);
+      fileReader.onload = e => resolve(e.target.result);
       fileReader.readAsText(file);
     });
 
     GM_setValue(CUSTOM_CONFIG, customConfig);
     Grant.notify({ icon: "success", msg: "导入成功，页面刷新后生效", onclick: () => location.reload() });
-  } catch (err) {
+  }
+  catch (err) {
     Grant.notify({ icon: "warn", msg: err?.message });
   }
 };
@@ -198,13 +201,13 @@ const getDetails = (dom = document) => {
       case "類別:":
         info.genres = value
           .split(",")
-          .map((item) => item.trim())
+          .map(item => item.trim())
           .filter(Boolean);
         break;
       case "演員:":
         info.actors = value
           .split("\n")
-          .map((item) => item.trim())
+          .map(item => item.trim())
           .filter(Boolean);
         break;
     }
@@ -238,7 +241,7 @@ const renderAction = ({ color, index, idx, desc, name }) => {
 };
 
 const findAction = ({ index, idx }, actions) => {
-  return actions.find((act) => act.index === Number(index) && act.idx === Number(idx));
+  return actions.find(act => act.index === Number(index) && act.idx === Number(idx));
 };
 
 const parseMagnet = (node) => {
@@ -259,7 +262,7 @@ const getMagnets = (dom = document) => {
 };
 
 const checkCrack = (magnets, uncensored) => {
-  return uncensored ? magnets.map((item) => ({ ...item, crack: false })) : magnets;
+  return uncensored ? magnets.map(item => ({ ...item, crack: false })) : magnets;
 };
 
 const offline = async ({ options, magnets, onstart, onprogress, onfinally }, currIdx = 0) => {
@@ -287,7 +290,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   const attributes = { type: "file", accept: ".js", style: "display: none;" };
   const fileInput = GM_addElement(document.body, "input", attributes);
 
-  document.addEventListener("keydown", (e) => e.altKey && e.code === "KeyU" && fileInput.click());
+  document.addEventListener("keydown", e => e.altKey && e.code === "KeyU" && fileInput.click());
   fileInput.addEventListener("change", setConfig);
 
   onShortcut();
@@ -311,13 +314,13 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       </div></div></div></div>`,
     );
 
-    const inMagnets = actions.filter((item) => Boolean(item.inMagnets));
+    const inMagnets = actions.filter(item => Boolean(item.inMagnets));
     if (!inMagnets.length) return;
 
     const inMagnetsStr = inMagnets.map(renderAction).join("");
     const magnetsNode = document.querySelector("#magnets-content");
 
-    const insert = (node) => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsStr);
+    const insert = node => node.querySelector(".buttons.column").insertAdjacentHTML("beforeend", inMagnetsStr);
     const insertMagnets = () => magnetsNode.querySelectorAll(".item.columns").forEach(insert);
 
     window.addEventListener("JavDB.magnet", insertMagnets);
@@ -327,11 +330,11 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   const onstart = (target) => {
     Util.setFavicon("pend");
     target.classList.add(LOAD_CLASS);
-    document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.setAttribute("disabled", ""));
+    document.querySelectorAll(`.${TARGET_CLASS}`).forEach(item => item.setAttribute("disabled", ""));
   };
 
   const onfinally = (target, res) => {
-    document.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.removeAttribute("disabled"));
+    document.querySelectorAll(`.${TARGET_CLASS}`).forEach(item => item.removeAttribute("disabled"));
     target.classList.remove(LOAD_CLASS);
     if (!res) return;
 
@@ -361,7 +364,7 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       magnets: checkCrack(magnets, UNC),
       onstart: () => onstart(target),
       onprogress: Util.setFavicon,
-      onfinally: (res) => onfinally(target, res),
+      onfinally: res => onfinally(target, res),
     });
   };
 
@@ -378,18 +381,18 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
     const sectionName = document.querySelector(".section-name")?.textContent.trim() ?? "";
     const actorSectionName = document.querySelector(".actor-section-name")?.textContent.trim() ?? "";
 
-    const getLastName = (txt) => txt.split(", ").at(-1).trim();
+    const getLastName = txt => txt.split(", ").at(-1).trim();
 
     const getOnTags = () => {
       const nodeList = document.querySelectorAll("#tags .tag_labels .tag.is-info");
-      const genres = [...nodeList].map((item) => item.textContent.trim());
+      const genres = [...nodeList].map(item => item.textContent.trim());
       return { genres };
     };
 
     const getOnActors = () => {
       const actor = getLastName(actorSectionName).replace("(無碼)", "").trim();
       const nodeList = document.querySelectorAll(".actor-tags.tags .tag.is-medium.is-link:not(.is-outlined)");
-      const genres = [...nodeList].map((item) => item.textContent.trim());
+      const genres = [...nodeList].map(item => item.textContent.trim());
       return { actors: [actor], genres };
     };
 
@@ -443,22 +446,22 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
   const insertActions = (actions) => {
     const actionsStr = `<div class="px-2 pt-2 buttons">${actions.map(renderAction).join("")}</div>`;
 
-    const insert = (node) => node.querySelector(COVER_SELECTOR)?.insertAdjacentHTML("beforeend", actionsStr);
-    const insertList = (nodeList) => nodeList.forEach(insert);
+    const insert = node => node.querySelector(COVER_SELECTOR)?.insertAdjacentHTML("beforeend", actionsStr);
+    const insertList = nodeList => nodeList.forEach(insert);
 
     insertList(movieList);
     window.addEventListener("JavDB.scroll", ({ detail }) => insertList(detail));
   };
 
-  const videoFocus = (target) => target.closest(COVER_SELECTOR)?.querySelector("video")?.focus();
+  const videoFocus = target => target.closest(COVER_SELECTOR)?.querySelector("video")?.focus();
 
   const onstart = (target) => {
     target.classList.add(LOAD_CLASS);
-    target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.setAttribute("disabled", ""));
+    target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach(item => item.setAttribute("disabled", ""));
   };
 
   const onfinally = (target, res) => {
-    target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach((item) => item.removeAttribute("disabled"));
+    target.parentElement.querySelectorAll(`.${TARGET_CLASS}`).forEach(item => item.removeAttribute("disabled"));
     target.classList.remove(LOAD_CLASS);
     if (res) setTimeout(() => unsafeWindow[MATCH_API]?.(target), MATCH_DELAY);
   };
@@ -489,9 +492,10 @@ const offline = async ({ options, magnets, onstart, onprogress, onfinally }, cur
       offline({
         options,
         magnets: checkCrack(magnets, UNC),
-        onfinally: (res) => onfinally(target, res),
+        onfinally: res => onfinally(target, res),
       });
-    } catch (err) {
+    }
+    catch (err) {
       onfinally(target);
       Util.print(err?.message);
     }

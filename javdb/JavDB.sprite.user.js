@@ -75,5 +75,5 @@ Util.upStore();
       GM_setValue(mid, source);
       setSprite(source);
     })
-    .catch((err) => Util.print(err?.message));
+    .catch(err => Util.print(err?.message));
 })();

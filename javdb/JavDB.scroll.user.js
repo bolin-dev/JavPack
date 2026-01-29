@@ -29,9 +29,9 @@
       img.addEventListener("load", ({ target }) => target.style.setProperty("opacity", 1), { once: true });
     };
 
-    const delTitle = (node) => node.querySelector("a:has(img)")?.removeAttribute("title");
+    const delTitle = node => node.querySelector("a:has(img)")?.removeAttribute("title");
 
-    const editCards = (nodeList) => nodeList.forEach((node) => fadeIn(node) || delTitle(node));
+    const editCards = nodeList => nodeList.forEach(node => fadeIn(node) || delTitle(node));
 
     editCards(cardList);
     return editCards;
@@ -52,8 +52,8 @@
     let _next = next;
     let _list = list;
 
-    const getUrl = (node) => node?.href;
-    const getLbl = getUrl(list[0]) ? getUrl : (node) => getUrl(node.querySelector("a"));
+    const getUrl = node => node?.href;
+    const getLbl = getUrl(list[0]) ? getUrl : node => getUrl(node.querySelector("a"));
 
     const parser = (dom) => {
       const next = dom?.querySelector(nextSelector)?.href;
@@ -63,7 +63,7 @@
 
     const filter = (list) => {
       const setList = new Set([..._list].map(getLbl));
-      return [...list].filter((node) => !setList.has(getLbl(node)));
+      return [...list].filter(node => !setList.has(getLbl(node)));
     };
 
     return async (entries, obs) => {
@@ -91,10 +91,12 @@
 
         _next = next;
         _list = list;
-      } catch (err) {
+      }
+      catch (err) {
         Util.print(err?.message);
         target.removeAttribute("disabled");
-      } finally {
+      }
+      finally {
         target.classList.remove(loadCls);
       }
     };
