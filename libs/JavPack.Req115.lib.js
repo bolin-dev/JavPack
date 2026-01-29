@@ -4,7 +4,7 @@
  * @connect 115.com
  */
 class Drive115 extends Req {
-  static defaultGetResponseType = "json";
+  static DEFAULT_GET_RESPONSE_TYPE = "json";
 
   static files(cid = "0", params = {}) {
     return this.request({
