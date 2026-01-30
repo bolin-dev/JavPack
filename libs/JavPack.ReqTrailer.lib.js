@@ -17,7 +17,7 @@ class ReqTrailer extends Req {
           const { src, bitrates } = JSON.parse(match[1]);
           if (!src && !bitrates?.length) throw new Error("Not found res");
 
-          const samples = [src, ...bitrates.map((it) => it.src)].filter((item) => item.endsWith(".mp4"));
+          const samples = [src, ...bitrates.map(it => it.src)].filter(item => item.endsWith(".mp4"));
           if (!samples.length) throw new Error("Not found mp4");
 
           return [...new Set(samples)];
@@ -54,7 +54,7 @@ class ReqTrailer extends Req {
       });
 
       if (!res?.result?.result_count) throw new Error("Not found result");
-      return res.result.items.map((item) => ({
+      return res.result.items.map(item => ({
         service: item.service_code,
         floor: item.floor_code,
         cid: item.content_id,
@@ -77,7 +77,7 @@ class ReqTrailer extends Req {
     return async (title, isVR) => {
       const result = await getResult(title);
       const rule = isVR ? rules[1] : rules[0];
-      return Promise.any(result.map((res) => getSamples(res, rule)));
+      return Promise.any(result.map(res => getSamples(res, rule)));
     };
   }
 
@@ -97,13 +97,13 @@ class ReqTrailer extends Req {
 
     const getSamples = (code, host) => {
       const sample = sampleUrl.replace("$host", host).replace("$code", code);
-      return resolutions.map((r) => sample.replace("%s", r));
+      return resolutions.map(r => sample.replace("%s", r));
     };
 
     const rules = [
       {
         studios: ["Tokyo-Hot", "東京熱"],
-        samples: (code) => [`https://my.cdn.tokyo-hot.com/media/samples/${code}.mp4`],
+        samples: code => [`https://my.cdn.tokyo-hot.com/media/samples/${code}.mp4`],
       },
       {
         studios: ["Heydouga"],
@@ -129,23 +129,23 @@ class ReqTrailer extends Req {
       },
       {
         studios: ["一本道"],
-        samples: (code) => getSamples(code, "1pondo.tv"),
+        samples: code => getSamples(code, "1pondo.tv"),
       },
       {
         studios: ["pacopacomama,パコパコママ"],
-        samples: (code) => getSamples(code, "pacopacomama.com"),
+        samples: code => getSamples(code, "pacopacomama.com"),
       },
       {
         studios: ["muramura"],
-        samples: (code) => getSamples(code, "muramura.tv"),
+        samples: code => getSamples(code, "muramura.tv"),
       },
       {
         studios: ["10musume", "天然むすめ"],
-        samples: (code) => getSamples(code, "10musume.com"),
+        samples: code => getSamples(code, "10musume.com"),
       },
       {
         studios: ["Caribbeancom", "加勒比", "カリビアンコム"],
-        samples: (code) => getSamples(code, "caribbeancom.com"),
+        samples: code => getSamples(code, "caribbeancom.com"),
       },
     ];
 
@@ -153,10 +153,10 @@ class ReqTrailer extends Req {
       if (!studio) throw new Error("Studio is required");
       studio = studio.toUpperCase();
 
-      const samples = rules.find(({ studios }) => studios.some((st) => st.toUpperCase() === studio))?.samples(code);
+      const samples = rules.find(({ studios }) => studios.some(st => st.toUpperCase() === studio))?.samples(code);
       if (!samples?.length) throw new Error("Not found samples");
 
-      const results = await Promise.allSettled(samples.map((url) => this.request({ method: "HEAD", url })));
+      const results = await Promise.allSettled(samples.map(url => this.request({ method: "HEAD", url })));
       const sources = results.filter(({ status }) => status === "fulfilled").map(({ value }) => value);
       if (!sources.length) throw new Error("Not found sources");
 
@@ -167,12 +167,15 @@ class ReqTrailer extends Req {
   static getTrailer({ isVR, isFC2, isWestern, isUncensored, code, title, studio }) {
     if (isFC2) {
       throw new Error("Not Supported FC2");
-    } else if (isWestern) {
+    }
+    else if (isWestern) {
       throw new Error("Not Supported Western");
-    } else if (isUncensored) {
+    }
+    else if (isUncensored) {
       const guessStudio = this.useStudio();
       return guessStudio(code, studio);
-    } else {
+    }
+    else {
       const getDMM = this.useDMM();
       return getDMM(title, isVR);
     }

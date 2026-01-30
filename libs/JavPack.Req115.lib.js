@@ -205,7 +205,7 @@ class Req115 extends Drive115 {
     if (cachedCid) {
       const res = await this.files(cachedCid);
       if (res?.path?.length) {
-        const path = res.path.slice(1).map((p) => p.name);
+        const path = res.path.slice(1).map(p => p.name);
         if (path.join("/") === routesStr) cid = cachedCid;
       }
     }
@@ -215,7 +215,7 @@ class Req115 extends Drive115 {
 
       for (const route of routes) {
         const { data } = await this.filesSearchAllFolders(route, { cid });
-        let folder = data.find((folder) => folder.n === route);
+        let folder = data.find(folder => folder.n === route);
         if (!folder) folder = await this.filesAdd(route, cid);
         cid = folder?.cid;
         if (!cid) break;
@@ -246,7 +246,7 @@ class Req115 extends Drive115 {
       if (index) await sleep();
       const { tasks } = await this.lixianTaskLists();
 
-      const task = tasks.find((task) => task.info_hash === info_hash);
+      const task = tasks.find(task => task.info_hash === info_hash);
       if (!task || task.status === -1) break;
 
       file_id = task.file_id;
@@ -259,21 +259,21 @@ class Req115 extends Drive115 {
       if (index) await sleep();
       const { data } = await this.filesAllVideos(file_id);
 
-      videos = data.filter((item) => regex.test(item.n));
+      videos = data.filter(item => regex.test(item.n));
       if (videos.length) break;
     }
 
     if (!videos.length) {
       const { tasks } = await this.lixianTaskLists();
-      const task = tasks.find((task) => task.info_hash === info_hash);
+      const task = tasks.find(task => task.info_hash === info_hash);
 
       if (task.status === 2) {
         const { data } = await this.filesAllVideos(file_id);
-        codes = codes.map((code) => code.toUpperCase());
+        codes = codes.map(code => code.toUpperCase());
 
         videos = data.filter((item) => {
           const name = item.n.toUpperCase();
-          return codes.some((code) => name.includes(code));
+          return codes.some(code => name.includes(code));
         });
       }
     }
@@ -282,14 +282,14 @@ class Req115 extends Drive115 {
   }
 
   static async handleClean(keepFiles, cid) {
-    const needMove = keepFiles.filter((file) => file.cid !== cid).map((file) => file.fid);
+    const needMove = keepFiles.filter(file => file.cid !== cid).map(file => file.fid);
     if (needMove.length) await this.filesMove(needMove, cid);
 
     const { data } = await this.filesAll(cid);
 
     const needRemove = data
-      .filter((item) => !keepFiles.some((file) => file.fid === item.fid))
-      .map((item) => item.fid ?? item.cid);
+      .filter(item => !keepFiles.some(file => file.fid === item.fid))
+      .map(item => item.fid ?? item.cid);
 
     if (needRemove.length) return this.rbDelete(needRemove, cid);
   }
@@ -302,11 +302,11 @@ class Req115 extends Drive115 {
     const labels = [];
 
     tags.forEach((tag) => {
-      const item = list.find((item) => item.name === tag);
+      const item = list.find(item => item.name === tag);
       if (item) labels.push(item.id);
     });
 
-    if (labels.length) return this.filesBatchLabel(files.map((it) => it.fid).toString(), labels.toString());
+    if (labels.length) return this.filesBatchLabel(files.map(it => it.fid).toString(), labels.toString());
   }
 
   static handleRename(files, cid, { rename, renameTxt, zh, crack }) {
@@ -400,7 +400,8 @@ class Req115 extends Drive115 {
         try {
           const { data } = await this.handleCover(cover, file_id, `${code}.cover.jpg`);
           if (data?.file_id) this.filesEdit(file_id, data.file_id);
-        } catch (err) {
+        }
+        catch (err) {
           console.warn("[Req115.handleCover]", err?.message);
         }
       }

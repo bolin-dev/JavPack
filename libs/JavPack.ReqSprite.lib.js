@@ -12,10 +12,10 @@ class ReqSprite extends Req {
     const list = res?.querySelectorAll(".content-main .card-content:has(.images-description a)");
     if (!list?.length) throw new Error("Not found list");
 
-    const match = [...list].filter((node) => regex.test(node.querySelector(".title a")?.textContent ?? ""));
+    const match = [...list].filter(node => regex.test(node.querySelector(".title a")?.textContent ?? ""));
     if (!match.length) throw new Error("Not found match");
 
-    const urls = match.map((node) => node.querySelector(".images-description a").textContent?.trim()).filter(Boolean);
+    const urls = match.map(node => node.querySelector(".images-description a").textContent?.trim()).filter(Boolean);
     if (!urls.length) throw new Error("Not found target");
 
     const target = await this.request(urls[0]);
@@ -34,14 +34,14 @@ class ReqSprite extends Req {
     const list = res?.querySelectorAll("#main .content-loop.post-loop .entry-title a");
     if (!list?.length) throw new Error("Not found list");
 
-    const url = [...list].find((node) => regex.test(node.textContent || ""))?.href;
+    const url = [...list].find(node => regex.test(node.textContent || ""))?.href;
     if (!url) throw new Error("Not found target");
 
     const target = await this.request(url);
     const images = target?.querySelectorAll("#main > article > .entry-content > p img");
     if (!images?.length) throw new Error("Not found images");
 
-    const sprites = [...images].map((img) => img.src).filter((src) => /[a-z]+\.(jpe?g|png)$/i.test(src));
+    const sprites = [...images].map(img => img.src).filter(src => /[a-z]+\.(?:jpe?g|png)$/i.test(src));
     if (!sprites.length) throw new Error("Not found sprite");
 
     return sprites.at(-1);
@@ -57,7 +57,7 @@ class ReqSprite extends Req {
     const list = res?.querySelectorAll("#content_news li > a");
     if (!list?.length) throw new Error("Not found list");
 
-    const url = [...list].find((node) => regex.test(node.title ?? ""))?.href;
+    const url = [...list].find(node => regex.test(node.title ?? ""))?.href;
     if (!url) throw new Error("Not found target");
 
     const target = await this.request(url);
@@ -65,7 +65,7 @@ class ReqSprite extends Req {
     if (!link) throw new Error("Not found link");
 
     const source = link.querySelector("img")?.src ?? link.href ?? "";
-    if (!/\.(jpe?g|png)$/i.test(source)) throw new Error("Not found source");
+    if (!/\.(?:jpe?g|png)$/i.test(source)) throw new Error("Not found source");
 
     const sprite = source.replace("//pixhost.to/show/", "//img89.pixhost.to/images/").replace(".th.", ".");
     const finalUrl = await this.request({ url: sprite, method: "HEAD" });
