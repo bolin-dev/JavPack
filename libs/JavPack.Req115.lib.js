@@ -103,7 +103,6 @@ class Drive115 extends Req {
    * Bulk label files
    * @param {string} file_ids fid1,fid2,fid3...
    * @param {string} file_label label_id1,label_id2,label_id3...
-   * @returns
    */
   static filesBatchLabel(file_ids, file_label, action = "add") {
     return this.post({
